@@ -4,12 +4,12 @@
  * Pattern: Đúng cách mà 90% công ty VN đang dùng
  */
 
-$(document).ready(function() {
+$(document).ready(function () {
 
     // ===== CHUẨN THỰC TẾ: Sử dụng jQuery =====
 
     // 1. AJAX Add to Cart (Chuẩn công ty)
-    $('.add-to-cart').click(function(e) {
+    $('.add-to-cart').click(function (e) {
         e.preventDefault();
 
         const productId = $(this).data('product-id');
@@ -25,8 +25,8 @@ $(document).ready(function() {
                 productId: productId,
                 quantity: quantity
             },
-            success: function(response) {
-                if(response.success) {
+            success: function (response) {
+                if (response.success) {
                     // Update cart badge
                     $('#cart-count').text(response.cartCount);
 
@@ -40,17 +40,17 @@ $(document).ready(function() {
                     showToast(response.message, 'error');
                 }
             },
-            error: function() {
+            error: function () {
                 showToast('Có lỗi xảy ra, vui lòng thử lại!', 'error');
             }
         });
     });
 
     // 2. Remove from Cart
-    $('.remove-item').click(function(e) {
+    $('.remove-item').click(function (e) {
         e.preventDefault();
 
-        if(!confirm('Bạn có chắc muốn xóa sản phẩm này?')) return;
+        if (!confirm('Bạn có chắc muốn xóa sản phẩm này?')) return;
 
         const cartItemId = $(this).data('item-id');
         const $row = $(this).closest('tr');
@@ -58,9 +58,9 @@ $(document).ready(function() {
         $.ajax({
             url: '/api/cart/remove/' + cartItemId,
             method: 'DELETE',
-            success: function(response) {
-                if(response.success) {
-                    $row.fadeOut(300, function() {
+            success: function (response) {
+                if (response.success) {
+                    $row.fadeOut(300, function () {
                         $(this).remove();
                     });
                     $('#cart-total').text(response.newTotal);
@@ -72,7 +72,7 @@ $(document).ready(function() {
     });
 
     // 3. Update Quantity
-    $('.quantity-input').change(function() {
+    $('.quantity-input').change(function () {
         const cartItemId = $(this).data('item-id');
         const newQuantity = $(this).val();
 
@@ -83,8 +83,8 @@ $(document).ready(function() {
                 cartItemId: cartItemId,
                 quantity: newQuantity
             },
-            success: function(response) {
-                if(response.success) {
+            success: function (response) {
+                if (response.success) {
                     $('#item-total-' + cartItemId).text(response.itemTotal);
                     $('#cart-total').text(response.cartTotal);
                 }
@@ -93,8 +93,8 @@ $(document).ready(function() {
     });
 
     // 4. Form Validation (Chuẩn Bootstrap)
-    $('form.needs-validation').submit(function(e) {
-        if(!this.checkValidity()) {
+    $('form.needs-validation').submit(function (e) {
+        if (!this.checkValidity()) {
             e.preventDefault();
             e.stopPropagation();
         }
@@ -103,26 +103,26 @@ $(document).ready(function() {
 
     // 5. Search Products (Debounced)
     let searchTimeout;
-    $('#search-input').keyup(function() {
+    $('#search-input').keyup(function () {
         clearTimeout(searchTimeout);
         const keyword = $(this).val();
 
-        searchTimeout = setTimeout(function() {
-            if(keyword.length >= 2) {
+        searchTimeout = setTimeout(function () {
+            if (keyword.length >= 2) {
                 searchProducts(keyword);
             }
         }, 500);
     });
 
     // 6. Category Filter
-    $('.category-filter').click(function(e) {
+    $('.category-filter').click(function (e) {
         e.preventDefault();
         const categoryId = $(this).data('category-id');
 
         $.ajax({
             url: '/api/products/category/' + categoryId,
             method: 'GET',
-            success: function(products) {
+            success: function (products) {
                 renderProducts(products);
             }
         });
@@ -151,8 +151,8 @@ function searchProducts(keyword) {
     $.ajax({
         url: '/api/products/search',
         method: 'GET',
-        data: { q: keyword },
-        success: function(products) {
+        data: {q: keyword},
+        success: function (products) {
             renderProducts(products);
         }
     });
@@ -161,7 +161,7 @@ function searchProducts(keyword) {
 // Render Products (Template rendering)
 function renderProducts(products) {
     let html = '';
-    products.forEach(function(product) {
+    products.forEach(function (product) {
         html += `
             <div class="col-md-4 mb-3">
                 <div class="card">
@@ -193,12 +193,12 @@ function formatPrice(price) {
 
 // Admin: Delete with confirmation
 function deleteItem(url, itemName) {
-    if(confirm(`Bạn có chắc muốn xóa "${itemName}"?`)) {
+    if (confirm(`Bạn có chắc muốn xóa "${itemName}"?`)) {
         $.ajax({
             url: url,
             method: 'DELETE',
-            success: function(response) {
-                if(response.success) {
+            success: function (response) {
+                if (response.success) {
                     location.reload(); // Reload trang sau khi xóa
                     showToast('Đã xóa thành công!', 'success');
                 }
@@ -212,9 +212,9 @@ function toggleStatus(url, currentStatus) {
     $.ajax({
         url: url,
         method: 'PUT',
-        data: { status: !currentStatus },
-        success: function(response) {
-            if(response.success) {
+        data: {status: !currentStatus},
+        success: function (response) {
+            if (response.success) {
                 location.reload();
             }
         }

@@ -1,39 +1,23 @@
 package com.example.projectend.controller;
 
-import com.example.projectend.entity.*;
-import com.example.projectend.service.*;
+import com.example.projectend.service.DanhGiaService;
+import com.example.projectend.service.TaiKhoanService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import jakarta.servlet.http.HttpServletResponse;
-import java.security.Principal;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
- * DASHBOARD CONTROLLER - Trang quản lý admin
- * Người 1 - Database Design & Backend Core ✅ ĐÃ HOÀN THÀNH (Cấu trúc cơ bản)
- * Người 2 - Authentication & Security ✅ ĐÃ HOÀN THÀNH (Security config)
- * Người 5 - Admin Dashboard & Reports 🔄 CẦN HOÀN THIỆN
- *
- * ========================================
- * TODO NGƯỜI 5 - DANH SÁCH CHI TIẾT:
- * ========================================
- *
- * BƯỚC 1: Tạo các service còn thiếu (SanPhamService, DonHangService, v.v.)
- * BƯỚC 2: Hoàn thiện Dashboard chính với thống kê
- * BƯỚC 3: Hoàn thiện CRUD quản lý đơn hàng với filter trạng thái
- * BƯỚC 4: Tạo trang báo cáo thống kê với charts
- * BƯỚC 5: Thêm tính năng export Excel/PDF
- * BƯỚC 6: Tạo các template admin với DataTables
- * BƯỚC 7: Thêm real-time notifications cho đơn hàng mới
+ * DASHBOARD CONTROLLER - Quản trị admin
+ * GIAO DIỆN TĨNH - MOCK DATA để các thành viên khác thấy giao diện hoàn chỉnh
+ * <p>
+ * PHÂN CÔNG:
+ * - THÀNH VIÊN 4: Hoàn thiện dashboard, thống kê, CRUD sản phẩm / tài khoản / đơn hàng
+ * - THÀNH VIÊN 3: Không chỉnh (trừ khi cần dữ liệu hiển thị chung header)
  */
 @Controller
 @RequestMapping("/admin")
@@ -43,139 +27,115 @@ public class DashboardController {
     @Autowired
     private TaiKhoanService taiKhoanService;
 
-    // TODO NGƯỜI 5: Tạo các service này
-    // @Autowired private SanPhamService sanPhamService;
-    // @Autowired private DonHangService donHangService;
-
-    @Autowired
-    private BaiVietService baiVietService;
-
     @Autowired
     private DanhGiaService danhGiaService;
 
-    // TODO NGƯỜI 5: Inject thêm service cần thiết
-    // @Autowired private ThongKeService thongKeService;
-    // @Autowired private AdminService adminService;
-
-    // Dashboard chính với thống kê tổng quan
     @GetMapping("")
     public String dashboard(Model model) {
+        // ===== MOCK DATA - Dữ liệu tĩnh để hiển thị giao diện =====
 
-        // TODO NGƯỜI 5: Sau khi tạo các service, uncomment các dòng dưới
-        // Thống kê cơ bản
-        // model.addAttribute("totalUsers", taiKhoanService.countByVaiTro("Khách hàng"));
-        // model.addAttribute("totalProducts", sanPhamService.countAll());
-        // model.addAttribute("totalOrders", donHangService.countAll());
-        model.addAttribute("totalPosts", baiVietService.countActivePosts());
+        // Thống kê tổng quan
+        model.addAttribute("totalUsers", 1234);
+        model.addAttribute("totalOrders", 856);
+        model.addAttribute("totalProducts", 325);
+        model.addAttribute("totalPosts", 48);
 
-        // TODO NGƯỜI 5: Thêm thống kê nâng cao
-        // LocalDate today = LocalDate.now();
-        // LocalDate startOfWeek = today.with(DayOfWeek.MONDAY);
-        // LocalDate startOfMonth = today.withDayOfMonth(1);
+        // Doanh thu
+        model.addAttribute("doanhThuHomNay", 2500000.0);
+        model.addAttribute("doanhThuTuan", 12800000.0);
+        model.addAttribute("doanhThuThang", 45200000.0);
 
-        // BigDecimal doanhThuHomNay = thongKeService.getDoanhThuByDate(today);
-        // BigDecimal doanhThuTuan = thongKeService.getDoanhThuBetweenDates(startOfWeek, today);
-        // BigDecimal doanhThuThang = thongKeService.getDoanhThuBetweenDates(startOfMonth, today);
+        // Thống kê nhanh
+        model.addAttribute("pendingOrderCount", 15);
+        model.addAttribute("lowStockCount", 8);
 
-        // model.addAttribute("doanhThuHomNay", doanhThuHomNay);
-        // model.addAttribute("doanhThuTuan", doanhThuTuan);
-        // model.addAttribute("doanhThuThang", doanhThuThang);
+        // Dữ liệu biểu đồ doanh thu 7 ngày
+        Map<String, Object> chartData = new HashMap<>();
+        chartData.put("labels", Arrays.asList("7/10", "8/10", "9/10", "10/10", "11/10", "12/10", "13/10"));
+        chartData.put("data", Arrays.asList(3.2, 4.5, 3.8, 5.2, 4.1, 6.3, 5.8));
+        model.addAttribute("chartData", chartData);
 
-        // // Top sản phẩm bán chạy
-        // List<Object[]> topProducts = thongKeService.getTopSellingProducts(5);
-        // model.addAttribute("topProducts", topProducts);
+        // Top 5 sản phẩm bán chạy
+        List<Map<String, Object>> topProducts = new ArrayList<>();
 
-        // // Đơn hàng mới cần xử lý
-        // List<DonHang> pendingOrders = donHangService.getPendingOrders(10);
-        // model.addAttribute("pendingOrders", pendingOrders);
+        Map<String, Object> product1 = new HashMap<>();
+        product1.put("tenSP", "Giỏ quà Tết An Khang");
+        product1.put("soLuongBan", 145);
+        product1.put("doanhThu", 7250000.0);
+        product1.put("hinhAnh", "https://picsum.photos/200/300");
+        topProducts.add(product1);
 
-        // // Dữ liệu cho chart doanh thu 7 ngày
-        // List<Object[]> chartData = thongKeService.getRevenueChart7Days();
-        // model.addAttribute("chartData", chartData);
+        Map<String, Object> product2 = new HashMap<>();
+        product2.put("tenSP", "Hộp quà Tết Phát Tài");
+        product2.put("soLuongBan", 98);
+        product2.put("doanhThu", 11760000.0);
+        product2.put("hinhAnh", "https://picsum.photos/200/301");
+        topProducts.add(product2);
+
+        Map<String, Object> product3 = new HashMap<>();
+        product3.put("tenSP", "Mứt dừa non hộp 500g");
+        product3.put("soLuongBan", 267);
+        product3.put("doanhThu", 4005000.0);
+        product3.put("hinhAnh", "https://picsum.photos/200/302");
+        topProducts.add(product3);
+
+        Map<String, Object> product4 = new HashMap<>();
+        product4.put("tenSP", "Bao lì xì vàng 2025");
+        product4.put("soLuongBan", 523);
+        product4.put("doanhThu", 1569000.0);
+        product4.put("hinhAnh", "https://picsum.photos/200/303");
+        topProducts.add(product4);
+
+        Map<String, Object> product5 = new HashMap<>();
+        product5.put("tenSP", "Bánh kẹo hỗn hợp");
+        product5.put("soLuongBan", 189);
+        product5.put("doanhThu", 3780000.0);
+        product5.put("hinhAnh", "https://picsum.photos/200/304");
+        topProducts.add(product5);
+
+        model.addAttribute("topProducts", topProducts);
+
+        // Đơn hàng chờ xử lý
+        List<Map<String, Object>> pendingOrders = new ArrayList<>();
+
+        Map<String, Object> order1 = new HashMap<>();
+        order1.put("maDH", "DH001");
+        order1.put("khachHang", "Nguyễn Văn A");
+        order1.put("tongTien", 1250000.0);
+        order1.put("ngayDat", "13/10/2025 09:30");
+        order1.put("trangThai", "Chờ xác nhận");
+        pendingOrders.add(order1);
+
+        Map<String, Object> order2 = new HashMap<>();
+        order2.put("maDH", "DH002");
+        order2.put("khachHang", "Trần Thị B");
+        order2.put("tongTien", 850000.0);
+        order2.put("ngayDat", "13/10/2025 08:15");
+        order2.put("trangThai", "Chờ xác nhận");
+        pendingOrders.add(order2);
+
+        Map<String, Object> order3 = new HashMap<>();
+        order3.put("maDH", "DH003");
+        order3.put("khachHang", "Lê Văn C");
+        order3.put("tongTien", 2100000.0);
+        order3.put("ngayDat", "12/10/2025 16:45");
+        order3.put("trangThai", "Chờ xác nhận");
+        pendingOrders.add(order3);
+
+        model.addAttribute("pendingOrders", pendingOrders);
 
         model.addAttribute("currentPage", "dashboard");
         model.addAttribute("pageTitle", "Dashboard - Quản lý cửa hàng");
-
         return "admin/dashboard";
     }
 
-    // ========== QUẢN LÝ BÀI VIẾT (ĐÃ HOÀN THÀNH) ==========
-    @GetMapping("/baiviet")
-    public String quanLyBaiViet(@RequestParam(defaultValue = "0") int page,
-                                @RequestParam(defaultValue = "10") int size,
-                                Model model) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<BaiViet> baiVietPage = baiVietService.getAllBaiViet(pageable);
-
-        model.addAttribute("baiVietPage", baiVietPage);
-        model.addAttribute("currentPage", "baiviet");
-        model.addAttribute("pageTitle", "Quản lý bài viết");
-
-        return "admin/baiviet/list";
-    }
-
-    @GetMapping("/baiviet/add")
-    public String themBaiViet(Model model) {
-        model.addAttribute("baiViet", new BaiViet());
-        model.addAttribute("currentPage", "baiviet");
-        model.addAttribute("pageTitle", "Thêm bài viết mới");
-
-        return "admin/baiviet/form";
-    }
-
-    @PostMapping("/baiviet/save")
-    public String luuBaiViet(@ModelAttribute BaiViet baiViet,
-                            Principal principal,
-                            RedirectAttributes redirectAttributes) {
-        try {
-            // Lấy tài khoản hiện tại
-            TaiKhoan taiKhoan = taiKhoanService.findByEmail(principal.getName());
-            baiViet.setTaiKhoan(taiKhoan);
-
-            baiVietService.save(baiViet);
-            redirectAttributes.addFlashAttribute("success", "Lưu bài viết thành công!");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
-        }
-
-        return "redirect:/admin/baiviet";
-    }
-
-    @GetMapping("/baiviet/edit/{id}")
-    public String suaBaiViet(@PathVariable Integer id, Model model) {
-        Optional<BaiViet> baiVietOpt = baiVietService.findById(id);
-        if (baiVietOpt.isEmpty()) {
-            return "redirect:/admin/baiviet?notfound";
-        }
-
-        model.addAttribute("baiViet", baiVietOpt.get());
-        model.addAttribute("currentPage", "baiviet");
-        model.addAttribute("pageTitle", "Sửa bài viết");
-
-        return "admin/baiviet/form";
-    }
-
-    @PostMapping("/baiviet/delete/{id}")
-    public String xoaBaiViet(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
-        try {
-            baiVietService.deleteById(id);
-            redirectAttributes.addFlashAttribute("success", "Xóa bài viết thành công!");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Không thể xóa bài viết: " + e.getMessage());
-        }
-
-        return "redirect:/admin/baiviet";
-    }
-
-    // ========== QUẢN LÝ ĐÁNH GIÁ (ĐÃ HOÀN THÀNH) ==========
     @GetMapping("/danhgia")
     public String quanLyDanhGia(@RequestParam(defaultValue = "0") int page,
-                               @RequestParam(defaultValue = "10") int size,
-                               Model model) {
-        // TODO NGƯỜI 5: Implement pagination for all reviews
+                                @RequestParam(defaultValue = "10") int size,
+                                Model model) {
+        // TODO THÀNH VIÊN 4: Phân trang danh sách đánh giá (danhGiaService.getAll...)
         model.addAttribute("currentPage", "danhgia");
         model.addAttribute("pageTitle", "Quản lý đánh giá");
-
         return "admin/danhgia/list";
     }
 
@@ -185,27 +145,16 @@ public class DashboardController {
             danhGiaService.deleteById(id);
             redirectAttributes.addFlashAttribute("success", "Xóa đánh giá thành công!");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Không thể xóa đánh giá: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Không thể xóa: " + e.getMessage());
         }
-
         return "redirect:/admin/danhgia";
     }
 
-    // ========== THỐNG KÊ ==========
-    @GetMapping("/thongke")
-    public String thongKe(Model model) {
-        // TODO NGƯỜI 5: Implement statistics dashboard
-        model.addAttribute("currentPage", "thongke");
-        model.addAttribute("pageTitle", "Thống kê");
+    // NOTE: /admin/thongke endpoint removed - now handled by AdminThongKeController
+    // TODO THÀNH VIÊN 4: Use AdminThongKeController for detailed statistics functionality
 
-        return "admin/thongke";
-    }
-
-    // TODO NGƯỜI 5: CÁC CHỨC NĂNG CẦN HOÀN THIỆN
-    // 1. Quản lý tài khoản (CRUD)
-    // 2. Quản lý sản phẩm (CRUD)
-    // 3. Quản lý đơn hàng với filter nâng cao
-    // 4. Báo cáo thống kê với charts
-    // 5. Export Excel/PDF
-    // 6. Cài đặt hệ thống
+    // TODO THÀNH VIÊN 4: Tạo thêm controllers con:
+    //  - /admin/sanpham/* (CRUD + upload ảnh)
+    //  - /admin/donhang/* (list + update status)
+    //  - /admin/taikhoan/* (CRUD user, reset password)
 }

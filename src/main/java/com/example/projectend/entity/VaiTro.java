@@ -4,8 +4,10 @@ import jakarta.persistence.*;
 
 /**
  * ENTITY VAI TRO
- * Người 1 - Database Design & Backend Core
- * Mapping với bảng VaiTro trong database WebBanHangTet
+ * PHÂN CÔNG:
+ * - THÀNH VIÊN 1: Mapping (ĐÃ HOÀN THÀNH)
+ * - THÀNH VIÊN 2: Sử dụng trong Security (gán ROLE_*)
+ * - THÀNH VIÊN 4: (Optional) Trang quản trị phân quyền nếu mở rộng
  */
 @Entity
 @Table(name = "VaiTro")
@@ -20,7 +22,8 @@ public class VaiTro {
     private String tenVT;
 
     // Constructors
-    public VaiTro() {}
+    public VaiTro() {
+    }
 
     public VaiTro(String tenVT) {
         this.tenVT = tenVT;

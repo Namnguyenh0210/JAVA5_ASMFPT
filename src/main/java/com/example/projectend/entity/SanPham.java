@@ -1,15 +1,20 @@
 package com.example.projectend.entity;
 
 import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
  * ENTITY SAN PHAM
- * Người 1 - Database Design & Backend Core
- * Mapping với bảng SanPham trong database WebBanHangTet
- * NOTE 04/10/2025: Gỡ quan hệ TrangThaiSanPham do DB hiện tại KHÔNG có cột MaTTSP (giữ sạch theo script được cung cấp).
- * TODO (Người 4 - Optional): Nếu bổ sung bảng trạng thái sản phẩm → thêm lại field trangThaiSanPham + cột MaTTSP.
+ * PHÂN CÔNG:
+ * - THÀNH VIÊN 1: Mapping chuẩn theo script SQL (ĐÃ HOÀN THÀNH)
+ * - THÀNH VIÊN 3: Sử dụng trong hiển thị, không thay đổi schema
+ * - THÀNH VIÊN 4: Dùng cho thống kê tồn kho / top bán (qua service khác)
+ * <p>
+ * =============================
+ * TODO THÀNH VIÊN 3 (Optional): Thêm phương thức tiện ích getGiaFormatted() trong DTO hoặc ViewModel (không thêm vào entity để giữ sạch)
+ * TODO THÀNH VIÊN 4 (Optional): Kiểm tra trước khi xóa sản phẩm (ràng buộc DonHangChiTiet) ở Service, không chỉnh entity.
  */
 @Entity
 @Table(name = "SanPham")
@@ -43,7 +48,8 @@ public class SanPham {
     private LocalDateTime ngayTao = LocalDateTime.now();
 
     // Constructors
-    public SanPham() {}
+    public SanPham() {
+    }
 
     public SanPham(String tenSP, BigDecimal gia, LoaiSanPham loaiSanPham) {
         this.tenSP = tenSP;

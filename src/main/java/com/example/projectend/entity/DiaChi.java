@@ -4,8 +4,12 @@ import jakarta.persistence.*;
 
 /**
  * ENTITY DIA CHI
- * Người 1 - Database Design & Backend Core (Skeleton bổ sung 03/10/2025)
- * Mapping với bảng DiaChi
+ * PHÂN CÔNG:
+ * - THÀNH VIÊN 1: Mapping (ĐÃ HOÀN THÀNH)
+ * - THÀNH VIÊN 3: CRUD địa chỉ khách hàng + set mặc định trong DiaChiService
+ * - THÀNH VIÊN 4: Dùng để hiển thị địa chỉ khi duyệt đơn (không chỉnh)
+ * <p>
+ * TODO THÀNH VIÊN 3: Đảm bảo chỉ 1 địa chỉ MacDinh=true / user (logic service)
  */
 @Entity
 @Table(name = "DiaChi")
@@ -26,7 +30,8 @@ public class DiaChi {
     @Column(name = "MacDinh")
     private Boolean macDinh = false;
 
-    public DiaChi() {}
+    public DiaChi() {
+    }
 
     public DiaChi(TaiKhoan taiKhoan, String diaChiChiTiet, Boolean macDinh) {
         this.taiKhoan = taiKhoan;
@@ -34,16 +39,35 @@ public class DiaChi {
         this.macDinh = macDinh;
     }
 
-    public Integer getMaDC() { return maDC; }
-    public void setMaDC(Integer maDC) { this.maDC = maDC; }
+    public Integer getMaDC() {
+        return maDC;
+    }
 
-    public TaiKhoan getTaiKhoan() { return taiKhoan; }
-    public void setTaiKhoan(TaiKhoan taiKhoan) { this.taiKhoan = taiKhoan; }
+    public void setMaDC(Integer maDC) {
+        this.maDC = maDC;
+    }
 
-    public String getDiaChiChiTiet() { return diaChiChiTiet; }
-    public void setDiaChiChiTiet(String diaChiChiTiet) { this.diaChiChiTiet = diaChiChiTiet; }
+    public TaiKhoan getTaiKhoan() {
+        return taiKhoan;
+    }
 
-    public Boolean getMacDinh() { return macDinh; }
-    public void setMacDinh(Boolean macDinh) { this.macDinh = macDinh; }
+    public void setTaiKhoan(TaiKhoan taiKhoan) {
+        this.taiKhoan = taiKhoan;
+    }
+
+    public String getDiaChiChiTiet() {
+        return diaChiChiTiet;
+    }
+
+    public void setDiaChiChiTiet(String diaChiChiTiet) {
+        this.diaChiChiTiet = diaChiChiTiet;
+    }
+
+    public Boolean getMacDinh() {
+        return macDinh;
+    }
+
+    public void setMacDinh(Boolean macDinh) {
+        this.macDinh = macDinh;
+    }
 }
-

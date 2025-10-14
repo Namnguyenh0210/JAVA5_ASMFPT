@@ -6,16 +6,11 @@ import org.springframework.stereotype.Repository;
 
 /**
  * VAI TRO REPOSITORY
- * Người 1 - Database Design & Backend Core (ĐÃ HOÀN THÀNH)
- * Repository cho entity VaiTro
+ * PHÂN CÔNG:
+ * - THÀNH VIÊN 1: Mapping (ĐÃ HOÀN THÀNH)
+ * - THÀNH VIÊN 2: Authentication & Authorization (load role by name)
  */
 @Repository
 public interface VaiTroRepository extends JpaRepository<VaiTro, Integer> {
-
-    // ========================================
-    // TODO: NGƯỜI 2 - Authentication & Authorization
-    // ========================================
-
-    // Tìm vai trò theo tên (cho authentication và phân quyền)
-    VaiTro findByTenVT(String tenVT);
+    VaiTro findByTenVT(String tenVT); // TODO THÀNH VIÊN 2: Dùng trong user registration & security
 }

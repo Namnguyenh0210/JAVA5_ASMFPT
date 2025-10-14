@@ -1,40 +1,25 @@
 package com.example.projectend.repository;
 
-import com.example.projectend.entity.*;
+import com.example.projectend.entity.GioHang;
+import com.example.projectend.entity.GioHangId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
-
 /**
  * GIO HANG REPOSITORY
- * Người 1 - Database Core (Bổ sung 03/10/2025)
+ * PHÂN CÔNG:
+ * - THÀNH VIÊN 1: Mapping (ĐÃ HOÀN THÀNH)
+ * - THÀNH VIÊN 3: Các truy vấn phục vụ thao tác giỏ hàng người dùng
+ * - THÀNH VIÊN 4: (Optional) Số liệu tổng quan (đếm record) cho dashboard
+ * <p>
+ * TODO THÀNH VIÊN 3: Thêm các method được comment bên dưới khi cần
+ * TODO THÀNH VIÊN 4 (Optional): Dùng count() trực tiếp để thống kê
  */
 @Repository
 public interface GioHangRepository extends JpaRepository<GioHang, GioHangId> {
 
-    // ========================================
-    // TODO: NGƯỜI 3 - CART OPERATIONS (BUSINESS RULE)
-    // ========================================
-    // Lấy toàn bộ item giỏ hàng của user (sort theo MaSP hoặc thời gian nếu có cột thời gian sau này)
-    // List<GioHang> findByTaiKhoanOrderBySanPham_MaSPAsc(TaiKhoan taiKhoan);
-
-    // Tìm 1 item trong giỏ để quyết định: nếu tồn tại -> cập nhật +quantity (UP-SERT logic)
-    // Optional<GioHang> findByTaiKhoanAndSanPham(TaiKhoan taiKhoan, SanPham sanPham);
-
-    // Xoá tất cả giỏ hàng user sau khi checkout thành công (dùng trong OrderService.placeOrder)
-    // void deleteByTaiKhoan(TaiKhoan taiKhoan);
-
-    // ========================================
-    // TODO: NGƯỜI 2/3 - MERGE CART (Remember cart khi login) (Optional)
-    // ========================================
-    // Lấy số lượng items để quyết định merge strategy (ví dụ > 100 thì giới hạn)
-    // long countByTaiKhoan(TaiKhoan taiKhoan);
-
-    // ========================================
-    // TODO: NGƯỜI 4 - DASHBOARD ADMIN / STAFF
-    // ========================================
-    // Tổng số record cart trong hệ thống (theo dõi tương tác khách)
-    // long count();
+    // List<GioHang> findByTaiKhoanOrderBySanPham_MaSPAsc(TaiKhoan taiKhoan); // TODO THÀNH VIÊN 3: Lấy danh sách items
+    // Optional<GioHang> findByTaiKhoanAndSanPham(TaiKhoan taiKhoan, SanPham sanPham); // TODO THÀNH VIÊN 3: Tìm 1 item
+    // void deleteByTaiKhoan(TaiKhoan taiKhoan); // TODO THÀNH VIÊN 3: Clear cart sau checkout
+    // long countByTaiKhoan(TaiKhoan taiKhoan); // TODO THÀNH VIÊN 3: Badge số items
 }

@@ -10,24 +10,14 @@ import java.util.Optional;
 
 /**
  * DIA CHI REPOSITORY
- * Người 1 - Database Core (Bổ sung 03/10/2025)
+ * PHÂN CÔNG:
+ *  - THÀNH VIÊN 1: Mapping (ĐÃ HOÀN THÀNH)
+ *  - THÀNH VIÊN 3: CRUD địa chỉ người dùng + lấy địa chỉ mặc định (Checkout/Profile)
  */
 @Repository
 public interface DiaChiRepository extends JpaRepository<DiaChi, Integer> {
 
-    // ========================================
-    // TODO: NGƯỜI 2 - Authentication & Profile
-    // ========================================
-    // TODO: NGƯỜI 2 - Lấy danh sách địa chỉ của user (sắp xếp mặc định trước)
-    // List<DiaChi> findByTaiKhoanOrderByMacDinhDesc(TaiKhoan taiKhoan);
-
-    // TODO: NGƯỜI 2 - Lấy địa chỉ mặc định của user
-    // Optional<DiaChi> findByTaiKhoanAndMacDinhTrue(TaiKhoan taiKhoan);
-
-    // ========================================
-    // TODO: NGƯỜI 3 - Checkout (nếu cần cho giỏ hàng)
-    // ========================================
-    // TODO: NGƯỜI 3 - Đếm số địa chỉ của user (giới hạn nếu cần)
-    // long countByTaiKhoan(TaiKhoan taiKhoan);
+    // List<DiaChi> findByTaiKhoanOrderByMacDinhDesc(TaiKhoan taiKhoan); // TODO THÀNH VIÊN 3
+    // Optional<DiaChi> findByTaiKhoanAndMacDinhTrue(TaiKhoan taiKhoan); // TODO THÀNH VIÊN 3
+    // long countByTaiKhoan(TaiKhoan taiKhoan); // TODO THÀNH VIÊN 3 (Optional limit)
 }
-

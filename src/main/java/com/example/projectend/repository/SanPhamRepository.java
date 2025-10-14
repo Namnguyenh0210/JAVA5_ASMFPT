@@ -6,36 +6,25 @@ import org.springframework.stereotype.Repository;
 
 /**
  * SAN PHAM REPOSITORY
- * Người 1 - Database Design & Backend Core (ĐÃ HOÀN THÀNH)
- * NOTE 04/10/2025: ĐÃ GỬ các TODO liên quan TrangThaiSanPham vì schema hiện tại không có cột MaTTSP và tính năng trạng thái đã bị xoá.
- * Repository cho entity SanPham
+ * CORE: Thành viên 1 đã hoàn thành mapping cơ bản.
+ * MỞ RỘNG:
+ * - THÀNH VIÊN 3: Thêm query phục vụ filter / search front-end
+ * - THÀNH VIÊN 4: Thêm query cảnh báo tồn kho, thống kê hỗ trợ admin
  */
 @Repository
 public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
 
-    // ========================================
-    // TODO: NGƯỜI 3 - Frontend & Customer Website
-    // ========================================
-
-    // TODO: NGƯỜI 3 - Thêm method tìm sản phẩm theo loại (cho menu danh mục)
+    // =============================
+    // TODO THÀNH VIÊN 3 - Queries FE
+    // =============================
     // List<SanPham> findByLoaiSanPham(LoaiSanPham loai);
-
-    // TODO: NGƯỜI 3 - Thêm method tìm kiếm sản phẩm theo tên
-    // List<SanPham> findByTenSPContaining(String keyword);
-
-    // TODO: NGƯỜI 3 - Thêm method lấy sản phẩm mới nhất (trang chủ)
+    // List<SanPham> findByTenSPContainingIgnoreCase(String keyword);
     // List<SanPham> findTop6ByOrderByNgayTaoDesc();
+    // List<SanPham> findByGiaBetween(BigDecimal min, BigDecimal max);
 
-    // TODO: NGƯỜI 3 - Thêm method lấy sản phẩm theo giá (lọc)
-    // List<SanPham> findByGiaBetween(BigDecimal minPrice, BigDecimal maxPrice);
-
-    // ========================================
-    // TODO: NGƯỜI 4 - Admin Panel & Product Management
-    // ========================================
-
-    // TODO: NGƯỜI 4 - Thêm method tìm sản phẩm sắp hết hàng
+    // =============================
+    // TODO THÀNH VIÊN 4 - Queries Admin
+    // =============================
     // List<SanPham> findBySoLuongLessThan(Integer threshold);
-
-    // TODO: NGƯỜI 4 - Thêm method tìm sản phẩm theo khoảng thời gian tạo
     // List<SanPham> findByNgayTaoBetween(LocalDateTime start, LocalDateTime end);
 }

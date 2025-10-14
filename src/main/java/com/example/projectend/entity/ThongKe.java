@@ -1,12 +1,17 @@
 package com.example.projectend.entity;
 
 import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
  * ENTITY THONG KE
- * Người 1 - Database Design & Backend Core (Bổ sung 03/10/2025)
+ * PHÂN CÔNG:
+ * - THÀNH VIÊN 1: Mapping (ĐÃ HOÀN THÀNH)
+ * - THÀNH VIÊN 4: Đọc / ghi bản ghi thống kê ngày (nếu sử dụng bảng này thay vì query runtime)
+ * <p>
+ * TODO THÀNH VIÊN 4: Xây quy trình cập nhật bảng này (batch lúc 23:59 hoặc khi truy cập dashboard) – optional
  */
 @Entity
 @Table(name = "ThongKe")
@@ -29,7 +34,8 @@ public class ThongKe {
     @Column(name = "TongSanPhamBanRa", nullable = false)
     private Integer tongSanPhamBanRa;
 
-    public ThongKe() {}
+    public ThongKe() {
+    }
 
     public ThongKe(LocalDate ngayBaoCao, BigDecimal tongDoanhThu, Integer tongDonHang, Integer tongSanPhamBanRa) {
         this.ngayBaoCao = ngayBaoCao;
@@ -38,15 +44,43 @@ public class ThongKe {
         this.tongSanPhamBanRa = tongSanPhamBanRa;
     }
 
-    public Integer getMaThongKe() { return maThongKe; }
-    public void setMaThongKe(Integer maThongKe) { this.maThongKe = maThongKe; }
-    public LocalDate getNgayBaoCao() { return ngayBaoCao; }
-    public void setNgayBaoCao(LocalDate ngayBaoCao) { this.ngayBaoCao = ngayBaoCao; }
-    public BigDecimal getTongDoanhThu() { return tongDoanhThu; }
-    public void setTongDoanhThu(BigDecimal tongDoanhThu) { this.tongDoanhThu = tongDoanhThu; }
-    public Integer getTongDonHang() { return tongDonHang; }
-    public void setTongDonHang(Integer tongDonHang) { this.tongDonHang = tongDonHang; }
-    public Integer getTongSanPhamBanRa() { return tongSanPhamBanRa; }
-    public void setTongSanPhamBanRa(Integer tongSanPhamBanRa) { this.tongSanPhamBanRa = tongSanPhamBanRa; }
-}
+    public Integer getMaThongKe() {
+        return maThongKe;
+    }
 
+    public void setMaThongKe(Integer maThongKe) {
+        this.maThongKe = maThongKe;
+    }
+
+    public LocalDate getNgayBaoCao() {
+        return ngayBaoCao;
+    }
+
+    public void setNgayBaoCao(LocalDate ngayBaoCao) {
+        this.ngayBaoCao = ngayBaoCao;
+    }
+
+    public BigDecimal getTongDoanhThu() {
+        return tongDoanhThu;
+    }
+
+    public void setTongDoanhThu(BigDecimal tongDoanhThu) {
+        this.tongDoanhThu = tongDoanhThu;
+    }
+
+    public Integer getTongDonHang() {
+        return tongDonHang;
+    }
+
+    public void setTongDonHang(Integer tongDonHang) {
+        this.tongDonHang = tongDonHang;
+    }
+
+    public Integer getTongSanPhamBanRa() {
+        return tongSanPhamBanRa;
+    }
+
+    public void setTongSanPhamBanRa(Integer tongSanPhamBanRa) {
+        this.tongSanPhamBanRa = tongSanPhamBanRa;
+    }
+}

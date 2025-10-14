@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/base}">
+<head>
+    <title th:text="${pageTitle}">Đặt hàng thành công - Cửa hàng đồ Tết</title>
+    <link rel="stylesheet" th:href="@{/css/checkout-success.css?v=1}">
+    <style>
+        .success-container {
+            padding: 60px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .success-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            padding: 50px;
+            text-align: center;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            animation: scaleIn 0.5s ease-out 0.3s both;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+
+        .success-icon i {
+            font-size: 60px;
+            color: white;
+        }
+
+        .success-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #27ae60;
+            margin-bottom: 15px;
+        }
+
+        .order-code {
+            font-size: 1.5rem;
+            color: #e74c3c;
+            font-weight: 600;
+            margin: 20px 0;
+        }
+
+        .order-info-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .info-value {
+            color: #333;
+        }
+
+        .product-list {
+            margin-top: 20px;
+        }
+
+        .product-item-success {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .product-img-small {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-right: 15px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn-action {
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .btn-primary-action {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            border: none;
+        }
+
+        .btn-primary-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(231, 76, 60, 0.4);
+        }
+
+        .btn-secondary-action {
+            background: white;
+            color: #e74c3c;
+            border: 2px solid #e74c3c;
+        }
+
+        .btn-secondary-action:hover {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .timeline-icon {
+            width: 40px;
+            height: 40px;
+            background: #27ae60;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+
+        .timeline-icon.pending {
+            background: #95a5a6;
+        }
+
+        .note-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="success-container">
+        <div class="container">
+            <div class="success-card">
+                <div class="success-icon">
+                    <i class="fas fa-check"></i>
+                </div>
+
+                <h1 class="success-title">Đặt hàng thành công!</h1>
+                <p class="lead">Cảm ơn bạn đã tin tưởng và mua sắm tại cửa hàng chúng tôi</p>
+
+                <!-- TODO THÀNH VIÊN 4: Load thông tin đơn hàng từ model -->
+                <div class="order-code">
+                    Mã đơn hàng: <span th:text="${donHang != null ? '#DH' + donHang.maDH : '#DH00000'}">DH12345</span>
+                </div>
+
+                <!-- Thông tin đơn hàng -->
+                <div class="order-info-card">
+                    <h4 class="mb-4"><i class="fas fa-info-circle"></i> Thông tin đơn hàng</h4>
+
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-user"></i> Người nhận:</span>
+                        <span class="info-value"
+                              th:text="${donHang != null ? donHang.khachHang.hoTen : 'Nguyễn Văn A'}">Nguyễn Văn A</span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-phone"></i> Số điện thoại:</span>
+                        <span class="info-value"
+                              th:text="${donHang != null ? donHang.khachHang.soDienThoai : '0909123456'}">0909123456</span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-map-marker-alt"></i> Địa chỉ giao hàng:</span>
+                        <span class="info-value"
+                              th:text="${donHang != null ? donHang.diaChi.diaChiChiTiet : '123 Nguyễn Văn Linh, Q7, TP.HCM'}">
+                            123 Nguyễn Văn Linh, Q7, TP.HCM
+                        </span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-credit-card"></i> Phương thức thanh toán:</span>
+                        <span class="info-value"
+                              th:text="${donHang != null ? donHang.phuongThucThanhToan.tenPTTT : 'COD'}">
+                            Thanh toán khi nhận hàng
+                        </span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-calendar-alt"></i> Ngày đặt:</span>
+                        <span class="info-value"
+                              th:text="${donHang != null ? #temporals.format(donHang.ngayDat, 'dd/MM/yyyy HH:mm') : ''}">
+                            13/10/2025 14:30
+                        </span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="info-label"><i class="fas fa-dollar-sign"></i> Tổng tiền:</span>
+                        <span class="info-value text-danger fw-bold"
+                              th:text="${donHang != null ? #numbers.formatDecimal(donHang.tongTien, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}">
+                            1.500.000 đ
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Sản phẩm đã đặt -->
+                <div class="order-info-card">
+                    <h4 class="mb-3"><i class="fas fa-box"></i> Sản phẩm đã đặt</h4>
+                    <div class="product-list">
+                        <!-- TODO THÀNH VIÊN 4: Load chi tiết đơn hàng -->
+                        <div th:if="${chiTietDonHang != null and !chiTietDonHang.isEmpty()}">
+                            <div th:each="item : ${chiTietDonHang}" class="product-item-success">
+                                <img th:src="${item.sanPham.hinhAnh}" th:alt="${item.sanPham.tenSP}"
+                                     class="product-img-small" onerror="this.src='https://via.placeholder.com/60'">
+                                <div class="flex-grow-1 text-start">
+                                    <div class="fw-bold" th:text="${item.sanPham.tenSP}">Giỏ quà Tết An Khang</div>
+                                    <small class="text-muted">
+                                        SL: <span th:text="${item.soLuong}">2</span> x
+                                        <span th:text="${#numbers.formatDecimal(item.donGia, 0, 'COMMA', 0, 'POINT')} + ' đ'">500.000 đ</span>
+                                    </small>
+                                </div>
+                                <div class="fw-bold text-danger"
+                                     th:text="${#numbers.formatDecimal(item.donGia * item.soLuong, 0, 'COMMA', 0, 'POINT')} + ' đ'">
+                                    1.000.000 đ
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Placeholder -->
+                        <div th:if="${chiTietDonHang == null or chiTietDonHang.isEmpty()}">
+                            <div class="product-item-success">
+                                <img src="https://via.placeholder.com/60" class="product-img-small">
+                                <div class="flex-grow-1 text-start">
+                                    <div class="fw-bold">Giỏ quà Tết An Khang</div>
+                                    <small class="text-muted">SL: 2 x 500.000 đ</small>
+                                </div>
+                                <div class="fw-bold text-danger">1.000.000 đ</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trạng thái đơn hàng -->
+                <div class="order-info-card">
+                    <h4 class="mb-3"><i class="fas fa-shipping-fast"></i> Trạng thái đơn hàng</h4>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="text-start">
+                                <strong>Đơn hàng đã được đặt</strong>
+                                <div class="small text-muted">Chúng tôi đã nhận đơn hàng của bạn</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-icon pending">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="text-start">
+                                <strong>Chờ xác nhận</strong>
+                                <div class="small text-muted">Đơn hàng đang chờ được xử lý</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-icon pending">
+                                <i class="fas fa-box"></i>
+                            </div>
+                            <div class="text-start">
+                                <strong>Đang chuẩn bị hàng</strong>
+                                <div class="small text-muted">Đơn vị vận chuyển sẽ lấy hàng trong 24h</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-icon pending">
+                                <i class="fas fa-truck"></i>
+                            </div>
+                            <div class="text-start">
+                                <strong>Đang giao hàng</strong>
+                                <div class="small text-muted">Dự kiến giao trong 2-3 ngày</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lưu ý -->
+                <div class="note-box text-start">
+                    <strong><i class="fas fa-info-circle"></i> Lưu ý:</strong>
+                    <ul class="mb-0 mt-2">
+                        <li>Đơn hàng sẽ được xử lý trong vòng 24h (trừ ngày lễ)</li>
+                        <li>Bạn có thể theo dõi đơn hàng trong phần <a href="/profile">Tài khoản của tôi</a></li>
+                        <li>Thông tin xác nhận đã được gửi qua email của bạn</li>
+                        <li>Liên hệ hotline: <strong>1900 xxxx</strong> nếu cần hỗ trợ</li>
+                    </ul>
+                </div>
+
+                <!-- Nút hành động -->
+                <div class="action-buttons">
+                    <a href="/profile" class="btn btn-action btn-primary-action">
+                        <i class="fas fa-eye"></i> Xem đơn hàng
+                    </a>
+                    <a href="/sanpham" class="btn btn-action btn-secondary-action">
+                        <i class="fas fa-shopping-cart"></i> Tiếp tục mua sắm
+                    </a>
+                </div>
+
+                <!-- Chia sẻ -->
+                <div class="mt-4">
+                    <p class="text-muted">Chia sẻ niềm vui của bạn:</p>
+                    <div class="d-flex justify-content-center gap-2">
+                        <a href="#" class="btn btn-outline-primary btn-sm">
+                            <i class="fab fa-facebook-f"></i> Facebook
+                        </a>
+                        <a href="#" class="btn btn-outline-info btn-sm">
+                            <i class="fab fa-twitter"></i> Twitter
+                        </a>
+                        <a href="#" class="btn btn-outline-success btn-sm">
+                            <i class="fab fa-whatsapp"></i> WhatsApp
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="scripts">
+    <script>
+        // Confetti effect khi load trang
+        window.onload = function () {
+            // TODO: Có thể thêm thư viện confetti.js để tạo hiệu ứng pháo hoa
+            console.log('Đặt hàng thành công! 🎉');
+        };
+    </script>
+</th:block>
+</body>
+</html>

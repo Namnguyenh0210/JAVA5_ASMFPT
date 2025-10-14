@@ -3,12 +3,19 @@ package com.example.projectend.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
  * LIEN HE CONTROLLER - Trang liên hệ
+ * PHÂN CÔNG:
+ * - THÀNH VIÊN 3: Form gửi liên hệ (nếu triển khai) + validation đơn giản
+ * - THÀNH VIÊN 4: (Optional) Ghi log liên hệ vào bảng riêng để admin xem (nếu thêm schema phụ ngoài phạm vi chính thì bỏ qua)
+ * <p>
+ * =============================
+ * TODO THÀNH VIÊN 3: Implement POST /lienhe/gui xử lý form (hiện đang comment ở dưới - optional)
  */
 @Controller
 public class LienHeController {
@@ -38,24 +45,5 @@ public class LienHeController {
         return "lienhe";
     }
 
-    // TODO: NGƯỜI 3 - Xử lý form gửi liên hệ
-    // @PostMapping("/lienhe/gui")
-    // public String guiLienHe(@Valid @ModelAttribute LienHeForm form,
-    //                         BindingResult result,
-    //                         RedirectAttributes redirectAttributes) {
-    //     if (result.hasErrors()) {
-    //         return "lienhe";
-    //     }
-    //
-    //     try {
-    //         lienHeService.guiLienHe(form);
-    //         redirectAttributes.addFlashAttribute("message", "Gửi liên hệ thành công!");
-    //         redirectAttributes.addFlashAttribute("messageType", "success");
-    //     } catch (Exception e) {
-    //         redirectAttributes.addFlashAttribute("message", "Có lỗi xảy ra, vui lòng thử lại!");
-    //         redirectAttributes.addFlashAttribute("messageType", "error");
-    //     }
-    //
-    //     return "redirect:/lienhe";
-    // }
+    // TODO THÀNH VIÊN 3 (Optional): POST /lienhe/gui xử lý gửi feedback
 }

@@ -4,24 +4,15 @@ import com.example.projectend.entity.ThongKe;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-
 /**
  * THONG KE REPOSITORY
- * Người 1 - Database Core (Bổ sung 03/10/2025)
+ * PHÂN CÔNG:
+ * - THÀNH VIÊN 1: Mapping (ĐÃ HOÀN THÀNH)
+ * - THÀNH VIÊN 4: Truy vấn thống kê nếu sử dụng bảng ThongKe thay vì query runtime
  */
 @Repository
 public interface ThongKeRepository extends JpaRepository<ThongKe, Integer> {
 
-    // ========================================
-    // TODO: NGƯỜI 5 - Reports & Analytics
-    // ========================================
-    // TODO: NGƯỜI 5 - Lấy báo cáo theo khoảng ngày (dashboard filter)
-    // List<ThongKe> findByNgayBaoCaoBetween(LocalDate start, LocalDate end);
-
-    // TODO: NGƯỜI 5 - Lấy 1 record theo ngày (để upsert)
-    // Optional<ThongKe> findByNgayBaoCao(LocalDate day);
+    // List<ThongKe> findByNgayBaoCaoBetween(LocalDate start, LocalDate end); // TODO THÀNH VIÊN 4
+    // Optional<ThongKe> findByNgayBaoCao(LocalDate day); // TODO THÀNH VIÊN 4
 }
-
