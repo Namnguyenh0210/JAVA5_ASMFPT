@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-base}">
+<head>
+    <title>Quản lý đơn hàng - Admin Panel</title>
+    <style>
+        .filter-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .status-badge {
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-cho-xac-nhan {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-da-xac-nhan {
+            background: #cfe2ff;
+            color: #084298;
+        }
+
+        .badge-dang-giao {
+            background: #cff4fc;
+            color: #055160;
+        }
+
+        .badge-hoan-thanh {
+            background: #d1e7dd;
+            color: #0f5132;
+        }
+
+        .badge-da-huy {
+            background: #f8d7da;
+            color: #842029;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="page-title">
+        <i class="fas fa-shopping-bag"></i>
+        <span>Quản lý đơn hàng</span>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-card">
+        <form th:action="@{/admin/donhang}" method="get" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Tìm kiếm</label>
+                <input type="text" class="form-control" name="keyword" th:value="${param.keyword}"
+                       placeholder="Mã ĐH, tên khách hàng...">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Trạng thái</label>
+                <select class="form-select" name="trangThai" th:value="${param.trangThai}">
+                    <option value="">Tất cả</option>
+                    <option value="Chờ xác nhận">Chờ xác nhận</option>
+                    <option value="Đã xác nhận">Đã xác nhận</option>
+                    <option value="Đang giao hàng">Đang giao hàng</option>
+                    <option value="Hoàn thành">Hoàn thành</option>
+                    <option value="Đã hủy">Đã hủy</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Từ ngày</label>
+                <input type="date" class="form-control" name="startDate" th:value="${param.startDate}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Đến ngày</label>
+                <input type="date" class="form-control" name="endDate" th:value="${param.endDate}">
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary-custom">
+                    <i class="fas fa-search"></i> Tìm kiếm
+                </button>
+                <a href="/admin/donhang" class="btn btn-secondary">
+                    <i class="fas fa-redo"></i> Đặt lại
+                </a>
+                <button type="button" class="btn btn-success" onclick="exportExcel()">
+                    <i class="fas fa-file-excel"></i> Xuất Excel
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="admin-table">
+        <div class="p-4 border-bottom d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">
+                Danh sách đơn hàng
+                <span class="badge bg-secondary"
+                      th:text="${donHangPage != null ? donHangPage.totalElements : 0}">0</span>
+            </h5>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>Mã ĐH</th>
+                    <th>Khách hàng</th>
+                    <th>Ngày đặt</th>
+                    <th>Tổng tiền</th>
+                    <th>PTTT</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- TODO THÀNH VIÊN 4: Load danh sách đơn hàng -->
+                <tr th:if="${donHangPage != null and donHangPage.hasContent()}" th:each="dh : ${donHangPage.content}">
+                    <td>
+                        <strong th:text="'#DH' + ${dh.maDH}">#DH123</strong>
+                    </td>
+                    <td>
+                        <div>
+                            <strong th:text="${dh.khachHang.hoTen}">Nguyễn Văn A</strong>
+                            <br>
+                            <small class="text-muted" th:text="${dh.khachHang.soDienThoai}">0909123456</small>
+                        </div>
+                    </td>
+                    <td>
+                        <small th:text="${#temporals.format(dh.ngayDat, 'dd/MM/yyyy HH:mm')}">13/10/2025 14:30</small>
+                    </td>
+                    <td>
+                        <strong class="text-danger"
+                                th:text="${#numbers.formatDecimal(dh.tongTien, 0, 'COMMA', 0, 'POINT')} + ' đ'">
+                            1.500.000 đ
+                        </strong>
+                    </td>
+                    <td>
+                        <small th:text="${dh.phuongThucThanhToan.tenPTTT}">COD</small>
+                    </td>
+                    <td>
+                            <span class="status-badge"
+                                  th:classappend="${'badge-' + #strings.replace(#strings.toLowerCase(dh.trangThaiDonHang.tenTTDH), ' ', '-')}"
+                                  th:text="${dh.trangThaiDonHang.tenTTDH}">
+                                Chờ xác nhận
+                            </span>
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <a th:href="@{/admin/donhang/{id}(id=${dh.maDH})}" class="btn btn-sm btn-info"
+                               title="Xem chi tiết">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <button type="button" class="btn btn-sm btn-primary-custom"
+                                    th:onclick="'updateStatus(' + ${dh.maDH} + ')'" title="Cập nhật trạng thái">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-danger"
+                                    th:onclick="'deleteOrder(' + ${dh.maDH} + ')'" title="Xóa">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Placeholder -->
+                <tr th:if="${donHangPage == null or !donHangPage.hasContent()}">
+                    <td colspan="7" class="text-center py-5">
+                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">Không có đơn hàng nào</p>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="p-3 border-top" th:if="${donHangPage != null and donHangPage.totalPages > 1}">
+            <nav>
+                <ul class="pagination justify-content-center mb-0">
+                    <li class="page-item" th:classappend="${donHangPage.first ? 'disabled' : ''}">
+                        <a class="page-link" th:href="@{/admin/donhang(page=${donHangPage.number - 1})}">Trước</a>
+                    </li>
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0, donHangPage.totalPages - 1)}"
+                        th:classappend="${i == donHangPage.number ? 'active' : ''}">
+                        <a class="page-link" th:href="@{/admin/donhang(page=${i})}" th:text="${i + 1}">1</a>
+                    </li>
+                    <li class="page-item" th:classappend="${donHangPage.last ? 'disabled' : ''}">
+                        <a class="page-link" th:href="@{/admin/donhang(page=${donHangPage.number + 1})}">Sau</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Modal cập nhật trạng thái -->
+    <div class="modal fade" id="updateStatusModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cập nhật trạng thái đơn hàng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="updateStatusForm">
+                        <input type="hidden" id="orderId" name="orderId">
+                        <div class="mb-3">
+                            <label class="form-label">Trạng thái mới</label>
+                            <select class="form-select" name="trangThai" required>
+                                <option value="Chờ xác nhận">Chờ xác nhận</option>
+                                <option value="Đã xác nhận">Đã xác nhận</option>
+                                <option value="Đang chuẩn bị hàng">Đang chuẩn bị hàng</option>
+                                <option value="Đang giao hàng">Đang giao hàng</option>
+                                <option value="Hoàn thành">Hoàn thành</option>
+                                <option value="Đã hủy">Đã hủy</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Ghi chú (tùy chọn)</label>
+                            <textarea class="form-control" name="ghiChu" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary-custom" onclick="submitUpdateStatus()">
+                        <i class="fas fa-save"></i> Cập nhật
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="scripts">
+    <script>
+        // TODO THÀNH VIÊN 4: Cập nhật trạng thái đơn hàng
+        function updateStatus(orderId) {
+            document.getElementById('orderId').value = orderId;
+            const modal = new bootstrap.Modal(document.getElementById('updateStatusModal'));
+            modal.show();
+        }
+
+        function submitUpdateStatus() {
+            const form = document.getElementById('updateStatusForm');
+            const formData = new FormData(form);
+            const orderId = formData.get('orderId');
+            const trangThai = formData.get('trangThai');
+
+            fetch(`/admin/donhang/${orderId}/update-status`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams(formData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Cập nhật trạng thái thành công!');
+                        location.reload();
+                    } else {
+                        alert('Lỗi: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra!');
+                });
+        }
+
+        function deleteOrder(orderId) {
+            if (confirm('Bạn có chắc chắn muốn xóa đơn hàng này?\n\nLưu ý: Hành động này không thể hoàn tác.')) {
+                fetch(`/admin/donhang/${orderId}/delete`, {
+                    method: 'POST'
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Xóa đơn hàng thành công!');
+                            location.reload();
+                        } else {
+                            alert('Lỗi: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Có lỗi xảy ra!');
+                    });
+            }
+        }
+
+        function exportExcel() {
+            const params = new URLSearchParams(window.location.search);
+            window.location.href = '/admin/donhang/export?' + params.toString();
+        }
+    </script>
+</th:block>
+</body>
+</html>
+

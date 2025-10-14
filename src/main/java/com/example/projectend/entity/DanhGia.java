@@ -1,11 +1,18 @@
 package com.example.projectend.entity;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
 /**
- * ENTITY ĐÁNH GIÁ - ASM Web Bán Hàng Tết
- * Quản lý đánh giá sản phẩm của khách hàng
+ * ENTITY DANH GIA
+ * PHÂN CÔNG:
+ * - THÀNH VIÊN 1: Mapping (ĐÃ HOÀN THÀNH)
+ * - THÀNH VIÊN 3: Tạo / hiển thị đánh giá sản phẩm
+ * - THÀNH VIÊN 4: Quản trị (xóa / duyệt nếu mở rộng moderation)
+ * <p>
+ * TODO THÀNH VIÊN 3 (Optional): Thêm DTO thống kê phân bố sao (không chỉnh entity)
+ * TODO THÀNH VIÊN 4 (Optional): Thêm filter theo khoảng thời gian ở trang admin
  */
 @Entity
 @Table(name = "DanhGia")
@@ -38,7 +45,8 @@ public class DanhGia {
     private LocalDateTime ngayDG = LocalDateTime.now();
 
     // Constructors
-    public DanhGia() {}
+    public DanhGia() {
+    }
 
     public DanhGia(TaiKhoan khachHang, SanPham sanPham, DonHang donHang, Integer soSao, String binhLuan) {
         this.khachHang = khachHang;

@@ -14,8 +14,15 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * SERVICE ĐÁNH GIÁ - ASM Web Bán Hàng Tết
- * Xử lý logic nghiệp vụ cho đánh giá sản phẩm
+ * DANH GIA SERVICE - Xử lý đánh giá sản phẩm
+ * PHÂN CÔNG:
+ * - THÀNH VIÊN 3: Hiển thị đánh giá trong chi tiết sản phẩm, tính điểm trung bình
+ * - THÀNH VIÊN 4: Quản trị (xóa, duyệt nếu bổ sung moderation sau này)
+ * <p>
+ * =============================
+ * TODO THÀNH VIÊN 3: Thêm method createReview(TaiKhoan kh, SanPham sp, DonHang dh, int soSao, String binhLuan)
+ * TODO THÀNH VIÊN 3: Thêm method getRatingSummary(SanPham sp) trả về map {avg, countEachStar}
+ * TODO THÀNH VIÊN 4: (Optional) Thêm cơ chế duyệt -> field TrangThai trong DB (nếu mở rộng schema sau này)
  */
 @Service
 public class DanhGiaService {
@@ -73,4 +80,9 @@ public class DanhGiaService {
     public void deleteById(Integer id) {
         danhGiaRepository.deleteById(id);
     }
+
+    // =============================
+    // TODO THÀNH VIÊN 3: Implement createReview(...)
+    // TODO THÀNH VIÊN 3: Implement getRatingSummary(...)
+    // TODO THÀNH VIÊN 4: (Optional) Moderation queue
 }

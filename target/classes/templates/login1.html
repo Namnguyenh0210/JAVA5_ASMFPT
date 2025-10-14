@@ -3,921 +3,178 @@
 
 <head>
     <th:block th:replace="~{fragments/layout :: head('Đăng Nhập')}"></th:block>
-    <style>
-        /* Login Page Specific Styles - Integrated with Main Theme */
-        body {
-            background: linear-gradient(135deg,
-                var(--primary-red) 0%,
-                var(--dark-red) 50%,
-                var(--gray-900) 100%);
-            min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        /* Animated Background Decorations */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image:
-                radial-gradient(circle at 20% 80%, rgba(251, 191, 36, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(251, 191, 36, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
-            animation: float 20s ease-in-out infinite;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(2deg); }
-        }
-
-        /* Floating Elements */
-        .floating-elements {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 2;
-            overflow: hidden;
-        }
-
-        .floating-element {
-            position: absolute;
-            font-size: 2rem;
-            opacity: 0.1;
-            animation: drift 15s infinite linear;
-        }
-
-        .floating-element:nth-child(1) {
-            top: 10%;
-            left: 10%;
-            animation-delay: 0s;
-        }
-
-        .floating-element:nth-child(2) {
-            top: 20%;
-            right: 15%;
-            animation-delay: 3s;
-        }
-
-        .floating-element:nth-child(3) {
-            top: 60%;
-            left: 20%;
-            animation-delay: 6s;
-        }
-
-        .floating-element:nth-child(4) {
-            bottom: 20%;
-            right: 10%;
-            animation-delay: 9s;
-        }
-
-        @keyframes drift {
-            0% { transform: translateY(0px) rotate(0deg); }
-            33% { transform: translateY(-30px) rotate(5deg); }
-            66% { transform: translateY(30px) rotate(-5deg); }
-            100% { transform: translateY(0px) rotate(0deg); }
-        }
-
-        /* Main Container */
-        .login-wrapper {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: var(--spacing-lg);
-            position: relative;
-            z-index: 10;
-        }
-
-        .login-container {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(20px);
-            border-radius: var(--radius-xl);
-            box-shadow:
-                0 25px 50px rgba(0, 0, 0, 0.25),
-                0 0 0 1px rgba(255, 255, 255, 0.1);
-            overflow: hidden;
-            max-width: 1000px;
-            width: 100%;
-            border: 2px solid var(--primary-gold);
-            position: relative;
-        }
-
-        .login-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary-red), var(--primary-gold), var(--primary-red));
-            animation: shimmer 3s ease-in-out infinite;
-        }
-
-        @keyframes shimmer {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        /* Left Panel - Branding */
-        .brand-panel {
-            background: linear-gradient(135deg, var(--primary-red), var(--dark-red));
-            color: var(--white);
-            padding: var(--spacing-3xl);
-            position: relative;
-            min-height: 600px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        .brand-panel::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(251, 191, 36, 0.1) 0%, transparent 70%);
-            animation: pulse 6s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.3; }
-            50% { transform: scale(1.1) rotate(5deg); opacity: 0.6; }
-        }
-
-        .brand-logo {
-            text-align: center;
-            margin-bottom: var(--spacing-2xl);
-            position: relative;
-            z-index: 2;
-        }
-
-        .brand-logo .logo-icon {
-            font-size: 4rem;
-            color: var(--primary-gold);
-            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            display: block;
-            margin-bottom: var(--spacing-md);
-            animation: bounce 3s ease-in-out infinite;
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
-        }
-
-        .brand-title {
-            font-size: 2.25rem;
-            font-weight: 800;
-            margin-bottom: var(--spacing-md);
-            color: var(--primary-gold);
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-            background: linear-gradient(45deg, var(--primary-gold), #fef3c7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .brand-subtitle {
-            font-size: 1.125rem;
-            opacity: 0.95;
-            margin-bottom: var(--spacing-2xl);
-            font-weight: 500;
-        }
-
-        .features-grid {
-            display: grid;
-            gap: var(--spacing-lg);
-            position: relative;
-            z-index: 2;
-        }
-
-        .feature-item {
-            display: flex;
-            align-items: center;
-            padding: var(--spacing-md);
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: var(--radius-lg);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-        }
-
-        .feature-item:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateX(5px);
-        }
-
-        .feature-icon {
-            color: var(--primary-gold);
-            font-size: 1.5rem;
-            margin-right: var(--spacing-md);
-            min-width: 2rem;
-        }
-
-        .feature-text {
-            font-weight: 500;
-            line-height: 1.4;
-        }
-
-        /* Right Panel - Login Form */
-        .form-panel {
-            padding: var(--spacing-3xl);
-            background: var(--white);
-            position: relative;
-        }
-
-        .form-header {
-            text-align: center;
-            margin-bottom: var(--spacing-2xl);
-        }
-
-        .form-title {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--gray-900);
-            margin-bottom: var(--spacing-sm);
-            background: linear-gradient(135deg, var(--primary-red), var(--dark-red));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .form-subtitle {
-            color: var(--gray-600);
-            font-size: 1rem;
-            font-weight: 500;
-        }
-
-        /* Enhanced Alerts */
-        .alert {
-            border-radius: var(--radius-lg);
-            border: none;
-            padding: var(--spacing-lg);
-            margin-bottom: var(--spacing-lg);
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .alert::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-        }
-
-        .alert-danger {
-            background: linear-gradient(135deg, #fef2f2, #fee2e2);
-            color: #dc2626;
-            border-left: 4px solid #dc2626;
-        }
-
-        .alert-success {
-            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
-            color: #16a34a;
-            border-left: 4px solid #16a34a;
-        }
-
-        /* Enhanced Form Groups */
-        .form-floating-enhanced {
-            position: relative;
-            margin-bottom: var(--spacing-xl);
-        }
-
-        .form-floating-enhanced .form-control {
-            width: 100%;
-            padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-lg) 3.5rem;
-            border: 2px solid var(--gray-300);
-            border-radius: var(--radius-lg);
-            font-size: 1rem;
-            font-weight: 500;
-            background: var(--gray-50);
-            transition: all 0.3s ease;
-            height: 60px;
-        }
-
-        .form-floating-enhanced .form-control:focus {
-            outline: none;
-            border-color: var(--primary-red);
-            box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
-            background: var(--white);
-            transform: translateY(-1px);
-        }
-
-        .form-floating-enhanced .form-label {
-            position: absolute;
-            top: 50%;
-            left: 3.5rem;
-            transform: translateY(-50%);
-            background: transparent;
-            padding: 0 var(--spacing-sm);
-            color: var(--gray-500);
-            font-weight: 500;
-            pointer-events: none;
-            transition: all 0.3s ease;
-        }
-
-        .form-floating-enhanced .form-control:focus + .form-label,
-        .form-floating-enhanced .form-control:not(:placeholder-shown) + .form-label {
-            top: 0;
-            left: 3rem;
-            font-size: 0.875rem;
-            color: var(--primary-red);
-            background: var(--white);
-            font-weight: 600;
-        }
-
-        .input-icon {
-            position: absolute;
-            left: var(--spacing-lg);
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--primary-red);
-            font-size: 1.25rem;
-            z-index: 10;
-        }
-
-        /* Password Toggle */
-        .password-toggle {
-            position: absolute;
-            right: var(--spacing-lg);
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: var(--gray-500);
-            font-size: 1.125rem;
-            cursor: pointer;
-            z-index: 10;
-            transition: color 0.3s ease;
-            padding: var(--spacing-sm);
-        }
-
-        .password-toggle:hover {
-            color: var(--primary-red);
-        }
-
-        /* Form Options */
-        .form-options {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--spacing-xl);
-            flex-wrap: wrap;
-            gap: var(--spacing-md);
-        }
-
-        .checkbox-wrapper {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-        }
-
-        .checkbox-wrapper input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: var(--primary-red);
-            cursor: pointer;
-        }
-
-        .checkbox-wrapper label {
-            color: var(--gray-700);
-            font-weight: 500;
-            cursor: pointer;
-        }
-
-        .forgot-link {
-            color: var(--primary-red);
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .forgot-link:hover {
-            color: var(--dark-red);
-            text-decoration: underline;
-        }
-
-        /* Enhanced Login Button */
-        .btn-login {
-            width: 100%;
-            background: linear-gradient(135deg, var(--primary-red), var(--dark-red));
-            border: none;
-            border-radius: var(--radius-lg);
-            padding: var(--spacing-lg) var(--spacing-xl);
-            font-size: 1.125rem;
-            font-weight: 700;
-            color: var(--white);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            margin-bottom: var(--spacing-xl);
-            height: 56px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: var(--spacing-sm);
-        }
-
-        .btn-login::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(220, 38, 38, 0.4);
-        }
-
-        .btn-login:hover::before {
-            left: 100%;
-        }
-
-        .btn-login:active {
-            transform: translateY(0);
-        }
-
-        /* Divider */
-        .divider {
-            position: relative;
-            text-align: center;
-            margin: var(--spacing-xl) 0;
-        }
-
-        .divider::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--gray-300), transparent);
-        }
-
-        .divider span {
-            background: var(--white);
-            color: var(--gray-500);
-            padding: 0 var(--spacing-lg);
-            font-weight: 600;
-            font-size: 0.875rem;
-        }
-
-        /* Register Section */
-        .register-section {
-            text-align: center;
-            padding: var(--spacing-xl);
-            background: linear-gradient(135deg, var(--gray-50), #fafafa);
-            border-radius: var(--radius-lg);
-            border: 2px dashed var(--gray-300);
-            position: relative;
-        }
-
-        .register-section::before {
-            content: '';
-            position: absolute;
-            top: -1px;
-            left: -1px;
-            right: -1px;
-            bottom: -1px;
-            background: linear-gradient(45deg, var(--primary-red), var(--primary-gold));
-            border-radius: var(--radius-lg);
-            z-index: -1;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .register-section:hover::before {
-            opacity: 0.1;
-        }
-
-        .register-text {
-            color: var(--gray-600);
-            font-weight: 500;
-            margin-bottom: var(--spacing-sm);
-        }
-
-        .register-link {
-            color: var(--primary-red);
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 1.125rem;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-        }
-
-        .register-link:hover {
-            color: var(--dark-red);
-            transform: translateY(-1px);
-        }
-
-        /* Back to Home Button */
-        .back-home {
-            position: absolute;
-            top: var(--spacing-lg);
-            left: var(--spacing-lg);
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border: 2px solid var(--primary-gold);
-            border-radius: var(--radius-full);
-            padding: var(--spacing-sm) var(--spacing-lg);
-            color: var(--primary-red);
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            z-index: 20;
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-        }
-
-        .back-home:hover {
-            background: var(--white);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-            color: var(--dark-red);
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .login-wrapper {
-                padding: var(--spacing-md);
-            }
-
-            .login-container {
-                margin: 0;
-            }
-
-            .brand-panel,
-            .form-panel {
-                padding: var(--spacing-xl);
-            }
-
-            .brand-title {
-                font-size: 1.75rem;
-            }
-
-            .form-title {
-                font-size: 1.5rem;
-            }
-
-            .form-options {
-                flex-direction: column;
-                align-items: stretch;
-                gap: var(--spacing-md);
-            }
-
-            .back-home {
-                position: relative;
-                top: 0;
-                left: 0;
-                margin-bottom: var(--spacing-lg);
-                align-self: flex-start;
-            }
-        }
-
-        /* Loading Animation */
-        .btn-login.loading {
-            pointer-events: none;
-        }
-
-        .btn-login.loading::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: var(--white);
-            animation: spin 1s ease-in-out infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Focus Improvements */
-        .form-control:focus,
-        .btn-login:focus,
-        .back-home:focus {
-            outline: 2px solid var(--primary-red);
-            outline-offset: 2px;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/register.css}">
 </head>
 
 <body>
-    <!-- Floating Background Elements -->
-    <div class="floating-elements">
-        <div class="floating-element">🧧</div>
-        <div class="floating-element">🏮</div>
-        <div class="floating-element">🎊</div>
-        <div class="floating-element">✨</div>
-    </div>
+<!-- Floating Background Elements -->
+<div class="floating-elements">
+    <div class="floating-element">🧧</div>
+    <div class="floating-element">🏮</div>
+    <div class="floating-element">🎊</div>
+    <div class="floating-element">✨</div>
+</div>
 
-    <!-- Back to Home -->
-    <a href="/" class="back-home">
-        <i class="fas fa-home"></i>
-        <span>Về Trang Chủ</span>
-    </a>
+<!-- Back to Home -->
+<a class="back-home" href="/">
+    <i class="fas fa-home"></i>
+    <span>Về Trang Chủ</span>
+</a>
 
-    <!-- Main Login Wrapper -->
-    <div class="login-wrapper">
-        <div class="login-container">
-            <div class="row g-0">
-                <!-- Left Panel - Branding -->
-                <div class="col-md-6 col-lg-5">
-                    <div class="brand-panel">
-                        <div class="brand-logo">
-                            <span class="logo-icon">🧧</span>
-                            <h1 class="brand-title">Tết Market</h1>
-                            <p class="brand-subtitle">Mang may mắn đến từng gia đình</p>
+<!-- Main Login Wrapper -->
+<div class="register-wrapper">
+    <div class="register-container">
+        <div class="row g-0">
+            <!-- Left Panel - Branding -->
+            <div class="col-md-6 col-lg-5">
+                <div class="brand-panel">
+                    <div class="brand-logo">
+                        <span class="logo-icon">🧧</span>
+                        <h1 class="brand-title">Tết Market</h1>
+                        <p class="brand-subtitle">Chào mừng bạn trở lại!</p>
+                    </div>
+
+                    <div class="benefits-grid">
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-gift"></i>
+                            </div>
+                            <div class="benefit-text">
+                                Hàng nghìn sản phẩm Tết chất lượng cao
+                            </div>
                         </div>
 
-                        <div class="features-grid">
-                            <div class="feature-item">
-                                <div class="feature-icon">
-                                    <i class="fas fa-gift"></i>
-                                </div>
-                                <div class="feature-text">
-                                    Hàng nghìn sản phẩm Tết chất lượng cao
-                                </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-shipping-fast"></i>
                             </div>
-
-                            <div class="feature-item">
-                                <div class="feature-icon">
-                                    <i class="fas fa-shipping-fast"></i>
-                                </div>
-                                <div class="feature-text">
-                                    Giao hàng nhanh chóng toàn quốc
-                                </div>
+                            <div class="benefit-text">
+                                Giao hàng nhanh chóng toàn quốc
                             </div>
+                        </div>
 
-                            <div class="feature-item">
-                                <div class="feature-icon">
-                                    <i class="fas fa-shield-alt"></i>
-                                </div>
-                                <div class="feature-text">
-                                    Bảo hành chất lượng 100%
-                                </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-shield-alt"></i>
                             </div>
+                            <div class="benefit-text">
+                                Bảo hành chất lượng 100%
+                            </div>
+                        </div>
 
-                            <div class="feature-item">
-                                <div class="feature-icon">
-                                    <i class="fas fa-heart"></i>
-                                </div>
-                                <div class="feature-text">
-                                    Phục vụ tận tâm, chu đáo
-                                </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <div class="benefit-text">
+                                Phục vụ tận tâm, chu đáo
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Right Panel - Login Form -->
-                <div class="col-md-6 col-lg-7">
-                    <div class="form-panel">
-                        <div class="form-header">
-                            <h2 class="form-title">Đăng Nhập</h2>
-                            <p class="form-subtitle">Chào mừng bạn trở lại! Vui lòng đăng nhập để tiếp tục mua sắm.</p>
+            <!-- Right Panel - Login Form -->
+            <div class="col-md-6 col-lg-7">
+                <div class="form-panel">
+                    <div class="form-header">
+                        <h2 class="form-title">Đăng Nhập</h2>
+                        <p class="form-subtitle">Chào mừng bạn trở lại! Vui lòng đăng nhập để tiếp tục mua sắm.</p>
+                    </div>
+
+                    <!-- Alert Messages -->
+                    <div class="alert alert-danger" th:if="${param.error}">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Email hoặc mật khẩu không chính xác. Vui lòng thử lại!</span>
+                    </div>
+
+                    <div class="alert alert-success" th:if="${param.logout}">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Bạn đã đăng xuất thành công. Hẹn gặp lại!</span>
+                    </div>
+
+                    <div class="alert alert-success" th:if="${successMessage}">
+                        <i class="fas fa-check-circle"></i>
+                        <span th:text="${successMessage}">Đăng ký thành công!</span>
+                    </div>
+
+                    <!-- Login Form -->
+                    <form id="loginForm" method="post" th:action="@{/login}">
+                        <div class="form-floating-enhanced">
+                            <i class="input-icon fas fa-envelope"></i>
+                            <input autocomplete="email"
+                                   class="form-control"
+                                   id="email"
+                                   name="email"
+                                   placeholder=" "
+                                   required
+                                   type="email">
+                            <label class="form-label" for="email">Địa chỉ Email</label>
                         </div>
 
-                        <!-- Alert Messages -->
-                        <div th:if="${param.error}" class="alert alert-danger">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <span>Email hoặc mật khẩu không chính xác. Vui lòng thử lại!</span>
-                        </div>
-
-                        <div th:if="${param.logout}" class="alert alert-success">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Bạn đã đăng xuất thành công. Hẹn gặp lại!</span>
-                        </div>
-
-                        <div th:if="${successMessage}" class="alert alert-success">
-                            <i class="fas fa-check-circle"></i>
-                            <span th:text="${successMessage}">Đăng ký thành công!</span>
-                        </div>
-
-                        <!-- Login Form -->
-                        <form th:action="@{/login}" method="post" id="loginForm">
-                            <div class="form-floating-enhanced">
-                                <i class="input-icon fas fa-envelope"></i>
-                                <input type="email"
-                                       class="form-control"
-                                       id="email"
-                                       name="email"
-                                       placeholder=" "
-                                       required
-                                       autocomplete="email">
-                                <label for="email" class="form-label">Địa chỉ Email</label>
-                            </div>
-
-                            <div class="form-floating-enhanced">
-                                <i class="input-icon fas fa-lock"></i>
-                                <input type="password"
-                                       class="form-control"
-                                       id="password"
-                                       name="password"
-                                       placeholder=" "
-                                       required
-                                       autocomplete="current-password">
-                                <label for="password" class="form-label">Mật Khẩu</label>
-                                <button type="button" class="password-toggle" onclick="togglePassword()" aria-label="Toggle password visibility">
-                                    <i class="fas fa-eye" id="passwordIcon"></i>
-                                </button>
-                            </div>
-
-                            <div class="form-options">
-                                <div class="checkbox-wrapper">
-                                    <input type="checkbox" id="remember" name="remember-me">
-                                    <label for="remember">Ghi nhớ đăng nhập</label>
-                                </div>
-                                <a href="#" class="forgot-link">Quên mật khẩu?</a>
-                            </div>
-
-                            <button type="submit" class="btn-login" id="loginBtn">
-                                <i class="fas fa-sign-in-alt"></i>
-                                <span>Đăng Nhập</span>
+                        <div class="form-floating-enhanced">
+                            <i class="input-icon fas fa-lock"></i>
+                            <input autocomplete="current-password"
+                                   class="form-control"
+                                   id="password"
+                                   name="password"
+                                   placeholder=" "
+                                   required
+                                   type="password">
+                            <label class="form-label" for="password">Mật Khẩu</label>
+                            <button aria-label="Toggle password visibility" class="password-toggle"
+                                    onclick="togglePassword('password', 'passwordIcon'); return false;"
+                                    type="button">
+                                <i class="fas fa-eye" id="passwordIcon"></i>
                             </button>
-                        </form>
-
-                        <div class="divider">
-                            <span>hoặc</span>
                         </div>
 
-                        <div class="register-section">
-                            <p class="register-text">Bạn chưa có tài khoản?</p>
-                            <a href="/register" class="register-link">
-                                <i class="fas fa-user-plus"></i>
-                                <span>Đăng ký miễn phí ngay</span>
-                            </a>
+                        <div class="form-options">
+                            <div class="checkbox-wrapper">
+                                <input id="remember" name="remember-me" type="checkbox">
+                                <label for="remember">Ghi nhớ đăng nhập</label>
+                            </div>
+                            <a class="forgot-link" href="#">Quên mật khẩu?</a>
                         </div>
+
+                        <button class="btn-submit" type="submit">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Đăng Nhập</span>
+                        </button>
+                    </form>
+
+                    <div class="divider">
+                        <span>hoặc</span>
+                    </div>
+
+                    <div class="login-section">
+                        <p class="login-text">Bạn chưa có tài khoản?</p>
+                        <a class="login-link" href="/register">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Đăng ký miễn phí ngay</span>
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Scripts -->
-    <script>
-        // Password toggle functionality
-        function togglePassword() {
-            const passwordField = document.getElementById('password');
-            const passwordIcon = document.getElementById('passwordIcon');
+<!-- Scripts -->
+<script>
+    function togglePassword(inputId, iconId) {
+        const passwordField = document.getElementById(inputId);
+        const passwordIcon = document.getElementById(iconId);
 
-            if (passwordField.type === 'password') {
-                passwordField.type = 'text';
-                passwordIcon.className = 'fas fa-eye-slash';
-            } else {
-                passwordField.type = 'password';
-                passwordIcon.className = 'fas fa-eye';
-            }
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            passwordIcon.className = 'fas fa-eye-slash';
+        } else {
+            passwordField.type = 'password';
+            passwordIcon.className = 'fas fa-eye';
         }
+    }
+</script>
 
-        // Enhanced form interactions
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('loginForm');
-            const loginBtn = document.getElementById('loginBtn');
-            const formElements = document.querySelectorAll('.form-floating-enhanced, .alert, .form-header');
-
-            // Animate elements on load
-            formElements.forEach((element, index) => {
-                element.style.opacity = '0';
-                element.style.transform = 'translateY(30px)';
-                setTimeout(() => {
-                    element.style.transition = 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
-                    element.style.opacity = '1';
-                    element.style.transform = 'translateY(0)';
-                }, index * 150);
-            });
-
-            // Form submission handling
-            form.addEventListener('submit', function(e) {
-                loginBtn.classList.add('loading');
-                loginBtn.disabled = true;
-
-                // Re-enable button after 5 seconds as fallback
-                setTimeout(() => {
-                    loginBtn.classList.remove('loading');
-                    loginBtn.disabled = false;
-                }, 5000);
-            });
-
-            // Enhanced input focus effects
-            const inputs = document.querySelectorAll('.form-control');
-            inputs.forEach(input => {
-                input.addEventListener('focus', function() {
-                    this.parentElement.style.transform = 'translateY(-2px)';
-                });
-
-                input.addEventListener('blur', function() {
-                    this.parentElement.style.transform = 'translateY(0)';
-                });
-
-                // Real-time validation visual feedback
-                input.addEventListener('input', function() {
-                    if (this.validity.valid) {
-                        this.style.borderColor = '#16a34a';
-                    } else {
-                        this.style.borderColor = '#dc2626';
-                    }
-                });
-            });
-
-            // Keyboard navigation improvements
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    const focusedElement = document.activeElement;
-                    if (focusedElement.type === 'email' || focusedElement.type === 'password') {
-                        e.preventDefault();
-                        const nextInput = focusedElement.type === 'email' ?
-                            document.getElementById('password') :
-                            document.getElementById('loginBtn');
-                        nextInput.focus();
-                    }
-                }
-            });
-
-            // Auto-hide alerts after 5 seconds
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => {
-                setTimeout(() => {
-                    alert.style.transition = 'all 0.5s ease';
-                    alert.style.opacity = '0';
-                    alert.style.transform = 'translateY(-20px)';
-                    setTimeout(() => alert.remove(), 500);
-                }, 5000);
-            });
-        });
-
-        // Add ripple effect to buttons
-        function createRipple(event) {
-            const button = event.currentTarget;
-            const ripple = document.createElement('span');
-            const rect = button.getBoundingClientRect();
-            const size = Math.max(rect.width, rect.height);
-            const x = event.clientX - rect.left - size / 2;
-            const y = event.clientY - rect.top - size / 2;
-
-            ripple.style.cssText = `
-                position: absolute;
-                border-radius: 50%;
-                background: rgba(255, 255, 255, 0.6);
-                transform: scale(0);
-                animation: ripple-animation 0.6s linear;
-                width: ${size}px;
-                height: ${size}px;
-                left: ${x}px;
-                top: ${y}px;
-                pointer-events: none;
-            `;
-
-            button.appendChild(ripple);
-
-            setTimeout(() => ripple.remove(), 600);
-        }
-
-        // Apply ripple effect to login button
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('loginBtn').addEventListener('click', createRipple);
-        });
-    </script>
-
-    <style>
-        @keyframes ripple-animation {
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
-        }
-    </style>
 </body>
-
 </html>

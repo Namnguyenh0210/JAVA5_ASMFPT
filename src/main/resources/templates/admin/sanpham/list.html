@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-base}">
+<head>
+    <title>Quản lý sản phẩm - Admin Panel</title>
+    <style>
+        .product-img-thumb {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .stock-warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="page-title">
+        <i class="fas fa-box"></i>
+        <span>Quản lý sản phẩm</span>
+    </div>
+
+    <!-- Low Stock Warning -->
+    <div class="stock-warning" th:if="${lowStockProducts != null and !lowStockProducts.isEmpty()}">
+        <strong><i class="fas fa-exclamation-triangle"></i> Cảnh báo tồn kho:</strong>
+        Có <strong th:text="${lowStockProducts.size()}">5</strong> sản phẩm sắp hết hàng!
+        <a href="#" class="ms-3">Xem chi tiết</a>
+    </div>
+
+    <!-- Filter & Action -->
+    <div class="filter-card">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <form th:action="@{/admin/sanpham}" method="get" class="d-flex gap-2">
+                    <input type="text" class="form-control" name="keyword" th:value="${param.keyword}"
+                           placeholder="Tìm theo tên, mã sản phẩm...">
+                    <button type="submit" class="btn btn-primary-custom">
+                        <i class="fas fa-search"></i> Tìm
+                    </button>
+                </form>
+            </div>
+            <div class="col-md-6 text-end">
+                <a href="/admin/sanpham/add" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Thêm sản phẩm mới
+                </a>
+                <button class="btn btn-info" onclick="importProducts()">
+                    <i class="fas fa-file-import"></i> Nhập Excel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Table -->
+    <div class="admin-table">
+        <div class="p-4 border-bottom">
+            <h5 class="mb-0">
+                Danh sách sản phẩm
+                <span class="badge bg-secondary"
+                      th:text="${sanPhamPage != null ? sanPhamPage.totalElements : 0}">0</span>
+            </h5>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>Hình ảnh</th>
+                    <th>Mã SP</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Danh mục</th>
+                    <th>Giá</th>
+                    <th>Tồn kho</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- TODO THÀNH VIÊN 4: Load danh sách sản phẩm -->
+                <tr th:if="${sanPhamPage != null and sanPhamPage.hasContent()}" th:each="sp : ${sanPhamPage.content}">
+                    <td>
+                        <img th:src="${sp.hinhAnh}" th:alt="${sp.tenSP}" class="product-img-thumb"
+                             onerror="this.src='https://via.placeholder.com/60'">
+                    </td>
+                    <td><code th:text="'SP' + ${sp.maSP}">SP001</code></td>
+                    <td>
+                        <strong th:text="${sp.tenSP}">Giỏ quà Tết An Khang</strong>
+                    </td>
+                    <td>
+                        <span class="badge bg-info" th:text="${sp.loaiSanPham.tenLoai}">Giỏ quà Tết</span>
+                    </td>
+                    <td>
+                        <strong class="text-danger"
+                                th:text="${#numbers.formatDecimal(sp.gia, 0, 'COMMA', 0, 'POINT')} + ' đ'">
+                            500.000 đ
+                        </strong>
+                    </td>
+                    <td>
+                            <span class="badge"
+                                  th:classappend="${sp.soLuong > 10 ? 'bg-success' : (sp.soLuong > 0 ? 'bg-warning' : 'bg-danger')}"
+                                  th:text="${sp.soLuong}">
+                                50
+                            </span>
+                    </td>
+                    <td>
+                        <span class="badge bg-success" th:if="${sp.soLuong > 0}">Còn hàng</span>
+                        <span class="badge bg-danger" th:if="${sp.soLuong <= 0}">Hết hàng</span>
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <a th:href="@{/admin/sanpham/{id}/edit(id=${sp.maSP})}"
+                               class="btn btn-sm btn-primary-custom" title="Sửa">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <button type="button" class="btn btn-sm btn-info"
+                                    th:onclick="'updateStock(' + ${sp.maSP} + ', ' + ${sp.soLuong} + ')'"
+                                    title="Nhập kho">
+                                <i class="fas fa-warehouse"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-danger"
+                                    th:onclick="'deleteProduct(' + ${sp.maSP} + ')'" title="Xóa">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- Placeholder -->
+                <tr th:if="${sanPhamPage == null or !sanPhamPage.hasContent()}">
+                    <td colspan="8" class="text-center py-5">
+                        <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">Chưa có sản phẩm nào</p>
+                        <a href="/admin/sanpham/add" class="btn btn-success">
+                            <i class="fas fa-plus"></i> Thêm sản phẩm đầu tiên
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="p-3 border-top" th:if="${sanPhamPage != null and sanPhamPage.totalPages > 1}">
+            <nav>
+                <ul class="pagination justify-content-center mb-0">
+                    <li class="page-item" th:classappend="${sanPhamPage.first ? 'disabled' : ''}">
+                        <a class="page-link" th:href="@{/admin/sanpham(page=${sanPhamPage.number - 1})}">Trước</a>
+                    </li>
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0, sanPhamPage.totalPages - 1)}"
+                        th:classappend="${i == sanPhamPage.number ? 'active' : ''}">
+                        <a class="page-link" th:href="@{/admin/sanpham(page=${i})}" th:text="${i + 1}">1</a>
+                    </li>
+                    <li class="page-item" th:classappend="${sanPhamPage.last ? 'disabled' : ''}">
+                        <a class="page-link" th:href="@{/admin/sanpham(page=${sanPhamPage.number + 1})}">Sau</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Modal nhập kho -->
+    <div class="modal fade" id="updateStockModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cập nhật tồn kho</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="updateStockForm">
+                        <input type="hidden" id="productId" name="productId">
+                        <div class="mb-3">
+                            <label class="form-label">Tồn kho hiện tại</label>
+                            <input type="number" class="form-control" id="currentStock" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Số lượng nhập thêm</label>
+                            <input type="number" class="form-control" name="quantity" min="1" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Ghi chú</label>
+                            <textarea class="form-control" name="note" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary-custom" onclick="submitUpdateStock()">
+                        <i class="fas fa-save"></i> Cập nhật
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="scripts">
+    <script>
+        // TODO THÀNH VIÊN 4: Cập nhật tồn kho
+        function updateStock(productId, currentStock) {
+            document.getElementById('productId').value = productId;
+            document.getElementById('currentStock').value = currentStock;
+            const modal = new bootstrap.Modal(document.getElementById('updateStockModal'));
+            modal.show();
+        }
+
+        function submitUpdateStock() {
+            const form = document.getElementById('updateStockForm');
+            const formData = new FormData(form);
+            const productId = formData.get('productId');
+
+            fetch(`/admin/sanpham/${productId}/nhapkho`, {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Cập nhật tồn kho thành công!');
+                        location.reload();
+                    } else {
+                        alert('Lỗi: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra!');
+                });
+        }
+
+        function deleteProduct(productId) {
+            if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này?\n\nCảnh báo: Không thể xóa nếu sản phẩm đã có đơn hàng!')) {
+                fetch(`/admin/sanpham/${productId}/delete`, {
+                    method: 'POST'
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Xóa sản phẩm thành công!');
+                            location.reload();
+                        } else {
+                            alert('Lỗi: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Có lỗi xảy ra!');
+                    });
+            }
+        }
+
+        function importProducts() {
+            alert('Chức năng nhập Excel đang phát triển!');
+        }
+    </script>
+</th:block>
+</body>
+</html>
+

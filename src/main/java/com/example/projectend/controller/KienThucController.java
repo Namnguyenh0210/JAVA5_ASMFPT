@@ -30,8 +30,8 @@ public class KienThucController {
 
     @GetMapping("/kienthuc")
     public String kienThuc(@RequestParam(defaultValue = "0") int page,
-                          @RequestParam(defaultValue = "6") int size,
-                          Model model) {
+                           @RequestParam(defaultValue = "6") int size,
+                           Model model) {
         // Add current page for navigation active state
         model.addAttribute("currentPage", "kienthuc");
 

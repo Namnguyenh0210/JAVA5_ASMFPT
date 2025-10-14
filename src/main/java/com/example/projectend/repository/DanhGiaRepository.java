@@ -1,9 +1,9 @@
 package com.example.projectend.repository;
 
 import com.example.projectend.entity.DanhGia;
+import com.example.projectend.entity.DonHang;
 import com.example.projectend.entity.SanPham;
 import com.example.projectend.entity.TaiKhoan;
-import com.example.projectend.entity.DonHang;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

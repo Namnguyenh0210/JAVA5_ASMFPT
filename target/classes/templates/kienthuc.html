@@ -2,84 +2,86 @@
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <!-- Sử dụng head chung -->
-    <th:block th:replace="~{fragments/layout :: head('Kiến Thức')}" />
+    <th:block th:replace="~{fragments/layout :: head('Kiến Thức')}"/>
     <link rel="stylesheet" th:href="@{/css/kienthuc.css}">
 </head>
 <body>
-    <!-- Header chung -->
-    <th:block th:replace="~{fragments/layout :: header}" />
+<!-- Header chung -->
+<th:block th:replace="~{fragments/layout :: header}"/>
 
-    <!-- Breadcrumb -->
-    <th:block th:replace="~{fragments/layout :: breadcrumb(${breadcrumbItems})}" />
+<!-- Breadcrumb -->
+<th:block th:replace="~{fragments/layout :: breadcrumb(${breadcrumbItems})}"/>
 
-    <main class="container kienthuc-page">
-        <section class="page-intro">
-            <h1 class="page-title">🎋 Kiến Thức Tết Nguyên Đán</h1>
-            <p class="page-subtitle">Tổng hợp bài viết về văn hoá – phong tục – quà tặng ngày Tết.</p>
-        </section>
+<main class="container kienthuc-page">
+    <section class="page-intro">
+        <h1 class="page-title">🎋 Kiến Thức Tết Nguyên Đán</h1>
+        <p class="page-subtitle">Tổng hợp bài viết về văn hoá – phong tục – quà tặng ngày Tết.</p>
+    </section>
 
-        <!-- Bài viết nổi bật -->
-        <section class="featured-posts" th:if="${featuredPosts}" >
-            <h2 class="section-title">Bài Viết Nổi Bật</h2>
-            <div class="post-grid">
-                <div class="post-card" th:each="post : ${featuredPosts}">
-                    <div class="post-card-inner">
-                        <h3 class="post-title" th:text="${post.tieuDe}">Tiêu đề</h3>
-                        <p class="post-excerpt" th:text="${post.tomTat}">Tóm tắt ngắn gọn bài viết...</p>
-                        <a th:href="@{'/kienthuc/' + ${post.id}}" class="btn btn-outline btn-sm">Đọc tiếp</a>
-                    </div>
+    <!-- Bài viết nổi bật -->
+    <section class="featured-posts" th:if="${featuredPosts}">
+        <h2 class="section-title">Bài Viết Nổi Bật</h2>
+        <div class="post-grid">
+            <div class="post-card" th:each="post : ${featuredPosts}">
+                <div class="post-card-inner">
+                    <h3 class="post-title" th:text="${post.tieuDe}">Tiêu đề</h3>
+                    <p class="post-excerpt" th:text="${post.tomTat}">Tóm tắt ngắn gọn bài viết...</p>
+                    <a class="btn btn-outline btn-sm" th:href="@{'/kienthuc/' + ${post.id}}">Đọc tiếp</a>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Danh sách bài viết -->
-        <section class="post-list-section">
-            <h2 class="section-title">Tất Cả Bài Viết</h2>
-            <div class="post-list" th:if="${baiVietPage}">
-                <article class="post-row" th:each="bv : ${baiVietPage.content}">
-                    <div class="post-row-main">
-                        <h3 class="post-row-title"><a th:href="@{'/kienthuc/' + ${bv.id}}" th:text="${bv.tieuDe}">Tiêu đề</a></h3>
-                        <p class="post-row-meta">
-                            <span><i class="fas fa-calendar"></i> <span th:text="${#temporals.format(bv.ngayTao,'dd/MM/yyyy')}">01/01/2025</span></span>
-                            <span> · <i class="fas fa-eye"></i> <span th:text="${bv.luotXem}">0</span> lượt xem</span>
-                        </p>
-                        <p class="post-row-excerpt" th:text="${bv.tomTat}">Mô tả ngắn...</p>
-                        <a class="read-more" th:href="@{'/kienthuc/' + ${bv.id}}">Đọc bài →</a>
-                    </div>
-                </article>
-
-                <!-- Pagination -->
-                <div class="pagination" th:if="${baiVietPage.totalPages > 1}">
-                    <a class="page-item" th:each="i : ${#numbers.sequence(0, baiVietPage.totalPages-1)}"
-                       th:classappend="${i == baiVietPage.number} ? 'active'"
-                       th:href="@{'/kienthuc'(page=${i})}" th:text="${i + 1}">1</a>
+    <!-- Danh sách bài viết -->
+    <section class="post-list-section">
+        <h2 class="section-title">Tất Cả Bài Viết</h2>
+        <div class="post-list" th:if="${baiVietPage}">
+            <article class="post-row" th:each="bv : ${baiVietPage.content}">
+                <div class="post-row-main">
+                    <h3 class="post-row-title"><a th:href="@{'/kienthuc/' + ${bv.id}}" th:text="${bv.tieuDe}">Tiêu
+                        đề</a></h3>
+                    <p class="post-row-meta">
+                        <span><i class="fas fa-calendar"></i> <span
+                                th:text="${#temporals.format(bv.ngayTao,'dd/MM/yyyy')}">01/01/2025</span></span>
+                        <span> · <i class="fas fa-eye"></i> <span th:text="${bv.luotXem}">0</span> lượt xem</span>
+                    </p>
+                    <p class="post-row-excerpt" th:text="${bv.tomTat}">Mô tả ngắn...</p>
+                    <a class="read-more" th:href="@{'/kienthuc/' + ${bv.id}}">Đọc bài →</a>
                 </div>
-            </div>
+            </article>
 
-            <!-- Placeholder khi chưa có dữ liệu -->
-            <div class="empty-state" th:if="${baiVietPage == null}">
-                <h3>Chưa có bài viết</h3>
-                <p><strong>TODO: NGƯỜI 3</strong> - Kết nối BaiVietService để hiển thị dữ liệu thực.</p>
-                <ul class="sample-topics">
-                    <li>Ý nghĩa của việc biếu quà Tết</li>
-                    <li>Phong tục mâm ngũ quả ba miền</li>
-                    <li>Lịch sử bánh chưng – bánh tét</li>
-                    <li>Gợi ý chọn quà Tết cho doanh nghiệp</li>
-                </ul>
+            <!-- Pagination -->
+            <div class="pagination" th:if="${baiVietPage.totalPages > 1}">
+                <a class="page-item" th:classappend="${i == baiVietPage.number} ? 'active'"
+                   th:each="i : ${#numbers.sequence(0, baiVietPage.totalPages-1)}"
+                   th:href="@{'/kienthuc'(page=${i})}" th:text="${i + 1}">1</a>
             </div>
-        </section>
+        </div>
 
-        <!-- Tags phổ biến -->
-        <section class="popular-tags" th:if="${popularTags}">
-            <h2 class="section-title">Chủ Đề Nổi Bật</h2>
-            <div class="tag-cloud">
-                <a class="tag" th:each="t : ${popularTags}" th:href="@{'/kienthuc/tag/' + ${t}}" th:text="${t}">Tag</a>
-            </div>
-        </section>
-    </main>
+        <!-- Placeholder khi chưa có dữ liệu -->
+        <div class="empty-state" th:if="${baiVietPage == null}">
+            <h3>Chưa có bài viết</h3>
+            <p><strong>TODO: NGƯỜI 3</strong> - Kết nối BaiVietService để hiển thị dữ liệu thực.</p>
+            <ul class="sample-topics">
+                <li>Ý nghĩa của việc biếu quà Tết</li>
+                <li>Phong tục mâm ngũ quả ba miền</li>
+                <li>Lịch sử bánh chưng – bánh tét</li>
+                <li>Gợi ý chọn quà Tết cho doanh nghiệp</li>
+            </ul>
+        </div>
+    </section>
 
-    <!-- Footer -->
-    <th:block th:replace="~{fragments/layout :: footer}" />
-    <th:block th:replace="~{fragments/layout :: scripts}" />
+    <!-- Tags phổ biến -->
+    <section class="popular-tags" th:if="${popularTags}">
+        <h2 class="section-title">Chủ Đề Nổi Bật</h2>
+        <div class="tag-cloud">
+            <a class="tag" th:each="t : ${popularTags}" th:href="@{'/kienthuc/tag/' + ${t}}" th:text="${t}">Tag</a>
+        </div>
+    </section>
+</main>
+
+<!-- Footer -->
+<th:block th:replace="~{fragments/layout :: footer}"/>
+<th:block th:replace="~{fragments/layout :: scripts}"/>
 </body>
 </html>

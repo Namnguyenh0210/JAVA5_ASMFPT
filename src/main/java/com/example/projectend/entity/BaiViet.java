@@ -1,11 +1,20 @@
 package com.example.projectend.entity;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
 /**
  * ENTITY BÀI VIẾT - ASM Web Bán Hàng Tết
  * Quản lý bài viết kiến thức cho website
+ * <p>
+ * PHÂN CÔNG:
+ * - THÀNH VIÊN 1: Mapping gốc (ĐÃ HOÀN THÀNH)
+ * - THÀNH VIÊN 3: Hiển thị bài viết phía khách (list, detail, search, featured)
+ * - THÀNH VIÊN 4: CRUD quản trị (toggleStatus, thêm/sửa/xóa)
+ * <p>
+ * TODO THÀNH VIÊN 3 (Optional): Viết DTO rút gọn (id, tieuDe, ngayDang) cho quick list
+ * TODO THÀNH VIÊN 4 (Optional): Thêm field SEO (MetaTitle) nếu mở rộng (KHÔNG sửa schema hiện tại theo yêu cầu đề bài)
  */
 @Entity
 @Table(name = "BaiViet")
@@ -36,7 +45,8 @@ public class BaiViet {
     private String trangThai = "Hiển thị";
 
     // Constructors
-    public BaiViet() {}
+    public BaiViet() {
+    }
 
     public BaiViet(TaiKhoan taiKhoan, String tieuDe, String noiDung, String hinhAnh) {
         this.taiKhoan = taiKhoan;

@@ -1,14 +1,16 @@
-body{
+body {
     margin: 0;
     padding: 0;
     color: rgb(96, 94, 94);
 }
-.profile img{
+
+.profile img {
     border-radius: 100px;
     object-fit: cover;
 
 }
-.profile{
+
+.profile {
     border: 1px solid whitesmoke;
     margin-left: 230px;
     margin-right: 230px;
@@ -18,30 +20,36 @@ body{
     border-radius: 40px;
     margin-bottom: 50px;
 }
-.infor{
+
+.infor {
     display: flex;
-   padding-left: 349px;
-   gap: 50px;
-   font-size: larger;
-}
-.infor h5{
+    padding-left: 349px;
+    gap: 50px;
     font-size: larger;
 }
-.profile button{
+
+.infor h5 {
+    font-size: larger;
+}
+
+.profile button {
     background-color: rgb(213, 37, 37);
     padding: 15px 15px 15px 15px;
     border-radius: 30px;
     align-items: center;
-   margin-bottom: 50px;
-   margin-top: 20px;
+    margin-bottom: 50px;
+    margin-top: 20px;
 }
-.profile button a{
+
+.profile button a {
     text-decoration: none;
     color: white;
 }
-.hcm{
+
+.hcm {
     padding-bottom: 40px;
 }
-.infor1{
+
+.infor1 {
     font-size: larger;
 }

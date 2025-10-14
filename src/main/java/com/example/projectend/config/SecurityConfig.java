@@ -10,15 +10,17 @@ import org.springframework.security.web.SecurityFilterChain;
 
 /**
  * SECURITY CONFIG - ASM WEB BÁN HÀNG TẾT
- * Đơn giản hóa cho môi trường học tập, vừa đủ tính năng
- *
  * ĐĂNG NHẬP BẰNG EMAIL + MẬT KHẨU PLAIN TEXT
+ * <p>
+ * PHÂN QUYỀN:
+ * - ROLE_KHÁCHHÀNG: Khách hàng thông thường
+ * - ROLE_NHÂNVIÊN: Nhân viên (có quyền admin)
+ * - ROLE_ADMIN: Quản trị viên cao nhất
  */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    // Plain text password cho ASM (không mã hóa)
     @Bean
     public PasswordEncoder passwordEncoder() {
         return NoOpPasswordEncoder.getInstance();
@@ -27,46 +29,53 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .authorizeHttpRequests(auth -> auth
-                // Public pages - ai cũng vào được
-                .requestMatchers("/", "/home", "/sanpham", "/sanpham/**", "/gioithieu", "/kienthuc", "/lienhe").permitAll()
-                .requestMatchers("/giohang", "/giohang/**").permitAll()  // Cho phép truy cập giỏ hàng không cần đăng nhập
-                .requestMatchers("/login", "/register").permitAll()
-                .requestMatchers("/css/**", "/js/**", "/img/**", "/static/**").permitAll()
-                .requestMatchers("/api/public/**").permitAll()
+                .authorizeHttpRequests(auth -> auth
+                        // Public pages - ai cũng vào được
+                        .requestMatchers("/", "/home", "/sanpham", "/sanpham/**").permitAll()
+                        .requestMatchers("/gioithieu", "/kienthuc", "/lienhe").permitAll()
+                        .requestMatchers("/login", "/register", "/403").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/img/**", "/images/**", "/static/**").permitAll()
+                        .requestMatchers("/api/public/**").permitAll()
 
-                // Admin pages - chỉ ADMIN
-                .requestMatchers("/admin/**", "/api/admin/**").hasRole("ADMIN")
+                        // Giỏ hàng - ai cũng vào được (kể cả chưa đăng nhập)
+                        .requestMatchers("/giohang", "/giohang/**").permitAll()
 
-                // User pages - phải đăng nhập (bỏ giohang ra khỏi đây)
-                .requestMatchers("/profile/**", "/checkout/**", "/orders/**").hasAnyRole("USER", "ADMIN")
-                .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
+                        // Admin pages - Chỉ ADMIN hoặc NHÂN VIÊN (không dấu cách)
+                        .requestMatchers("/admin/**").hasAnyRole("ADMIN", "NHÂNVIÊN")
 
-                // Còn lại phải đăng nhập
-                .anyRequest().authenticated()
-            )
-            .formLogin(form -> form
-                .loginPage("/login")
-                .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/", true)
-                .failureUrl("/login?error=true")
-                .usernameParameter("email") // ĐĂNG NHẬP BẰNG EMAIL
-                .passwordParameter("password")
-                .permitAll()
-            )
-            .logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/?logout=success")
-                .invalidateHttpSession(true)
-                .clearAuthentication(true)
-                .permitAll()
-            )
-            // Tắt CSRF cho đơn giản (chỉ dùng trong ASM)
-            .csrf(csrf -> csrf.disable())
-            // Exception handling đơn giản
-            .exceptionHandling(ex -> ex
-                .accessDeniedPage("/403")
-            );
+                        // Checkout & Profile - Phải đăng nhập
+                        .requestMatchers("/checkout", "/checkout/**").authenticated()
+                        .requestMatchers("/profile", "/profile/**").authenticated()
+
+                        // Còn lại phải đăng nhập
+                        .anyRequest().authenticated()
+                )
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .loginProcessingUrl("/login")
+                        .usernameParameter("email")
+                        .passwordParameter("password")
+                        .successHandler((request, response, authentication) -> {
+                            // Chuyển hướng theo role
+                            String role = authentication.getAuthorities().iterator().next().getAuthority();
+                            if (role.equals("ROLE_ADMIN") || role.equals("ROLE_NHÂNVIÊN")) {
+                                response.sendRedirect("/admin");
+                            } else {
+                                response.sendRedirect("/");
+                            }
+                        })
+                        .failureUrl("/login?error=true")
+                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/?logout=success")
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .permitAll()
+                )
+                .csrf(csrf -> csrf.disable())
+                .exceptionHandling(ex -> ex.accessDeniedPage("/403"));
 
         return http.build();
     }

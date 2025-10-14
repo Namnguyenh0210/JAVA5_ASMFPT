@@ -6,44 +6,58 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 /**
  * HOME CONTROLLER - Trang chủ website bán đồ Tết
- * Người 1 - Database Design & Backend Core ✅ ĐÃ HOÀN THÀNH (Cấu trúc cơ bản)
- * Người 3 - Frontend & Customer Website 🔄 CẦN HOÀN THIỆN
- *
- * ========================================
- * TODO NGƯỜI 3 - DANH SÁCH CHI TIẾT:
- * ========================================
- *
- * BƯỚC 1: Inject Services (sau khi đã tạo)
- * @Autowired private SanPhamService sanPhamService;
- * @Autowired private BaiVietService baiVietService;
- *
- * BƯỚC 2: Trong method home() - thêm logic:
- * - Lấy 4 sản phẩm nổi bật: model.addAttribute("featuredProducts", sanPhamService.getFeaturedProducts(4));
- * - Lấy 3 bài viết mới nhất: model.addAttribute("featuredPosts", baiVietService.getFeaturedPosts(3));
- * - Lấy danh mục sản phẩm: model.addAttribute("categories", sanPhamService.getAllCategories());
- *
- * BƯỚC 3: Cập nhật home.html template:
- * - Thêm slider banner Tết 2025
- * - Grid hiển thị 4 sản phẩm nổi bật
- * - Section 3 bài viết kiến thức mới nhất
- * - Footer với thông tin liên hệ
+ * <p>
+ * =============================
+ * PHÂN CÔNG: TV2 - FRONTEND KHÁCH HÀNG
+ * =============================
+ * TODO TV2 - CẦN LÀM:
+ * <p>
+ * 1. @Autowired các service:
+ * - SanPhamService sanPhamService;
+ * - BaiVietService baiVietService;
+ * <p>
+ * 2. Trong method home():
+ * a) Lấy 8 sản phẩm nổi bật:
+ * List<SanPham> featured = sanPhamService.getFeaturedProducts(8);
+ * model.addAttribute("sanPhamNoiBat", featured);
+ * <p>
+ * b) Lấy 3 bài viết mới:
+ * List<BaiViet> posts = baiVietService.getFeaturedPosts(3);
+ * model.addAttribute("tinTuc", posts);
+ * <p>
+ * c) Lấy danh mục (cho menu):
+ * List<LoaiSanPham> categories = sanPhamService.getAllCategories();
+ * model.addAttribute("danhMuc", categories);
+ * <p>
+ * 3. Cập nhật template home.html để hiển thị dữ liệu
+ * <p>
+ * THỜI GIAN: 1 giờ (rất đơn giản)
+ * =============================
  */
 @Controller
 public class HomeController {
+
+    // TODO TV2: Bước 1 - Inject services (gỡ comment)
+    // @Autowired
+    // private SanPhamService sanPhamService;
+    //
+    // @Autowired
+    // private BaiVietService baiVietService;
 
     @GetMapping("/")
     public String home(Model model) {
         model.addAttribute("currentPage", "home");
 
-        // TODO NGƯỜI 3: Thêm các dòng sau khi đã tạo SanPhamService và BaiVietService
-        // List<SanPham> featuredProducts = sanPhamService.getFeaturedProducts(4);
-        // model.addAttribute("featuredProducts", featuredProducts);
-
-        // List<BaiViet> featuredPosts = baiVietService.getFeaturedPosts(3);
-        // model.addAttribute("featuredPosts", featuredPosts);
-
-        // List<LoaiSanPham> categories = sanPhamService.getAllCategories();
-        // model.addAttribute("categories", categories);
+        // TODO TV2: Bước 2 - Gỡ comment sau khi implement Service
+        // HƯỚNG DẪN:
+        // List<SanPham> sanPhamNoiBat = sanPhamService.getFeaturedProducts(8);
+        // model.addAttribute("sanPhamNoiBat", sanPhamNoiBat);
+        //
+        // List<BaiViet> tinTuc = baiVietService.getFeaturedPosts(3);
+        // model.addAttribute("tinTuc", tinTuc);
+        //
+        // List<LoaiSanPham> danhMuc = sanPhamService.getAllCategories();
+        // model.addAttribute("danhMuc", danhMuc);
 
         model.addAttribute("pageTitle", "Trang chủ - Cửa hàng đồ Tết Nguyên Đán 2025");
         return "home";

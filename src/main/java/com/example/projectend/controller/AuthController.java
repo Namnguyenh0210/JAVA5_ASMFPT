@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 /**
  * AUTH CONTROLLER - ASM WEB BÁN HÀNG TẾT
  * Người 2 - Authentication & Authorization ✅ HOÀN THÀNH
- *
+ * <p>
  * ĐĂNG NHẬP BẰNG EMAIL + MẬT KHẨU PLAIN TEXT
  */
 @Controller
@@ -34,8 +34,8 @@ public class AuthController {
     // ========================================
     @GetMapping("/login")
     public String loginPage(@RequestParam(value = "error", required = false) String error,
-                           @RequestParam(value = "logout", required = false) String logout,
-                           Model model) {
+                            @RequestParam(value = "logout", required = false) String logout,
+                            Model model) {
         if (error != null) {
             model.addAttribute("errorMessage", "Email hoặc mật khẩu không đúng!");
         }
@@ -56,11 +56,11 @@ public class AuthController {
 
     @PostMapping("/register")
     public String registerSubmit(@RequestParam String hoTen,
-                                @RequestParam String email,
-                                @RequestParam String password,
-                                @RequestParam String confirmPassword,
-                                @RequestParam(required = false) String soDienThoai,
-                                RedirectAttributes redirectAttributes) {
+                                 @RequestParam String email,
+                                 @RequestParam String matKhau,
+                                 @RequestParam String confirmPassword,
+                                 @RequestParam(required = false) String soDienThoai,
+                                 RedirectAttributes redirectAttributes) {
 
         // Validation cơ bản
         if (hoTen == null || hoTen.trim().isEmpty()) {
@@ -73,12 +73,12 @@ public class AuthController {
             return "redirect:/register";
         }
 
-        if (password == null || password.length() < 6) {
+        if (matKhau == null || matKhau.length() < 6) {
             redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu phải có ít nhất 6 ký tự!");
             return "redirect:/register";
         }
 
-        if (!password.equals(confirmPassword)) {
+        if (!matKhau.equals(confirmPassword)) {
             redirectAttributes.addFlashAttribute("errorMessage", "Mật khẩu xác nhận không khớp!");
             return "redirect:/register";
         }
@@ -100,7 +100,7 @@ public class AuthController {
             TaiKhoan taiKhoanMoi = new TaiKhoan();
             taiKhoanMoi.setHoTen(hoTen.trim());
             taiKhoanMoi.setEmail(email.trim().toLowerCase());
-            taiKhoanMoi.setMatKhau(password); // LUU PLAIN TEXT CHO ASM
+            taiKhoanMoi.setMatKhau(matKhau); // LUU PLAIN TEXT CHO ASM
             taiKhoanMoi.setSoDienThoai(soDienThoai);
             taiKhoanMoi.setVaiTro(vaiTroUser);
             taiKhoanMoi.setTrangThai(true);
@@ -110,12 +110,12 @@ public class AuthController {
             taiKhoanRepository.save(taiKhoanMoi);
 
             redirectAttributes.addFlashAttribute("successMessage",
-                "Đăng ký thành công! Bạn có thể đăng nhập ngay bây giờ.");
+                    "Đăng ký thành công! Bạn có thể đăng nhập ngay bây giờ.");
             return "redirect:/login";
 
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage",
-                "Có lỗi xảy ra khi đăng ký. Vui lòng thử lại!");
+                    "Có lỗi xảy ra khi đăng ký. Vui lòng thử lại!");
             return "redirect:/register";
         }
     }
