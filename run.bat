@@ -123,6 +123,7 @@ echo.
 
 REM Start the application
 call mvn spring-boot:run
+start http://localhost:8080
 
 REM This will run when application stops
 echo.
