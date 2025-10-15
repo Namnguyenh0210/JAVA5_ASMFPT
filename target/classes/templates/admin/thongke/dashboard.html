@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layouts/admin-base}">
+<head>
+<title>Dashboard - Admin Panel</title>
+<style type="text/css">
+/* ==================================== */
+/* Custom CSS cho Admin Dashboard - Sáng & Tối Giản (Dựa trên mẫu ảnh) */
+/* ==================================== */
+
+/* 1. Layout, Nền & Tiêu đề */
+body {
+	background-color: #f5f5f5; /* Nền rất sáng, giống mẫu */
+	color: #444;
+	font-family: Arial, sans-serif; /* Phông chữ cơ bản, sạch sẽ */
+}
+
+/* Page title - Tiêu đề trang */
+.page-title {
+	font-size: 1.6rem;
+	font-weight: 600;
+	color: #333;
+	margin-bottom: 20px;
+	padding-bottom: 10px;
+	border-bottom: 1px solid #ddd; /* Đường kẻ mỏng, nhạt */
+}
+
+.page-title i {
+	color: #3498db; /* Màu xanh dương chủ đạo */
+	margin-right: 10px;
+}
+
+/* Tùy chỉnh nút */
+.btn-primary-custom {
+	background-color: #3498db; /* Xanh dương chủ đạo */
+	border-color: #3498db;
+	color: white;
+	font-weight: 500;
+	border-radius: 4px;
+	transition: background-color 0.2s;
+}
+
+.btn-primary-custom:hover {
+	background-color: #2980b9;
+	border-color: #2980b9;
+}
+
+/* 2. Stat Cards (Thẻ thống kê) */
+/* Thay vì shadow, mẫu sử dụng border và background phẳng */
+.stat-card {
+	background: #ffffff; /* Nền trắng tinh */
+	border: 1px solid #e0e0e0; /* Viền mỏng, nhẹ */
+	border-radius: 4px;
+	padding: 20px;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	transition: border-color 0.2s;
+}
+
+.stat-card:hover {
+	border-color: #c0c0c0; /* Viền đậm hơn khi hover */
+}
+
+.stat-icon {
+	width: 50px;
+	height: 50px;
+	border-radius: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.2rem;
+	color: #fff;
+	margin-bottom: 15px;
+	/* Xóa box-shadow để theo phong cách phẳng */
+}
+
+/* Áp dụng màu gradient lại cho icon dựa trên code HTML của bạn */
+/* Màu sẽ được quản lý bởi style inline trong HTML của bạn */
+.stat-value {
+	font-size: 2rem;
+	font-weight: 700;
+	color: #333;
+	line-height: 1.2;
+}
+
+.stat-label {
+	font-size: 0.9rem;
+	color: #777;
+	margin-bottom: 10px;
+}
+
+.stat-change {
+	font-size: 0.85rem;
+	display: flex;
+	align-items: center;
+	padding-top: 10px;
+	margin-top: 10px;
+	border-top: 1px dashed #e0e0e0; /* Đường kẻ đứt nét nhẹ */
+}
+
+.stat-change.positive {
+	color: #27ae60; /* Xanh lá */
+}
+
+/* 3. Tables & Quick Stats (Bảng và Thống kê nhanh/Chart) */
+.admin-table, .col-lg-8 .stat-card, .col-lg-4 .stat-card {
+	background: #ffffff;
+	border: 1px solid #e0e0e0;
+	border-radius: 4px;
+	box-shadow: none; /* Xóa shadow */
+	height: 100%;
+	overflow: hidden;
+}
+
+/* Tiêu đề trong các thẻ bảng */
+.admin-table .p-4.border-bottom, .col-lg-8 .stat-card h5, .col-lg-4 .stat-card h5
+	{
+	padding: 15px 20px;
+	border-bottom: 1px solid #e0e0e0 !important;
+	background-color: #fcfcfc; /* Nền nhạt cho header */
+	margin-bottom: 0;
+	font-size: 1.1rem;
+	color: #333;
+}
+
+/* Bảng */
+.admin-table .table {
+	margin-bottom: 0;
+	color: #444;
+}
+
+.admin-table .table thead th {
+	background-color: #f9f9f9; /* Đầu bảng sáng */
+	border-top: none;
+	border-bottom: 1px solid #e0e0e0;
+	font-weight: 600;
+	color: #555;
+	font-size: 0.85rem;
+}
+
+.admin-table .table tbody td {
+	vertical-align: middle;
+	font-size: 0.9rem;
+	border-color: #f0f0f0;
+}
+
+.admin-table .table tbody tr:hover {
+	background-color: #fcfcfc;
+}
+
+/* Hình ảnh sản phẩm trong bảng */
+.admin-table .table img {
+	border: 1px solid #eee;
+}
+
+/* Quick Stats (Thống kê nhanh) */
+.col-lg-4 .stat-card h5 {
+	border-bottom: 1px solid #e0e0e0;
+	margin-bottom: 20px;
+}
+
+.progress {
+	border-radius: 2px;
+	height: 6px !important; /* Mỏng hơn */
+	background-color: #f0f0f0;
+}
+
+/* Footer bảng (Xem thêm) */
+.admin-table .p-3.text-center.border-top {
+	border-top: 1px solid #e0e0e0 !important;
+	background-color: #fcfcfc;
+}
+
+.admin-table .p-3 a {
+	color: #3498db;
+	font-weight: 500;
+}
+</style>
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="page-title">
+			<i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
+		</div>
+
+		<!-- Stats Cards -->
+		<div class="row mb-4">
+			<div class="col-lg-3 col-md-6 mb-4">
+				<div class="stat-card">
+					<div class="stat-icon"
+						style="background: linear-gradient(135deg, #3498db, #2980b9);">
+						<i class="fas fa-users"></i>
+					</div>
+					<div class="stat-value"
+						th:text="${totalUsers != null ? totalUsers : 0}">1,234</div>
+					<div class="stat-label">Tổng người dùng</div>
+					<div class="stat-change positive">
+						<i class="fas fa-arrow-up"></i> +12% so với tháng trước
+					</div>
+				</div>
+			</div>
+
+			<div class="col-lg-3 col-md-6 mb-4">
+				<div class="stat-card">
+					<div class="stat-icon"
+						style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
+						<i class="fas fa-shopping-cart"></i>
+					</div>
+					<div class="stat-value"
+						th:text="${totalOrders != null ? totalOrders : 0}">856</div>
+					<div class="stat-label">Tổng đơn hàng</div>
+					<div class="stat-change positive">
+						<i class="fas fa-arrow-up"></i> +8% so với tháng trước
+					</div>
+				</div>
+			</div>
+
+			<div class="col-lg-3 col-md-6 mb-4">
+				<div class="stat-card">
+					<div class="stat-icon"
+						style="background: linear-gradient(135deg, #f39c12, #e67e22);">
+						<i class="fas fa-box"></i>
+					</div>
+					<div class="stat-value"
+						th:text="${totalProducts != null ? totalProducts : 0}">325</div>
+					<div class="stat-label">Tổng sản phẩm</div>
+					<div class="stat-change positive">
+						<i class="fas fa-arrow-up"></i> +5% so với tháng trước
+					</div>
+				</div>
+			</div>
+
+			<div class="col-lg-3 col-md-6 mb-4">
+				<div class="stat-card">
+					<div class="stat-icon"
+						style="background: linear-gradient(135deg, #27ae60, #229954);">
+						<i class="fas fa-dollar-sign"></i>
+					</div>
+					<div class="stat-value"
+						th:text="${doanhThuThang != null ? #numbers.formatDecimal(doanhThuThang / 1000000, 1, 'COMMA', 1, 'POINT') + 'M' : '0M'}">
+						45.2M</div>
+					<div class="stat-label">Doanh thu tháng này</div>
+					<div class="stat-change positive">
+						<i class="fas fa-arrow-up"></i> +18% so với tháng trước
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<!-- Revenue Chart -->
+			<div class="col-lg-8 mb-4">
+				<div class="stat-card">
+					<h5 class="mb-4">
+						<i class="fas fa-chart-line"></i> Doanh thu 7 ngày gần nhất
+					</h5>
+					<canvas id="revenueChart" height="100"></canvas>
+				</div>
+			</div>
+
+			<!-- Quick Stats -->
+			<div class="col-lg-4 mb-4">
+				<div class="stat-card">
+					<h5 class="mb-4">
+						<i class="fas fa-info-circle"></i> Thống kê nhanh
+					</h5>
+
+					<div class="mb-3">
+						<div class="d-flex justify-content-between mb-2">
+							<span>Doanh thu hôm nay</span> <strong class="text-success"
+								th:text="${doanhThuHomNay != null ? #numbers.formatDecimal(doanhThuHomNay, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}">2.5M
+								đ</strong>
+						</div>
+						<div class="progress" style="height: 8px;">
+							<div class="progress-bar bg-success" style="width: 65%"></div>
+						</div>
+					</div>
+
+					<div class="mb-3">
+						<div class="d-flex justify-content-between mb-2">
+							<span>Doanh thu tuần</span> <strong class="text-info"
+								th:text="${doanhThuTuan != null ? #numbers.formatDecimal(doanhThuTuan, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}">12.8M
+								đ</strong>
+						</div>
+						<div class="progress" style="height: 8px;">
+							<div class="progress-bar bg-info" style="width: 80%"></div>
+						</div>
+					</div>
+
+					<div class="mb-3">
+						<div class="d-flex justify-content-between mb-2">
+							<span>Đơn chờ xử lý</span> <strong class="text-warning"
+								th:text="${pendingOrderCount != null ? pendingOrderCount : 0}">15</strong>
+						</div>
+						<div class="progress" style="height: 8px;">
+							<div class="progress-bar bg-warning" style="width: 30%"></div>
+						</div>
+					</div>
+
+					<div class="mb-3">
+						<div class="d-flex justify-content-between mb-2">
+							<span>Sản phẩm sắp hết</span> <strong class="text-danger"
+								th:text="${lowStockCount != null ? lowStockCount : 0}">8</strong>
+						</div>
+						<div class="progress" style="height: 8px;">
+							<div class="progress-bar bg-danger" style="width: 20%"></div>
+						</div>
+					</div>
+
+					<a href="/admin/thongke" class="btn btn-primary-custom w-100 mt-3">
+						<i class="fas fa-chart-bar"></i> Xem báo cáo chi tiết
+					</a>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<!-- Top Products -->
+			<div class="col-lg-6 mb-4">
+				<div class="admin-table">
+					<div class="p-4 border-bottom">
+						<h5 class="mb-0">
+							<i class="fas fa-fire"></i> Top 5 sản phẩm bán chạy
+						</h5>
+					</div>
+					<table class="table">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Sản phẩm</th>
+								<th>Đã bán</th>
+								<th>Doanh thu</th>
+							</tr>
+						</thead>
+						<tbody>
+							<!-- TODO THÀNH VIÊN 4: Load top products từ ThongKeService -->
+							<tr th:if="${topProducts != null and !topProducts.isEmpty()}"
+								th:each="sp, stat : ${topProducts}">
+								<td th:text="${stat.count}">1</td>
+								<td>
+									<div class="d-flex align-items-center">
+										<img th:src="${sp[3]}"
+											style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px; margin-right: 10px;"
+											onerror="this.src='https://via.placeholder.com/40'"> <span
+											th:text="${sp[1]}">Giỏ quà Tết An Khang</span>
+									</div>
+								</td>
+								<td><span class="badge bg-success" th:text="${sp[2]}">125</span></td>
+								<td class="fw-bold text-danger"
+									th:text="${#numbers.formatDecimal(sp[4], 0, 'COMMA', 0, 'POINT')} + ' đ'">62.5M
+									đ</td>
+							</tr>
+
+							<!-- Placeholder -->
+							<tr th:if="${topProducts == null or topProducts.isEmpty()}"
+								th:each="i : ${#numbers.sequence(1, 5)}">
+								<td th:text="${i}">1</td>
+								<td>
+									<div class="d-flex align-items-center">
+										<img src="https://via.placeholder.com/40"
+											style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px; margin-right: 10px;">
+										<span>Sản phẩm mẫu</span>
+									</div>
+								</td>
+								<td><span class="badge bg-success">0</span></td>
+								<td class="fw-bold text-danger">0 đ</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<!-- Recent Orders -->
+			<div class="col-lg-6 mb-4">
+				<div class="admin-table">
+					<div class="p-4 border-bottom">
+						<h5 class="mb-0">
+							<i class="fas fa-clock"></i> Đơn hàng chờ xử lý
+						</h5>
+					</div>
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Mã ĐH</th>
+								<th>Khách hàng</th>
+								<th>Tổng tiền</th>
+								<th>Hành động</th>
+							</tr>
+						</thead>
+						<tbody>
+							<!-- TODO THÀNH VIÊN 4: Load pending orders -->
+							<tr th:if="${pendingOrders != null and !pendingOrders.isEmpty()}"
+								th:each="dh : ${pendingOrders}">
+								<td><strong th:text="'#DH' + ${dh.maDH}">#DH123</strong></td>
+								<td th:text="${dh.khachHang.hoTen}">Nguyễn Văn A</td>
+								<td class="text-danger fw-bold"
+									th:text="${#numbers.formatDecimal(dh.tongTien, 0, 'COMMA', 0, 'POINT')} + ' đ'">1.5M
+									đ</td>
+								<td><a th:href="@{/admin/donhang/{id}(id=${dh.maDH})}"
+									class="btn btn-sm btn-primary-custom"> <i
+										class="fas fa-eye"></i>
+								</a></td>
+							</tr>
+
+							<!-- Placeholder -->
+							<tr th:if="${pendingOrders == null or pendingOrders.isEmpty()}"
+								th:each="i : ${#numbers.sequence(1, 5)}">
+								<td><strong>#DH000</strong></td>
+								<td>Khách hàng</td>
+								<td class="text-danger fw-bold">0 đ</td>
+								<td>
+									<button class="btn btn-sm btn-primary-custom">
+										<i class="fas fa-eye"></i>
+									</button>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="p-3 text-center border-top">
+						<a href="/admin/donhang" class="text-decoration-none"> Xem tất
+							cả đơn hàng <i class="fas fa-arrow-right"></i>
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<th:block layout:fragment="scripts">
+		<script>
+        // TODO THÀNH VIÊN 4: Lấy dữ liệu chart từ ThongKeService
+        const chartData = /*[[${chartData}]]*/ null;
+
+        // Default data nếu chưa có
+        const labels = chartData ? chartData.map(d => d[0]) : ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+        const data = chartData ? chartData.map(d => d[1]) : [2500000, 3200000, 2800000, 4100000, 3900000, 4500000, 5200000];
+
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Doanh thu (VNĐ)',
+                    data: data,
+                    backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                    borderColor: 'rgba(231, 76, 60, 1)',
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    pointBackgroundColor: 'rgba(231, 76, 60, 1)',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                return 'Doanh thu: ' + context.parsed.y.toLocaleString('vi-VN') + ' đ';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function (value) {
+                                return (value / 1000000).toFixed(1) + 'M';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Auto refresh every 30 seconds
+        setInterval(() => {
+            location.reload();
+        }, 30000);
+    </script>
+	</th:block>
+</body>
+</html>
+

@@ -110,7 +110,7 @@ public class AdminThongKeController {
 
         model.addAttribute("currentPage", "thongke");
         model.addAttribute("pageTitle", "Thống kê & Báo cáo");
-        return "admin/thongke/dashboard";
+        return "admin/thongke";
     }
 
     // =============================
