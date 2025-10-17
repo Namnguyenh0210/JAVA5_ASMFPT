@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title th:text="${title} + ' - Tết Market'">Tết Market</title>
+
+    <!-- Common CSS -->
+    <link rel="stylesheet" th:href="@{/css/common.css?v=20251003}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Page specific CSS will be inserted here -->
+    <th:block th:fragment="page-css"></th:block>
+
+    <!-- Meta tags for SEO -->
+    <meta content="Chuyên cung cấp sản phẩm Tết truyền thống chất lượng cao" name="description">
+    <meta content="quà tết, giỏ quà tết, hộp quà tết, mứt tết, bánh kẹo" name="keywords">
+    <meta content="Tết Market" name="author">
+
+    <!-- Favicon -->
+    <link rel="icon" th:href="@{/img/favicon.ico}" type="image/x-icon">
+</head>
+
+<body>
+<!-- Header Fragment -->
+<header class="header" th:fragment="header">
+    <div class="container">
+        <div class="header-content">
+            <a class="logo" href="/">
+                <img alt="Logo" onerror="this.style.display='none'" th:src="@{/img/logo-trang.png}">
+                <span>🧧 Tết Market</span>
+            </a>
+
+            <nav class="nav" id="mainNav">
+                <a class="nav-link" href="/" th:classappend="${currentPage == 'home' ? 'active' : ''}">Trang Chủ</a>
+                <a class="nav-link" href="/sanpham" th:classappend="${currentPage == 'sanpham' ? 'active' : ''}">Sản
+                    Phẩm</a>
+                <a class="nav-link" href="/gioithieu" th:classappend="${currentPage == 'gioithieu' ? 'active' : ''}">Giới
+                    Thiệu</a>
+                <a class="nav-link" href="/kienthuc" th:classappend="${currentPage == 'kienthuc' ? 'active' : ''}">Kiến
+                    Thức</a>
+                <a class="nav-link" href="/lienhe" th:classappend="${currentPage == 'lienhe' ? 'active' : ''}">Liên
+                    Hệ</a>
+                <a class="nav-link" href="/giohang" th:classappend="${currentPage == 'giohang' ? 'active' : ''}">
+                    <i class="fas fa-shopping-cart"></i> Giỏ Hàng
+                    <span class="cart-count" id="cartCount">0</span>
+                </a>
+                <a class="nav-link" href="/login" th:classappend="${currentPage == 'login' ? 'active' : ''}">
+                    <i class="fas fa-user"></i> Đăng Nhập
+                </a>
+            </nav>
+        </div>
+    </div>
+</header>
+
+<!-- Breadcrumb Fragment -->
+<nav class="breadcrumb" th:fragment="breadcrumb(items)" th:if="${items != null and !items.isEmpty()}">
+    <div class="container">
+        <ol class="breadcrumb-list">
+            <li th:class="${iterStat.last} ? 'breadcrumb-item active' : 'breadcrumb-item'"
+                th:each="item, iterStat : ${items}">
+                <a class="breadcrumb-link" th:href="${item.url}" th:if="${!iterStat.last}"
+                   th:text="${item.name}">Home</a>
+                <span th:if="${iterStat.last}" th:text="${item.name}">Current</span>
+            </li>
+        </ol>
+    </div>
+</nav>
+
+<!-- Footer Fragment -->
+<footer class="footer" th:fragment="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>🧧 Tết Market</h3>
+                <p>Chuyên cung cấp các sản phẩm Tết truyền thống chất lượng cao, mang lại may mắn và thịnh vượng cho gia
+                    đình bạn.</p>
+                <div class="social-links">
+                    <a aria-label="Facebook" href="#"><i class="fab fa-facebook"></i></a>
+                    <a aria-label="Instagram" href="#"><i class="fab fa-instagram"></i></a>
+                    <a aria-label="YouTube" href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Liên Kết Nhanh</h3>
+                <a href="/">Trang Chủ</a>
+                <a href="/sanpham">Sản Phẩm</a>
+                <a href="/gioithieu">Giới Thiệu</a>
+                <a href="/lienhe">Liên Hệ</a>
+            </div>
+            <div class="footer-section">
+                <h3>Danh Mục</h3>
+                <a href="/sanpham?category=gio-qua">Giỏ Quà Tết</a>
+                <a href="/sanpham?category=hop-qua">Hộp Quà Tết</a>
+                <a href="/sanpham?category=mut-banh">Mứt - Bánh Kẹo</a>
+                <a href="/sanpham?category=trang-tri">Trang Trí</a>
+            </div>
+            <div class="footer-section">
+                <h3>Liên Hệ</h3>
+                <p><i class="fas fa-map-marker-alt"></i> 123 Đường ABC, TP.HCM</p>
+                <p><i class="fas fa-phone"></i> 0909.123.456</p>
+                <p><i class="fas fa-envelope"></i> info@tetmarket.com</p>
+                <p><i class="fas fa-clock"></i> 8:00 - 22:00 hàng ngày</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; <span th:text="${currentYear}">2025</span> Tết Market. Mừng năm <span
+                    th:text="${tetYear}">2025</span>! 🧧</p>
+        </div>
+    </div>
+</footer>
+
+<!-- Common Scripts Fragment -->
+<div th:fragment="scripts">
+    <script th:src="@{/js/common.js?v=20251003}"></script>
+    <script th:src="@{/js/main.js?v=20251003}"></script>
+</div>
+</body>
+</html>

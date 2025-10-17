@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title layout:title-pattern="$CONTENT_TITLE - $LAYOUT_TITLE">Admin Panel</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- Admin CSS -->
+    <link rel="stylesheet" th:href="@{/css/admin.css?v=1}">
+
+    <style>
+        :root {
+            --primary-color: #e74c3c;
+            --secondary-color: #34495e;
+            --sidebar-width: 260px;
+            --header-height: 60px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f6fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Sidebar */
+        .admin-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: linear-gradient(180deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .menu-item {
+            display: block;
+            padding: 12px 25px;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background: rgba(231, 76, 60, 0.15);
+            border-left-color: var(--primary-color);
+            color: white;
+        }
+
+        .menu-item i {
+            width: 25px;
+            margin-right: 10px;
+        }
+
+        .menu-section {
+            padding: 10px 25px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        /* Main Content */
+        .admin-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .admin-header {
+            height: var(--header-height);
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .btn-toggle-sidebar {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+            cursor: pointer;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-search {
+            position: relative;
+        }
+
+        .header-search input {
+            padding: 8px 15px 8px 40px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            width: 250px;
+        }
+
+        .header-search i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        .header-notifications {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 5px 15px;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+
+        .header-user:hover {
+            background: #f5f6fa;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), #c0392b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Page Container */
+        .page-container {
+            padding: 30px;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .page-breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        /* Cards */
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            margin-top: 10px;
+        }
+
+        .stat-change.positive {
+            color: #27ae60;
+        }
+
+        .stat-change.negative {
+            color: #e74c3c;
+        }
+
+        /* Table */
+        .admin-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead {
+            background: #f8f9fa;
+        }
+
+        .table th {
+            font-weight: 600;
+            color: var(--secondary-color);
+            border: none;
+            padding: 15px;
+        }
+
+        .table td {
+            padding: 15px;
+            vertical-align: middle;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        /* Badges */
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        /* Buttons */
+        .btn-primary-custom {
+            background: linear-gradient(135deg, var(--primary-color), #c0392b);
+            border: none;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(231, 76, 60, 0.4);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .admin-sidebar {
+                transform: translateX(-100%);
+            }
+
+            .admin-sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            .admin-content {
+                margin-left: 0;
+            }
+
+            .header-search {
+                display: none;
+            }
+        }
+
+        /* Scrollbar */
+        .admin-sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .admin-sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+    </style>
+
+    <th:block layout:fragment="extra-css"></th:block>
+</head>
+<body>
+<!-- Sidebar -->
+<aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-header">
+        <a href="/admin" class="sidebar-logo">
+            <i class="fas fa-store"></i> Tết Admin
+        </a>
+    </div>
+
+    <nav class="sidebar-menu">
+        <a href="/admin" class="menu-item" th:classappend="${currentPage == 'dashboard' ? 'active' : ''}">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Dashboard</span>
+        </a>
+
+        <div class="menu-section">Quản lý</div>
+
+        <a href="/admin/donhang" class="menu-item" th:classappend="${currentPage == 'donhang' ? 'active' : ''}">
+            <i class="fas fa-shopping-bag"></i>
+            <span>Đơn hàng</span>
+        </a>
+
+        <a href="/admin/sanpham" class="menu-item" th:classappend="${currentPage == 'sanpham' ? 'active' : ''}">
+            <i class="fas fa-box"></i>
+            <span>Sản phẩm</span>
+        </a>
+
+        <a href="/admin/taikhoan" class="menu-item" th:classappend="${currentPage == 'taikhoan' ? 'active' : ''}">
+            <i class="fas fa-users"></i>
+            <span>Tài khoản</span>
+        </a>
+
+        <a href="/admin/baiviet" class="menu-item" th:classappend="${currentPage == 'baiviet' ? 'active' : ''}">
+            <i class="fas fa-newspaper"></i>
+            <span>Bài viết</span>
+        </a>
+
+        <div class="menu-section">Báo cáo</div>
+
+        <a href="/admin/thongke" class="menu-item" th:classappend="${currentPage == 'thongke' ? 'active' : ''}">
+            <i class="fas fa-chart-line"></i>
+            <span>Thống kê</span>
+        </a>
+
+        <div class="menu-section">Hệ thống</div>
+
+        <a href="/admin/caidat" class="menu-item">
+            <i class="fas fa-cog"></i>
+            <span>Cài đặt</span>
+        </a>
+
+        <a href="/" class="menu-item" target="_blank">
+            <i class="fas fa-globe"></i>
+            <span>Xem trang web</span>
+        </a>
+
+        <a href="/logout" class="menu-item">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Đăng xuất</span>
+        </a>
+    </nav>
+</aside>
+
+<!-- Main Content -->
+<div class="admin-content">
+    <!-- Header -->
+    <header class="admin-header">
+        <div class="header-left">
+            <button class="btn-toggle-sidebar" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <div class="header-search">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Tìm kiếm...">
+            </div>
+        </div>
+
+        <div class="header-right">
+            <div class="header-notifications">
+                <i class="fas fa-bell fa-lg"></i>
+                <span class="notification-badge">5</span>
+            </div>
+
+            <div class="header-user" data-bs-toggle="dropdown">
+                <div class="user-avatar"
+                     th:text="${#authentication.principal.username != null ? #strings.substring(#authentication.principal.username, 0, 1).toUpperCase() : 'A'}">
+                    A
+                </div>
+                <div>
+                    <div class="fw-bold"
+                         th:text="${#authentication.principal.username != null ? #authentication.principal.username : 'Admin'}">
+                        Admin
+                    </div>
+                    <small class="text-muted">Administrator</small>
+                </div>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Content -->
+    <main class="page-container" layout:fragment="content">
+        <h1>Content goes here</h1>
+    </main>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('adminSidebar');
+        sidebar.classList.toggle('mobile-open');
+    }
+
+    // Close sidebar when click outside on mobile
+    document.addEventListener('click', function (event) {
+        const sidebar = document.getElementById('adminSidebar');
+        const toggleBtn = document.querySelector('.btn-toggle-sidebar');
+
+        if (window.innerWidth <= 768) {
+            if (!sidebar.contains(event.target) && !toggleBtn.contains(event.target)) {
+                sidebar.classList.remove('mobile-open');
+            }
+        }
+    });
+</script>
+
+<th:block layout:fragment="scripts"></th:block>
+</body>
+</html>

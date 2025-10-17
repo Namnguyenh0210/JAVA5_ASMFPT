@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{fragments/layout :: head('Liên Hệ')}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/lienhe.css?v=1}">
+</head>
+
+<body>
+<!-- Header chung -->
+<th:block th:replace="~{fragments/layout :: header}"></th:block>
+
+<!-- Breadcrumb -->
+<th:block th:replace="~{fragments/layout :: breadcrumb(${breadcrumbItems})}"></th:block>
+
+<!-- Contact Section -->
+<section class="contact-section">
+    <div class="container">
+        <div class="contact-header">
+            <h1>📞 Liên Hệ Với Chúng Tôi</h1>
+            <p>Hãy để lại thông tin để chúng tôi có thể hỗ trợ bạn tốt nhất!</p>
+        </div>
+
+        <div class="contact-content">
+            <!-- Contact Info -->
+            <div class="contact-info">
+                <h2>Thông Tin Liên Hệ</h2>
+
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="info-content">
+                        <h3>Địa Chỉ</h3>
+                        <p th:text="${shopAddress}">123 Đường ABC, Quận XYZ, TP.HCM</p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="info-content">
+                        <h3>Điện Thoại</h3>
+                        <p th:text="${shopPhone}">0909 123 456</p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="info-content">
+                        <h3>Email</h3>
+                        <p th:text="${shopEmail}">contact@tetmarket.com</p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="info-content">
+                        <h3>Giờ Làm Việc</h3>
+                        <p th:text="${shopHours}">8:00 - 22:00 hàng ngày</p>
+                    </div>
+                </div>
+
+                <!-- Social Links -->
+                <div class="social-section">
+                    <h3>Kết Nối Với Chúng Tôi</h3>
+                    <div class="social-links">
+                        <a class="social-link facebook" href="#">
+                            <i class="fab fa-facebook"></i>
+                            <span>Facebook</span>
+                        </a>
+                        <a class="social-link instagram" href="#">
+                            <i class="fab fa-instagram"></i>
+                            <span>Instagram</span>
+                        </a>
+                        <a class="social-link youtube" href="#">
+                            <i class="fab fa-youtube"></i>
+                            <span>YouTube</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="contact-form-section">
+                <h2>Gửi Tin Nhắn</h2>
+                <form action="/lienhe/gui" class="contact-form" method="post">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="hoTen">Họ Tên *</label>
+                            <input id="hoTen" name="hoTen" required type="text">
+                        </div>
+                        <div class="form-group">
+                            <label for="soDienThoai">Số Điện Thoại *</label>
+                            <input id="soDienThoai" name="soDienThoai" required type="tel">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input id="email" name="email" required type="email">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="chuDe">Chủ Đề</label>
+                        <select id="chuDe" name="chuDe">
+                            <option value="tuvanthumuaqua">Tư vấn thứ mua quà</option>
+                            <option value="khieunaichatluong">Khiếu nại chất lượng</option>
+                            <option value="hopdongdoitac">Hợp đồng đối tác</option>
+                            <option value="khac">Khác</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="noiDung">Nội Dung *</label>
+                        <textarea id="noiDung" name="noiDung" placeholder="Vui lòng mô tả chi tiết yêu cầu của bạn..."
+                                  required
+                                  rows="6"></textarea>
+                    </div>
+
+                    <button class="submit-btn" type="submit">
+                        <i class="fas fa-paper-plane"></i>
+                        Gửi Tin Nhắn
+                    </button>
+
+                    <!-- TODO: NGƯỜI 3 - Thêm hiển thị thông báo thành công/lỗi -->
+                    <div class="alert alert-success" th:if="${message != null && messageType == 'success'}"
+                         th:text="${message}"></div>
+                    <div class="alert alert-error" th:if="${message != null && messageType == 'error'}"
+                         th:text="${message}"></div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Map Section -->
+        <div class="map-section">
+            <h2>Vị Trí Cửa Hàng</h2>
+            <div class="map-container">
+                <!-- TODO: NGƯỜI 3 - Tích hợp Google Maps API -->
+                <iframe allowfullscreen=""
+                        height="400" loading="lazy"
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.4609289721735!2d106.66829841531493!3d10.776889992319736!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752ed2392c44df%3A0xd2ecb62e0d050fe9!2sFPT%20University%20HCMC!5e0!3m2!1sen!2s!4v1609459200000!5m2!1sen!2s"
+                        style="border:0;" width="100%"></iframe>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="faq-section">
+            <h2>Câu Hỏi Thường Gặp</h2>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <h3 class="faq-question">
+                        <i class="fas fa-question-circle"></i>
+                        Có giao hàng tận nơi không?
+                    </h3>
+                    <div class="faq-answer">
+                        <p>Có, chúng tôi giao hàng tận nơi trong phạm vi TP.HCM và các tỉnh lân cận. Phí giao hàng sẽ
+                            được tính theo khoảng cách.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <h3 class="faq-question">
+                        <i class="fas fa-question-circle"></i>
+                        Thời gian giao hàng là bao lâu?
+                    </h3>
+                    <div class="faq-answer">
+                        <p>Đối với nội thành TP.HCM: 1-2 ngày. Đối với các tỉnh: 2-5 ngày tùy theo địa điểm.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <h3 class="faq-question">
+                        <i class="fas fa-question-circle"></i>
+                        Có thể đổi trả hàng không?
+                    </h3>
+                    <div class="faq-answer">
+                        <p>Có, bạn có thể đổi trả trong vòng 7 ngày nếu sản phẩm chưa sử dụng và còn nguyên bao bì.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <h3 class="faq-question">
+                        <i class="fas fa-question-circle"></i>
+                        Có nhận đặt hàng số lượng lớn không?
+                    </h3>
+                    <div class="faq-answer">
+                        <p>Có, chúng tôi nhận đặt hàng số lượng lớn cho doanh nghiệp với giá ưu đãi. Vui lòng liên hệ
+                            trực tiếp để được tư vấn.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<th:block th:replace="~{fragments/layout :: footer}"></th:block>
+
+<!-- Scripts -->
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+<script>
+    // FAQ toggle
+    document.querySelectorAll('.faq-question').forEach(question => {
+        question.addEventListener('click', () => {
+            const faqItem = question.parentElement;
+            const answer = faqItem.querySelector('.faq-answer');
+
+            // Toggle active class
+            faqItem.classList.toggle('active');
+
+            // Toggle answer visibility
+            if (faqItem.classList.contains('active')) {
+                answer.style.maxHeight = answer.scrollHeight + 'px';
+            } else {
+                answer.style.maxHeight = '0';
+            }
+        });
+    });
+
+    // Form validation
+    const form = document.querySelector('.contact-form');
+    form.addEventListener('submit', function (e) {
+        const requiredFields = form.querySelectorAll('[required]');
+        let isValid = true;
+
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.classList.add('error');
+                isValid = false;
+            } else {
+                field.classList.remove('error');
+            }
+        });
+
+        if (!isValid) {
+            e.preventDefault();
+            alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+        }
+    });
+</script>
+</body>
+
+
+</html>

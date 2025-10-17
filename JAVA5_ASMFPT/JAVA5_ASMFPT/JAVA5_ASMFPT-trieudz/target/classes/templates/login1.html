@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{fragments/layout :: head('Đăng Nhập')}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/register.css}">
+</head>
+
+<body>
+<!-- Floating Background Elements -->
+<div class="floating-elements">
+    <div class="floating-element">🧧</div>
+    <div class="floating-element">🏮</div>
+    <div class="floating-element">🎊</div>
+    <div class="floating-element">✨</div>
+</div>
+
+<!-- Back to Home -->
+<a class="back-home" href="/">
+    <i class="fas fa-home"></i>
+    <span>Về Trang Chủ</span>
+</a>
+
+<!-- Main Login Wrapper -->
+<div class="register-wrapper">
+    <div class="register-container">
+        <div class="row g-0">
+            <!-- Left Panel - Branding -->
+            <div class="col-md-6 col-lg-5">
+                <div class="brand-panel">
+                    <div class="brand-logo">
+                        <span class="logo-icon">🧧</span>
+                        <h1 class="brand-title">Tết Market</h1>
+                        <p class="brand-subtitle">Chào mừng bạn trở lại!</p>
+                    </div>
+
+                    <div class="benefits-grid">
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-gift"></i>
+                            </div>
+                            <div class="benefit-text">
+                                Hàng nghìn sản phẩm Tết chất lượng cao
+                            </div>
+                        </div>
+
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-shipping-fast"></i>
+                            </div>
+                            <div class="benefit-text">
+                                Giao hàng nhanh chóng toàn quốc
+                            </div>
+                        </div>
+
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div class="benefit-text">
+                                Bảo hành chất lượng 100%
+                            </div>
+                        </div>
+
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <div class="benefit-text">
+                                Phục vụ tận tâm, chu đáo
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Login Form -->
+            <div class="col-md-6 col-lg-7">
+                <div class="form-panel">
+                    <div class="form-header">
+                        <h2 class="form-title">Đăng Nhập</h2>
+                        <p class="form-subtitle">Chào mừng bạn trở lại! Vui lòng đăng nhập để tiếp tục mua sắm.</p>
+                    </div>
+
+                    <!-- Alert Messages -->
+                    <div class="alert alert-danger" th:if="${param.error}">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>Email hoặc mật khẩu không chính xác. Vui lòng thử lại!</span>
+                    </div>
+
+                    <div class="alert alert-success" th:if="${param.logout}">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Bạn đã đăng xuất thành công. Hẹn gặp lại!</span>
+                    </div>
+
+                    <div class="alert alert-success" th:if="${successMessage}">
+                        <i class="fas fa-check-circle"></i>
+                        <span th:text="${successMessage}">Đăng ký thành công!</span>
+                    </div>
+
+                    <!-- Login Form -->
+                    <form id="loginForm" method="post" th:action="@{/login}">
+                        <div class="form-floating-enhanced">
+                            <i class="input-icon fas fa-envelope"></i>
+                            <input autocomplete="email"
+                                   class="form-control"
+                                   id="email"
+                                   name="email"
+                                   placeholder=" "
+                                   required
+                                   type="email">
+                            <label class="form-label" for="email">Địa chỉ Email</label>
+                        </div>
+
+                        <div class="form-floating-enhanced">
+                            <i class="input-icon fas fa-lock"></i>
+                            <input autocomplete="current-password"
+                                   class="form-control"
+                                   id="password"
+                                   name="password"
+                                   placeholder=" "
+                                   required
+                                   type="password">
+                            <label class="form-label" for="password">Mật Khẩu</label>
+                            <button aria-label="Toggle password visibility" class="password-toggle"
+                                    onclick="togglePassword('password', 'passwordIcon'); return false;"
+                                    type="button">
+                                <i class="fas fa-eye" id="passwordIcon"></i>
+                            </button>
+                        </div>
+
+                        <div class="form-options">
+                            <div class="checkbox-wrapper">
+                                <input id="remember" name="remember-me" type="checkbox">
+                                <label for="remember">Ghi nhớ đăng nhập</label>
+                            </div>
+                            <a class="forgot-link" href="#">Quên mật khẩu?</a>
+                        </div>
+
+                        <button class="btn-submit" type="submit">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Đăng Nhập</span>
+                        </button>
+                    </form>
+
+                    <div class="divider">
+                        <span>hoặc</span>
+                    </div>
+
+                    <div class="login-section">
+                        <p class="login-text">Bạn chưa có tài khoản?</p>
+                        <a class="login-link" href="/register">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Đăng ký miễn phí ngay</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script>
+    function togglePassword(inputId, iconId) {
+        const passwordField = document.getElementById(inputId);
+        const passwordIcon = document.getElementById(iconId);
+
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            passwordIcon.className = 'fas fa-eye-slash';
+        } else {
+            passwordField.type = 'password';
+            passwordIcon.className = 'fas fa-eye';
+        }
+    }
+</script>
+
+</body>
+</html>

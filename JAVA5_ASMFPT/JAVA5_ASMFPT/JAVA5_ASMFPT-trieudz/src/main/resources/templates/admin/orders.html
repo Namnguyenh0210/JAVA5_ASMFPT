@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý đơn hàng</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="d-flex">
+    <div th:replace="~{admin/fragments/sidebar :: sidebar}"></div>
+
+    <div class="container-fluid p-4">
+        <h2>📦 Quản lý đơn hàng</h2>
+
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>Mã</th>
+                <th>Khách hàng</th>
+                <th>Ngày đặt</th>
+                <th>Tổng tiền</th>
+                <th>Trạng thái</th>
+                <th>Hành động</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="o : ${orders}">
+                <td th:text="${o.id}"></td>
+                <td th:text="${o.customerName}"></td>
+                <td th:text="${o.orderDate}"></td>
+                <td th:text="${o.total}"></td>
+                <td>
+                    <span th:text="${o.status}"></span>
+                </td>
+                <td>
+                    <a th:href="@{'/admin/orders/view/' + ${o.id}}" class="btn btn-info btn-sm">Xem</a>
+                    <a th:href="@{'/admin/orders/update/' + ${o.id}}" class="btn btn-primary btn-sm">Cập nhật</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

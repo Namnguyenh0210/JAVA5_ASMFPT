@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <th:block th:replace="~{fragments/layout :: head('Đăng Ký')}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/register.css}">
+</head>
+
+<body>
+<!-- Floating Background Elements -->
+<div class="floating-elements">
+    <div class="floating-element">🧧</div>
+    <div class="floating-element">🏮</div>
+    <div class="floating-element">🎊</div>
+    <div class="floating-element">✨</div>
+</div>
+
+<!-- Back to Home -->
+<a class="back-home" href="/">
+    <i class="fas fa-home"></i>
+    <span>Về Trang Chủ</span>
+</a>
+
+<!-- Main Register Wrapper -->
+<div class="register-wrapper">
+    <div class="register-container">
+        <div class="row g-0">
+            <!-- Left Panel - Branding -->
+            <div class="col-md-6 col-lg-5">
+                <div class="brand-panel">
+                    <div class="brand-logo">
+                        <span class="logo-icon">🧧</span>
+                        <h1 class="brand-title">Tết Market</h1>
+                        <p class="brand-subtitle">Tham gia cộng đồng mua sắm Tết</p>
+                    </div>
+
+                    <div class="benefits-grid">
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <div class="benefit-text">
+                                Tạo tài khoản miễn phí chỉ trong 1 phút
+                            </div>
+                        </div>
+
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-tags"></i>
+                            </div>
+                            <div class="benefit-text">
+                                Nhận ưu đãi đặc biệt dành cho thành viên mới
+                            </div>
+                        </div>
+
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-truck"></i>
+                            </div>
+                            <div class="benefit-text">
+                                Theo dõi đơn hàng và lịch sử mua sắm
+                            </div>
+                        </div>
+
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div class="benefit-text">
+                                Nhận thông báo về khuyến mãi mới nhất
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Register Form -->
+            <div class="col-md-6 col-lg-7">
+                <div class="form-panel">
+                    <div class="form-header">
+                        <h2 class="form-title">Đăng Ký Tài Khoản</h2>
+                        <p class="form-subtitle">Tạo tài khoản mới để trải nghiệm mua sắm tuyệt vời cùng chúng tôi.</p>
+                    </div>
+
+                    <!-- Alert Messages -->
+                    <div class="alert alert-danger" th:if="${errorMessage}">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span th:text="${errorMessage}">Có lỗi xảy ra!</span>
+                    </div>
+
+                    <!-- Register Form -->
+                    <form id="registerForm" method="post" th:action="@{/register}">
+                        <div class="form-floating-enhanced">
+                            <i class="input-icon fas fa-user"></i>
+                            <input autocomplete="name"
+                                   class="form-control"
+                                   id="hoTen"
+                                   maxlength="100"
+                                   name="hoTen"
+                                   placeholder=" "
+                                   required
+                                   type="text">
+                            <label class="form-label" for="hoTen">Họ và Tên</label>
+                        </div>
+
+                        <div class="form-floating-enhanced">
+                            <i class="input-icon fas fa-envelope"></i>
+                            <input autocomplete="email"
+                                   class="form-control"
+                                   id="email"
+                                   maxlength="100"
+                                   name="email"
+                                   placeholder=" "
+                                   required
+                                   type="email">
+                            <label class="form-label" for="email">Địa chỉ Email</label>
+                        </div>
+
+                        <div class="form-floating-enhanced">
+                            <i class="input-icon fas fa-phone"></i>
+                            <input autocomplete="tel"
+                                   class="form-control"
+                                   id="soDienThoai"
+                                   maxlength="20"
+                                   name="soDienThoai"
+                                   placeholder=" "
+                                   type="tel">
+                            <label class="form-label" for="soDienThoai">Số Điện Thoại</label>
+                        </div>
+
+                        <div class="form-floating-enhanced">
+                            <i class="input-icon fas fa-lock"></i>
+                            <input autocomplete="new-password"
+                                   class="form-control"
+                                   id="matKhau"
+                                   minlength="6"
+                                   name="matKhau"
+                                   oninput="checkPasswordStrength(this.value)"
+                                   placeholder=" "
+                                   required
+                                   type="password">
+                            <label class="form-label" for="matKhau">Mật Khẩu</label>
+                            <button aria-label="Toggle password visibility" class="password-toggle"
+                                    onclick="togglePassword('matKhau', 'passwordIcon1')"
+                                    type="button">
+                                <i class="fas fa-eye" id="passwordIcon1"></i>
+                            </button>
+                            <div class="password-strength">
+                                <div class="password-strength-bar" id="passwordStrengthBar"></div>
+                            </div>
+                            <div class="password-strength-text" id="passwordStrengthText"></div>
+                        </div>
+
+                        <div class="form-floating-enhanced">
+                            <i class="input-icon fas fa-lock"></i>
+                            <input autocomplete="new-password"
+                                   class="form-control"
+                                   id="confirmPassword"
+                                   name="confirmPassword"
+                                   placeholder=" "
+                                   required
+                                   type="password">
+                            <label class="form-label" for="confirmPassword">Xác Nhận Mật Khẩu</label>
+                            <button aria-label="Toggle password visibility" class="password-toggle"
+                                    onclick="togglePassword('confirmPassword', 'passwordIcon2')"
+                                    type="button">
+                                <i class="fas fa-eye" id="passwordIcon2"></i>
+                            </button>
+                        </div>
+
+                        <button class="btn-register" id="registerBtn" type="submit">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Đăng Ký Tài Khoản</span>
+                        </button>
+                    </form>
+
+                    <div class="divider">
+                        <span>hoặc</span>
+                    </div>
+
+                    <div class="login-section">
+                        <p class="login-text">Đã có tài khoản?</p>
+                        <a class="login-link" th:href="@{/login}">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Đăng nhập ngay</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script>
+    // Password toggle functionality
+    function togglePassword(fieldId, iconId) {
+        const passwordField = document.getElementById(fieldId);
+        const passwordIcon = document.getElementById(iconId);
+
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            passwordIcon.className = 'fas fa-eye-slash';
+        } else {
+            passwordField.type = 'password';
+            passwordIcon.className = 'fas fa-eye';
+        }
+    }
+
+    // Password strength checker
+    function checkPasswordStrength(password) {
+        const strengthBar = document.getElementById('passwordStrengthBar');
+        const strengthText = document.getElementById('passwordStrengthText');
+
+        let strength = 0;
+        let text = '';
+        let className = '';
+
+        if (password.length >= 6) strength++;
+        if (password.match(/[a-z]+/)) strength++;
+        if (password.match(/[A-Z]+/)) strength++;
+        if (password.match(/[0-9]+/)) strength++;
+        if (password.match(/[$@#&!]+/)) strength++;
+
+        switch (strength) {
+            case 0:
+            case 1:
+                text = 'Mật khẩu yếu';
+                className = 'password-strength-weak';
+                break;
+            case 2:
+                text = 'Mật khẩu khá';
+                className = 'password-strength-fair';
+                break;
+            case 3:
+            case 4:
+                text = 'Mật khẩu tốt';
+                className = 'password-strength-good';
+                break;
+            case 5:
+                text = 'Mật khẩu mạnh';
+                className = 'password-strength-strong';
+                break;
+        }
+
+        strengthBar.className = 'password-strength-bar ' + className;
+        strengthText.textContent = text;
+        strengthText.className = 'password-strength-text';
+    }
+
+    // Enhanced form interactions
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('registerForm');
+        const registerBtn = document.getElementById('registerBtn');
+        const formElements = document.querySelectorAll('.form-floating-enhanced, .alert, .form-header');
+
+        // Animate elements on load
+        formElements.forEach((element, index) => {
+            element.style.opacity = '0';
+            element.style.transform = 'translateY(30px)';
+            setTimeout(() => {
+                element.style.transition = 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+                element.style.opacity = '1';
+                element.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+
+        // Form submission handling
+        form.addEventListener('submit', function (e) {
+            registerBtn.classList.add('loading');
+            registerBtn.disabled = true;
+
+            // Re-enable button after 10 seconds as fallback
+            setTimeout(() => {
+                registerBtn.classList.remove('loading');
+                registerBtn.disabled = false;
+            }, 10000);
+        });
+
+        // Enhanced input focus effects
+        const inputs = document.querySelectorAll('.form-control');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function () {
+                this.parentElement.style.transform = 'translateY(-2px)';
+            });
+
+            input.addEventListener('blur', function () {
+                this.parentElement.style.transform = 'translateY(0)';
+            });
+
+            // Real-time validation visual feedback
+            input.addEventListener('input', function () {
+                if (this.validity.valid) {
+                    this.classList.remove('error');
+                    this.classList.add('valid');
+                } else {
+                    this.classList.remove('valid');
+                    this.classList.add('error');
+                }
+            });
+        });
+
+        // Password strength checking
+        const passwordField = document.getElementById('matKhau');
+        passwordField.addEventListener('input', function () {
+            checkPasswordStrength(this.value);
+        });
+
+        // Confirm password validation
+        const confirmPasswordField = document.getElementById('confirmPassword');
+        confirmPasswordField.addEventListener('input', function () {
+            const password = passwordField.value;
+            const confirmPassword = this.value;
+
+            if (password !== confirmPassword) {
+                this.setCustomValidity('Mật khẩu xác nhận không khớp');
+                this.classList.add('error');
+                this.classList.remove('valid');
+            } else {
+                this.setCustomValidity('');
+                this.classList.remove('error');
+                this.classList.add('valid');
+            }
+        });
+
+        // Auto-hide alerts after 5 seconds
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            setTimeout(() => {
+                alert.style.transition = 'all 0.5s ease';
+                alert.style.opacity = '0';
+                alert.style.transform = 'translateY(-20px)';
+                setTimeout(() => alert.remove(), 500);
+            }, 5000);
+        });
+    });
+</script>
+
+</body>
+
+</html>

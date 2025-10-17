@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{fragments/layout :: head(${pageTitle})}"></th:block>
+    <th:block layout:fragment="page-css"></th:block>
+</head>
+<body>
+<!-- Header -->
+<th:block th:replace="~{fragments/layout :: header}"></th:block>
+
+<!-- Breadcrumb (optional) -->
+<th:block th:if="${breadcrumbItems}" th:replace="~{fragments/layout :: breadcrumb(${breadcrumbItems})}"></th:block>
+
+<!-- Main Content -->
+<main layout:fragment="content">
+    <!-- Page content will be inserted here -->
+</main>
+
+<!-- Footer -->
+<th:block th:replace="~{fragments/layout :: footer}"></th:block>
+
+<!-- Scripts -->
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+<th:block layout:fragment="page-scripts"></th:block>
+</body>
+</html>
