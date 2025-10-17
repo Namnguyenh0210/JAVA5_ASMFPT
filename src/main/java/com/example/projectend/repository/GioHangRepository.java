@@ -2,8 +2,15 @@ package com.example.projectend.repository;
 
 import com.example.projectend.entity.GioHang;
 import com.example.projectend.entity.GioHangId;
+import com.example.projectend.entity.TaiKhoan;
+import com.example.projectend.entity.SanPham;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * GIO HANG REPOSITORY
@@ -18,8 +25,15 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface GioHangRepository extends JpaRepository<GioHang, GioHangId> {
 
-    // List<GioHang> findByTaiKhoanOrderBySanPham_MaSPAsc(TaiKhoan taiKhoan); // TODO THÀNH VIÊN 3: Lấy danh sách items
-    // Optional<GioHang> findByTaiKhoanAndSanPham(TaiKhoan taiKhoan, SanPham sanPham); // TODO THÀNH VIÊN 3: Tìm 1 item
-    // void deleteByTaiKhoan(TaiKhoan taiKhoan); // TODO THÀNH VIÊN 3: Clear cart sau checkout
-    // long countByTaiKhoan(TaiKhoan taiKhoan); // TODO THÀNH VIÊN 3: Badge số items
+    @Query("SELECT gh FROM GioHang gh " +
+           "JOIN FETCH gh.sanPham sp " +
+           "JOIN FETCH sp.loaiSanPham " +
+           "WHERE gh.taiKhoan = :taiKhoan")
+    List<GioHang> findByTaiKhoan(@Param("taiKhoan") TaiKhoan taiKhoan); // Lấy danh sách items
+
+    Optional<GioHang> findByTaiKhoanAndSanPham(TaiKhoan taiKhoan, SanPham sanPham); // Tìm 1 item
+
+    void deleteByTaiKhoan(TaiKhoan taiKhoan); // Clear cart sau checkout
+
+    long countByTaiKhoan(TaiKhoan taiKhoan); // Badge số items
 }

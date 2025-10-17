@@ -1,15 +1,18 @@
 package com.example.projectend.service;
 
 import com.example.projectend.entity.GioHang;
+import com.example.projectend.entity.GioHangId;
 import com.example.projectend.entity.SanPham;
 import com.example.projectend.entity.TaiKhoan;
 import com.example.projectend.repository.GioHangRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * GIO HANG SERVICE - Quản lý giỏ hàng người dùng
@@ -60,7 +63,7 @@ public class GioHangService {
     // HƯỚNG DẪN: Tạo query trong Repository:
     // List<GioHang> findByTaiKhoan(TaiKhoan tk);
     public List<GioHang> getGioHangByTaiKhoan(TaiKhoan tk) {
-        return Collections.emptyList(); // TODO TV2: Implement
+        return gioHangRepository.findByTaiKhoan(tk);
     }
 
     // =============================
@@ -77,8 +80,20 @@ public class GioHangService {
     //      newItem.setSoLuong(soLuong);
     //      gioHangRepository.save(newItem);
     //    }
+    @Transactional
     public void themSanPham(TaiKhoan tk, SanPham sp, int soLuong) {
-        // TODO TV2: Implement thêm hoặc cộng dồn số lượng
+        Optional<GioHang> existing = gioHangRepository.findByTaiKhoanAndSanPham(tk, sp);
+
+        if (existing.isPresent()) {
+            // Sản phẩm đã có trong giỏ -> cộng dồn số lượng
+            GioHang gioHang = existing.get();
+            gioHang.setSoLuong(gioHang.getSoLuong() + soLuong);
+            gioHangRepository.save(gioHang);
+        } else {
+            // Sản phẩm chưa có -> tạo mới
+            GioHang newItem = new GioHang(tk, sp, soLuong);
+            gioHangRepository.save(newItem);
+        }
     }
 
     // =============================
@@ -91,8 +106,21 @@ public class GioHangService {
     //     item.get().setSoLuong(soLuong);
     //     gioHangRepository.save(item.get());
     // }
+    @Transactional
     public void capNhatSoLuong(TaiKhoan tk, Integer maSP, int soLuong) {
-        // TODO TV2: Implement cập nhật số lượng
+        if (soLuong <= 0) {
+            xoaSanPham(tk, maSP);
+            return;
+        }
+
+        Optional<GioHang> existing = gioHangRepository.findByTaiKhoanAndSanPham(tk,
+                new SanPham() {{ setMaSP(maSP); }});
+
+        if (existing.isPresent()) {
+            GioHang gioHang = existing.get();
+            gioHang.setSoLuong(soLuong);
+            gioHangRepository.save(gioHang);
+        }
     }
 
     // =============================
@@ -100,8 +128,10 @@ public class GioHangService {
     // HƯỚNG DẪN:
     // GioHangId id = new GioHangId(tk.getMaTK(), maSP);
     // gioHangRepository.deleteById(id);
+    @Transactional
     public void xoaSanPham(TaiKhoan tk, Integer maSP) {
-        // TODO TV2: Implement xóa theo composite key
+        GioHangId id = new GioHangId(tk.getMaTK(), maSP);
+        gioHangRepository.deleteById(id);
     }
 
     // =============================
@@ -110,7 +140,7 @@ public class GioHangService {
     // Option 1: return gioHangRepository.countByTaiKhoan(tk);
     // Option 2: return getGioHangByTaiKhoan(tk).size();
     public int countItems(TaiKhoan tk) {
-        return 0; // TODO TV2: Implement
+        return (int) gioHangRepository.countByTaiKhoan(tk);
     }
 
     // =============================
@@ -122,7 +152,13 @@ public class GioHangService {
     // }
     // return total;
     public BigDecimal tinhTongTien(List<GioHang> items) {
-        return BigDecimal.ZERO; // TODO TV2: Implement
+        BigDecimal total = BigDecimal.ZERO;
+        for (GioHang item : items) {
+            BigDecimal itemTotal = item.getSanPham().getGia()
+                    .multiply(BigDecimal.valueOf(item.getSoLuong()));
+            total = total.add(itemTotal);
+        }
+        return total;
     }
 
     // =============================
@@ -131,7 +167,8 @@ public class GioHangService {
     // List<GioHang> items = getGioHangByTaiKhoan(tk);
     // return tinhTongTien(items);
     public BigDecimal tinhTongTienByTaiKhoan(TaiKhoan tk) {
-        return BigDecimal.ZERO; // TODO TV2: Implement
+        List<GioHang> items = getGioHangByTaiKhoan(tk);
+        return tinhTongTien(items);
     }
 
     // =============================
@@ -139,7 +176,8 @@ public class GioHangService {
     // HƯỚNG DẪN:
     // Tạo query trong Repository: void deleteByTaiKhoan(TaiKhoan tk);
     // Hoặc: gioHangRepository.deleteAll(getGioHangByTaiKhoan(tk));
+    @Transactional
     public void clearGioHang(TaiKhoan tk) {
-        // TODO TV2: Implement xóa toàn bộ giỏ
+        gioHangRepository.deleteByTaiKhoan(tk);
     }
 }
