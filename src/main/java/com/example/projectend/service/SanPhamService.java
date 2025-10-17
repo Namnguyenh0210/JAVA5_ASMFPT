@@ -85,26 +85,49 @@ public class SanPhamService {
                                          BigDecimal minPrice, BigDecimal maxPrice,
                                          String sort, Pageable pageable) {
         Specification<SanPham> spec = Specification.where(null);
+
         if (search != null && !search.isEmpty()) {
             spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("tenSP")), "%" + search.toLowerCase() + "%"));
         }
+
         if (loaiId != null) {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("loaiSanPham").get("maLoai"), loaiId));
         }
+
+        // Cải thiện logic tìm kiếm theo khoảng giá
         if (minPrice != null && maxPrice != null) {
-            spec = spec.and((root, query, cb) -> cb.between(root.get("gia"), minPrice, maxPrice));
+            // Nếu có cả min và max, tìm sản phẩm trong khoảng hoặc gần với khoảng giá
+            BigDecimal range = maxPrice.subtract(minPrice);
+            BigDecimal expandedMin = minPrice.subtract(range.multiply(new BigDecimal("0.2"))); // -20%
+            BigDecimal expandedMax = maxPrice.add(range.multiply(new BigDecimal("0.2"))); // +20%
+
+            spec = spec.and((root, query, cb) -> cb.or(
+                // Sản phẩm trong khoảng giá chính xác (ưu tiên)
+                cb.between(root.get("gia"), minPrice, maxPrice),
+                // Sản phẩm gần với khoảng giá (mở rộng 20%)
+                cb.and(
+                    cb.greaterThanOrEqualTo(root.get("gia"), expandedMin),
+                    cb.lessThanOrEqualTo(root.get("gia"), expandedMax)
+                )
+            ));
         } else if (minPrice != null) {
+            // Chỉ có giá tối thiểu
             spec = spec.and((root, query, cb) -> cb.greaterThanOrEqualTo(root.get("gia"), minPrice));
         } else if (maxPrice != null) {
+            // Chỉ có giá tối đa
             spec = spec.and((root, query, cb) -> cb.lessThanOrEqualTo(root.get("gia"), maxPrice));
         }
-        // Sắp xếp
-        Sort sortObj = Sort.by(Sort.Direction.DESC, "ngayTao");
+
+        // Sắp xếp ưu tiên sản phẩm trong khoảng giá chính xác
+        Sort sortObj;
         if ("gia-tang".equals(sort)) {
             sortObj = Sort.by(Sort.Direction.ASC, "gia");
         } else if ("gia-giam".equals(sort)) {
             sortObj = Sort.by(Sort.Direction.DESC, "gia");
+        } else {
+            sortObj = Sort.by(Sort.Direction.DESC, "ngayTao");
         }
+
         Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sortObj);
         return sanPhamRepository.findAll(spec, sortedPageable);
     }

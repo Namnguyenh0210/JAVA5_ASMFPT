@@ -55,20 +55,20 @@
                     <!-- Hiển thị khi có sản phẩm -->
                     <div th:unless="${gioHangItems.isEmpty()}">
                         <div class="table-header">
-                            <div class="header-item header-checkbox">
-                                <input type="checkbox" id="selectAllCheckbox" onclick="toggleSelectAll()">
-                            </div>
-                            <div class="header-item">Sản Phẩm</div>
-                            <div class="header-item">Đơn Giá</div>
-                            <div class="header-item">Số Lượng</div>
-                            <div class="header-item">Thành Tiền</div>
-                            <div class="header-item">Thao Tác</div>
+                            <div class="header-checkbox"></div>
+                            <div class="header-item header-product">Sản Phẩm</div>
+                            <div class="header-item header-center">Đơn Giá</div>
+                            <div class="header-item header-center">Số Lượng</div>
+                            <div class="header-item header-center">Thành Tiền</div>
                         </div>
 
                         <!-- Danh sách sản phẩm -->
                         <div th:each="item : ${gioHangItems}" class="cart-item" th:id="'item-' + ${item.sanPham.maSP}">
                             <div class="item-checkbox">
-                                <input type="checkbox" class="item-select" th:data-id="${item.sanPham.maSP}">
+                                <input type="checkbox" class="item-select" th:data-id="${item.sanPham.maSP}"
+                                       th:data-price="${item.sanPham.gia}"
+                                       th:data-quantity="${item.soLuong}"
+                                       onchange="updateSummary()">
                             </div>
                             <div class="item-product">
                                 <div class="product-image">
@@ -108,38 +108,36 @@
                             <div class="item-total">
                                 <span class="total-price" th:text="${#numbers.formatDecimal(item.sanPham.gia * item.soLuong, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</span>
                             </div>
-                            <div class="item-action">
+                            <div class="item-action" style="display: none;">
                                 <button class="action-btn remove-item" th:onclick="'removeItem(' + ${item.sanPham.maSP} + ')'" title="Xóa sản phẩm">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
                         </div>
+
+                        <!-- Cart Actions - Di chuyển xuống DƯỚI CÙNG -->
+                        <div class="cart-actions">
+                            <div class="left-actions">
+                                <button class="btn btn-all" id="btnAll" onclick="toggleSelectAll()">
+                                    <i class="fas fa-check-square"></i>
+                                    All
+                                </button>
+                                <button class="btn btn-edit" id="btnEdit" onclick="toggleEditMode()">
+                                    <i class="fas fa-edit"></i>
+                                    Edit
+                                </button>
+                            </div>
+                            <div class="right-actions">
+                                <a class="btn btn-secondary" th:href="@{/sanpham}">
+                                    <i class="fas fa-arrow-left"></i>
+                                    Tiếp Tục Mua Sắm
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Cart Actions -->
-                <div class="cart-actions" th:unless="${gioHangItems.isEmpty()}">
-                    <div class="left-actions">
-                        <button class="btn btn-outline" id="btnAll" onclick="toggleSelectAll()">
-                            <i class="fas fa-check-square"></i>
-                            All
-                        </button>
-                        <button class="btn btn-outline" id="btnEdit" onclick="toggleEditMode()">
-                            <i class="fas fa-edit"></i>
-                            Edit
-                        </button>
-                        <button class="btn btn-danger" id="btnDelete" onclick="deleteSelected()">
-                            <i class="fas fa-trash"></i>
-                            Delete
-                        </button>
-                    </div>
-                    <div class="right-actions">
-                        <a class="btn btn-secondary" th:href="@{/sanpham}">
-                            <i class="fas fa-arrow-left"></i>
-                            Tiếp Tục Mua Sắm
-                        </a>
-                    </div>
-                </div>
+                <!-- Xóa cart-actions cũ ở đây - không cần nữa -->
             </div>
 
             <!-- Cart Summary -->
@@ -148,33 +146,32 @@
                     <h3 class="summary-title">Tóm Tắt Đơn Hàng</h3>
                     <div class="summary-content">
                         <div class="summary-row">
-                            <span>Tạm tính (<span th:text="${itemCount}">0</span> sản phẩm):</span>
-                            <span th:text="${gioHangItems.isEmpty() ? '0đ' : #numbers.formatDecimal(tongTien, 0, 'COMMA', 0, 'POINT') + 'đ'}">0đ</span>
+                            <span>Tạm tính (<span id="selectedCount">0</span> sản phẩm):</span>
+                            <span id="subtotalAmount">0đ</span>
                         </div>
 
                         <div class="summary-row">
                             <span>Giảm giá:</span>
-                            <span class="discount" th:text="${gioHangItems.isEmpty() ? '0đ' : '-100.000đ'}">0đ</span>
+                            <span class="discount" id="discountAmount">0đ</span>
                         </div>
 
                         <div class="summary-row">
                             <span>Phí vận chuyển:</span>
                             <span class="shipping-fee">
-                                <span th:if="${!gioHangItems.isEmpty()}" class="free-shipping">MIỄN PHÍ</span>
-                                <span th:if="${gioHangItems.isEmpty()}">0đ</span>
+                                <span class="free-shipping" id="shippingFee">MIỄN PHÍ</span>
                             </span>
                         </div>
 
                         <div class="summary-row total-row">
                             <span>Tổng cộng:</span>
-                            <span class="total-amount" th:text="${gioHangItems.isEmpty() ? '0đ' : #numbers.formatDecimal(tongTien - 100000, 0, 'COMMA', 0, 'POINT') + 'đ'}">0đ</span>
+                            <span class="total-amount" id="totalAmount">0đ</span>
                         </div>
 
                         <!-- Voucher -->
-                        <div class="voucher-section" th:unless="${gioHangItems.isEmpty()}">
+                        <div class="voucher-section">
                             <h4>Mã Giảm Giá</h4>
                             <div class="voucher-input">
-                                <input class="voucher-code" placeholder="Nhập mã giảm giá..." type="text">
+                                <input class="voucher-code" id="voucherCodeInput" placeholder="Nhập mã giảm giá..." type="text">
                                 <button class="voucher-apply-btn" onclick="applyVoucher()">Áp Dụng</button>
                             </div>
                             <div class="available-vouchers">
@@ -188,7 +185,7 @@
                                 <div class="voucher-item">
                                     <div class="voucher-info">
                                         <div class="voucher-code-text">FREESHIP</div>
-                                        <div class="voucher-desc">Miễn phí vận chuyển</div>
+                                        <div class="voucher-desc">Miễn phí vận chuyển &lt;5km</div>
                                     </div>
                                     <button class="voucher-select" onclick="selectVoucher('FREESHIP')">Chọn</button>
                                 </div>
@@ -196,7 +193,7 @@
                         </div>
 
                         <!-- Checkout Button -->
-                        <button class="checkout-btn" onclick="checkout()" th:disabled="${gioHangItems.isEmpty()}">
+                        <button class="checkout-btn" onclick="checkout()" id="checkoutBtn" disabled>
                             <i class="fas fa-credit-card"></i>
                             Tiến Hành Thanh Toán
                         </button>
@@ -229,6 +226,7 @@
 <!-- Scripts -->
 <script th:inline="javascript">
     let editMode = false;
+    let appliedVoucher = null;
 
     // Cập nhật số lượng sản phẩm
     function updateQuantity(sanPhamId, change) {
@@ -249,13 +247,20 @@
         .then(data => {
             if (data.success) {
                 quantityInput.value = newQuantity;
+
+                // Update checkbox data
+                const checkbox = item.querySelector('.item-select');
+                checkbox.dataset.quantity = newQuantity;
+
                 // Cập nhật tổng tiền của item
                 const price = parseFloat(item.querySelector('.current-price').textContent.replace(/[^\d]/g, ''));
                 const total = price * newQuantity;
                 item.querySelector('.total-price').textContent = formatPrice(total);
 
-                // Reload trang để cập nhật tổng
-                location.reload();
+                // Update summary if item is selected
+                if (checkbox.checked) {
+                    updateSummary();
+                }
             } else {
                 alert(data.message || 'Có lỗi xảy ra!');
             }
@@ -289,26 +294,36 @@
 
     // Chọn tất cả
     function toggleSelectAll() {
-        const selectAllCheckbox = document.getElementById('selectAllCheckbox');
         const checkboxes = document.querySelectorAll('.item-select');
-        const isChecked = selectAllCheckbox ? selectAllCheckbox.checked : !checkboxes[0]?.checked;
 
+        if (checkboxes.length === 0) return;
+
+        // Check if all are currently checked
+        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+
+        // Toggle: if all checked, uncheck all; otherwise check all
         checkboxes.forEach(checkbox => {
-            checkbox.checked = isChecked;
+            checkbox.checked = !allChecked;
         });
 
-        if (selectAllCheckbox) {
-            selectAllCheckbox.checked = isChecked;
+        // Update button text
+        const btnAll = document.getElementById('btnAll');
+        if (!allChecked) {
+            btnAll.innerHTML = '<i class="fas fa-check-square"></i> Unselect All';
+        } else {
+            btnAll.innerHTML = '<i class="fas fa-check-square"></i> All';
         }
+
+        updateSummary();
     }
 
     // Chế độ chỉnh sửa
     function toggleEditMode() {
         editMode = !editMode;
-        const checkboxes = document.querySelectorAll('.item-checkbox, .header-checkbox');
+        const actionColumns = document.querySelectorAll('.item-action');
 
-        checkboxes.forEach(checkbox => {
-            checkbox.style.display = editMode ? 'flex' : 'none';
+        actionColumns.forEach(col => {
+            col.style.display = editMode ? 'flex' : 'none';
         });
 
         const btnEdit = document.getElementById('btnEdit');
@@ -318,7 +333,7 @@
         btnEdit.classList.toggle('active', editMode);
     }
 
-    // Xóa các sản phẩm đã chọn
+    // Xóa các sản phẩm đã chọn (chỉ trong edit mode)
     function deleteSelected() {
         const selected = document.querySelectorAll('.item-select:checked');
 
@@ -342,26 +357,84 @@
         }
     }
 
+    // Update summary based on selected items
+    function updateSummary() {
+        const selectedCheckboxes = document.querySelectorAll('.item-select:checked');
+        let subtotal = 0;
+        let count = 0;
+
+        selectedCheckboxes.forEach(checkbox => {
+            const price = parseFloat(checkbox.dataset.price);
+            const quantity = parseInt(checkbox.dataset.quantity);
+            subtotal += price * quantity;
+            count++;
+        });
+
+        // Update count and subtotal
+        document.getElementById('selectedCount').textContent = count;
+        document.getElementById('subtotalAmount').textContent = count > 0 ? formatPrice(subtotal) : '0đ';
+
+        // Calculate discount
+        let discount = 0;
+        if (appliedVoucher && count > 0 && subtotal > 0) {
+            if (appliedVoucher === 'NEWYEAR2025' && subtotal >= 1000000) {
+                discount = subtotal * 0.1;
+            }
+        }
+        document.getElementById('discountAmount').textContent = discount > 0 ? '-' + formatPrice(discount) : '0đ';
+
+        // Shipping fee - always 30,000đ when items are selected, unless FREESHIP voucher applied
+        let shippingFee = 0;
+        if (count > 0) {
+            // Check if FREESHIP voucher is applied
+            if (appliedVoucher === 'FREESHIP') {
+                shippingFee = 0;
+            } else {
+                shippingFee = 30000;
+            }
+        }
+
+        document.getElementById('shippingFee').textContent = count === 0 ? 'MIỄN PHÍ' : (shippingFee === 0 ? 'MIỄN PHÍ' : formatPrice(shippingFee));
+
+        // Calculate total (subtotal - discount + shipping)
+        const total = subtotal - discount + shippingFee;
+        document.getElementById('totalAmount').textContent = count > 0 ? formatPrice(total) : '0đ';
+
+        // Enable/disable checkout button
+        const checkoutBtn = document.getElementById('checkoutBtn');
+        checkoutBtn.disabled = count === 0;
+    }
+
     // Áp dụng voucher
     function selectVoucher(code) {
-        document.querySelector('.voucher-code').value = code;
+        document.getElementById('voucherCodeInput').value = code;
         applyVoucher();
     }
 
     function applyVoucher() {
-        const code = document.querySelector('.voucher-code').value.trim();
-        if (code) {
-            alert(`Áp dụng mã giảm giá "${code}" thành công!`);
-        } else {
-            alert('Vui lòng nhập mã giảm giá!');
+        const code = document.getElementById('voucherCodeInput').value.trim();
+        const selectedCount = document.querySelectorAll('.item-select:checked').length;
+
+        if (selectedCount === 0) {
+            alert('Vui lòng chọn sản phẩm trước khi áp dụng voucher!');
+            return;
         }
+
+        if (!code) {
+            alert('Vui lòng nhập mã giảm giá!');
+            return;
+        }
+
+        appliedVoucher = code;
+        updateSummary();
+        alert(`Áp dụng mã giảm giá "${code}" thành công!`);
     }
 
     // Thanh toán
     function checkout() {
-        const items = document.querySelectorAll('.cart-item');
-        if (items.length === 0) {
-            alert('Giỏ hàng của bạn đang trống!');
+        const selected = document.querySelectorAll('.item-select:checked');
+        if (selected.length === 0) {
+            alert('Vui lòng chọn sản phẩm để thanh toán!');
             return;
         }
         window.location.href = '/checkout';
@@ -372,12 +445,9 @@
         return new Intl.NumberFormat('vi-VN').format(price) + 'đ';
     }
 
-    // Ẩn checkbox khi load trang
+    // Initialize on page load
     window.addEventListener('DOMContentLoaded', () => {
-        const checkboxes = document.querySelectorAll('.item-checkbox, .header-checkbox');
-        checkboxes.forEach(checkbox => {
-            checkbox.style.display = 'none';
-        });
+        updateSummary();
     });
 </script>
 </body>
