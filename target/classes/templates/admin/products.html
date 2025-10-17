@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>Quản lý sản phẩm</title>
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+</head>
+<body>
+	<div class="d-flex">
+		<div th:replace="~{admin/fragments/sidebar :: sidebar}"></div>
+
+		<div class="container-fluid p-4">
+			<h2>🛒 Quản lý sản phẩm</h2>
+
+			<form th:action="@{/admin/products/save}" method="post"
+				enctype="multipart/form-data" class="row g-3 mb-4">
+				<input type="hidden" name="maSP" th:value="${product.maSP}">
+				<div class="col-md-4">
+					<label class="form-label">Tên sản phẩm</label> <input type="text"
+						name="tenSP" class="form-control" th:value="${product.tenSP}">
+				</div>
+				<div class="col-md-4">
+					<label class="form-label">Giá</label> <input type="number"
+						name="gia" class="form-control" th:value="${product.gia}">
+				</div>
+				<div class="col-md-4">
+					<label class="form-label">Ảnh</label> <input type="file"
+						name="hinhAnh" class="form-control">
+				</div>
+				<div class="col-md-4">
+					<label class="form-label">Số lượng</label> <input type="number"
+						name="soLuong" class="form-control" th:value="${product.soLuong}">
+				</div>
+				<div class="col-md-4">
+					<label class="form-label">Danh mục</label> <select
+						name="loaiSanPham" class="form-select">
+						<option th:each="c : ${categories}" th:value="${c.maLoai}"
+							th:text="${c.tenLoai}"></option>
+					</select>
+				</div>
+				<div class="col-12">
+					<button class="btn btn-success">Lưu</button>
+				</div>
+			</form>
+
+
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>Tên</th>
+						<th>Ảnh</th>
+						<th>Giá</th>
+						<th>Số lượng</th>
+						<th>Danh mục</th>
+						<th>Hành động</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="p : ${products}">
+						<td th:text="${p.maSP}"></td>
+						<td th:text="${p.tenSP}"></td>
+						<td><img th:src="@{'/images/' + ${p.hinhAnh}}" width="80"></td>
+						<td th:text="${p.gia}"></td>
+						<td th:text="${p.soLuong}"></td>
+						<td th:text="${p.loaiSanPham.tenLoai}"></td>
+						<td><a th:href="@{'/admin/products/edit/' + ${p.maSP}}"
+							class="btn btn-primary btn-sm">Sửa</a> <a
+							th:href="@{'/admin/products/delete/' + ${p.maSP}}"
+							class="btn btn-danger btn-sm">Xóa</a></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</body>
+</html>

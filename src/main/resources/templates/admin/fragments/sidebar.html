@@ -1,0 +1,43 @@
+<!-- templates/admin/fragments/sidebar.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Sidebar</title>
+</head>
+<body>
+<div th:fragment="sidebar" class="d-flex flex-column flex-shrink-0 p-3 bg-dark text-white"
+     style="width: 250px; height: 100vh;">
+    <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+        <span class="fs-4">🛍️ Admin Panel</span>
+    </a>
+    <hr>
+    <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item">
+            <a th:href="@{/admin}" class="nav-link text-white">📊 Dashboard</a>
+        </li>
+        <li>
+            <a th:href="@{/admin/baiviet}" class="nav-link text-white">📝 Bài viết</a>
+        </li>
+        <li>
+            <a th:href="@{/admin/sanpham}" class="nav-link text-white">🛒 Sản phẩm</a>
+        </li>
+        <li>
+            <a th:href="@{/admin/donhang}" class="nav-link text-white">📦 Đơn hàng</a>
+        </li>
+
+        <!-- Chỉ Admin mới thấy -->
+        <li sec:authorize="hasRole('ADMIN')">
+            <a th:href="@{/admin/taikhoan}" class="nav-link text-white">👤 Tài khoản</a>
+        </li>
+        <li sec:authorize="hasRole('ADMIN')">
+            <a th:href="@{/admin/thongke}" class="nav-link text-white">📈 Thống kê</a>
+        </li>
+    </ul>
+    <hr>
+    <div>
+        <a th:href="@{/logout}" class="text-white text-decoration-none">🚪 Đăng xuất</a>
+    </div>
+</div>
+</body>
+</html>

@@ -1,311 +1,77 @@
+<!-- templates/admin/dashboard.html -->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/admin-base}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title>Dashboard - Admin Panel</title>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<div layout:fragment="content">
-    <div class="page-title">
-        <i class="fas fa-tachometer-alt"></i>
-        <span>Dashboard</span>
-    </div>
+<div class="d-flex">
+    <div th:replace="~{admin/fragments/sidebar :: sidebar}"></div>
 
-    <!-- Stats Cards -->
-    <div class="row mb-4">
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #3498db, #2980b9);">
-                    <i class="fas fa-users"></i>
+    <div class="container-fluid p-4">
+        <h2 class="mb-4">📊 Tổng quan</h2>
+
+        <div class="row g-3">
+            <div class="col-md-3">
+                <div class="card text-bg-primary">
+                    <div class="card-body">
+                        <h5>Sản phẩm</h5>
+                        <p class="fs-4" th:text="${productCount}">0</p>
+                    </div>
                 </div>
-                <div class="stat-value" th:text="${totalUsers != null ? totalUsers : 0}">1,234</div>
-                <div class="stat-label">Tổng người dùng</div>
-                <div class="stat-change positive">
-                    <i class="fas fa-arrow-up"></i> +12% so với tháng trước
+            </div>
+            <div class="col-md-3">
+                <div class="card text-bg-success">
+                    <div class="card-body">
+                        <h5>Đơn hàng</h5>
+                        <p class="fs-4" th:text="${orderCount}">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-bg-warning">
+                    <div class="card-body">
+                        <h5>Bài viết</h5>
+                        <p class="fs-4" th:text="${postCount}">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3" sec:authorize="hasRole('ADMIN')">
+                <div class="card text-bg-danger">
+                    <div class="card-body">
+                        <h5>Doanh thu</h5>
+                        <p class="fs-4" th:text="${revenueToday} + ' ₫'">0 ₫</p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #e74c3c, #c0392b);">
-                    <i class="fas fa-shopping-cart"></i>
-                </div>
-                <div class="stat-value" th:text="${totalOrders != null ? totalOrders : 0}">856</div>
-                <div class="stat-label">Tổng đơn hàng</div>
-                <div class="stat-change positive">
-                    <i class="fas fa-arrow-up"></i> +8% so với tháng trước
-                </div>
-            </div>
-        </div>
+        <hr class="my-4">
 
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #f39c12, #e67e22);">
-                    <i class="fas fa-box"></i>
-                </div>
-                <div class="stat-value" th:text="${totalProducts != null ? totalProducts : 0}">325</div>
-                <div class="stat-label">Tổng sản phẩm</div>
-                <div class="stat-change positive">
-                    <i class="fas fa-arrow-up"></i> +5% so với tháng trước
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6 mb-4">
-            <div class="stat-card">
-                <div class="stat-icon" style="background: linear-gradient(135deg, #27ae60, #229954);">
-                    <i class="fas fa-dollar-sign"></i>
-                </div>
-                <div class="stat-value"
-                     th:text="${doanhThuThang != null ? #numbers.formatDecimal(doanhThuThang / 1000000, 1, 'COMMA', 1, 'POINT') + 'M' : '0M'}">
-                    45.2M
-                </div>
-                <div class="stat-label">Doanh thu tháng này</div>
-                <div class="stat-change positive">
-                    <i class="fas fa-arrow-up"></i> +18% so với tháng trước
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <!-- Revenue Chart -->
-        <div class="col-lg-8 mb-4">
-            <div class="stat-card">
-                <h5 class="mb-4"><i class="fas fa-chart-line"></i> Doanh thu 7 ngày gần nhất</h5>
-                <canvas id="revenueChart" height="100"></canvas>
-            </div>
-        </div>
-
-        <!-- Quick Stats -->
-        <div class="col-lg-4 mb-4">
-            <div class="stat-card">
-                <h5 class="mb-4"><i class="fas fa-info-circle"></i> Thống kê nhanh</h5>
-
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Doanh thu hôm nay</span>
-                        <strong class="text-success"
-                                th:text="${doanhThuHomNay != null ? #numbers.formatDecimal(doanhThuHomNay, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}">2.5M
-                            đ</strong>
-                    </div>
-                    <div class="progress" style="height: 8px;">
-                        <div class="progress-bar bg-success" style="width: 65%"></div>
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Doanh thu tuần</span>
-                        <strong class="text-info"
-                                th:text="${doanhThuTuan != null ? #numbers.formatDecimal(doanhThuTuan, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}">12.8M
-                            đ</strong>
-                    </div>
-                    <div class="progress" style="height: 8px;">
-                        <div class="progress-bar bg-info" style="width: 80%"></div>
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Đơn chờ xử lý</span>
-                        <strong class="text-warning"
-                                th:text="${pendingOrderCount != null ? pendingOrderCount : 0}">15</strong>
-                    </div>
-                    <div class="progress" style="height: 8px;">
-                        <div class="progress-bar bg-warning" style="width: 30%"></div>
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Sản phẩm sắp hết</span>
-                        <strong class="text-danger" th:text="${lowStockCount != null ? lowStockCount : 0}">8</strong>
-                    </div>
-                    <div class="progress" style="height: 8px;">
-                        <div class="progress-bar bg-danger" style="width: 20%"></div>
-                    </div>
-                </div>
-
-                <a href="/admin/thongke" class="btn btn-primary-custom w-100 mt-3">
-                    <i class="fas fa-chart-bar"></i> Xem báo cáo chi tiết
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <!-- Top Products -->
-        <div class="col-lg-6 mb-4">
-            <div class="admin-table">
-                <div class="p-4 border-bottom">
-                    <h5 class="mb-0"><i class="fas fa-fire"></i> Top 5 sản phẩm bán chạy</h5>
-                </div>
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Sản phẩm</th>
-                        <th>Đã bán</th>
-                        <th>Doanh thu</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <!-- TODO THÀNH VIÊN 4: Load top products từ ThongKeService -->
-                    <tr th:if="${topProducts != null and !topProducts.isEmpty()}" th:each="sp, stat : ${topProducts}">
-                        <td th:text="${stat.count}">1</td>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <img th:src="${sp[3]}"
-                                     style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px; margin-right: 10px;"
-                                     onerror="this.src='https://via.placeholder.com/40'">
-                                <span th:text="${sp[1]}">Giỏ quà Tết An Khang</span>
-                            </div>
-                        </td>
-                        <td><span class="badge bg-success" th:text="${sp[2]}">125</span></td>
-                        <td class="fw-bold text-danger"
-                            th:text="${#numbers.formatDecimal(sp[4], 0, 'COMMA', 0, 'POINT')} + ' đ'">62.5M đ
-                        </td>
-                    </tr>
-
-                    <!-- Placeholder -->
-                    <tr th:if="${topProducts == null or topProducts.isEmpty()}"
-                        th:each="i : ${#numbers.sequence(1, 5)}">
-                        <td th:text="${i}">1</td>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <img src="https://via.placeholder.com/40"
-                                     style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px; margin-right: 10px;">
-                                <span>Sản phẩm mẫu</span>
-                            </div>
-                        </td>
-                        <td><span class="badge bg-success">0</span></td>
-                        <td class="fw-bold text-danger">0 đ</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Recent Orders -->
-        <div class="col-lg-6 mb-4">
-            <div class="admin-table">
-                <div class="p-4 border-bottom">
-                    <h5 class="mb-0"><i class="fas fa-clock"></i> Đơn hàng chờ xử lý</h5>
-                </div>
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>Mã ĐH</th>
-                        <th>Khách hàng</th>
-                        <th>Tổng tiền</th>
-                        <th>Hành động</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <!-- TODO THÀNH VIÊN 4: Load pending orders -->
-                    <tr th:if="${pendingOrders != null and !pendingOrders.isEmpty()}" th:each="dh : ${pendingOrders}">
-                        <td><strong th:text="'#DH' + ${dh.maDH}">#DH123</strong></td>
-                        <td th:text="${dh.khachHang.hoTen}">Nguyễn Văn A</td>
-                        <td class="text-danger fw-bold"
-                            th:text="${#numbers.formatDecimal(dh.tongTien, 0, 'COMMA', 0, 'POINT')} + ' đ'">1.5M đ
-                        </td>
-                        <td>
-                            <a th:href="@{/admin/donhang/{id}(id=${dh.maDH})}" class="btn btn-sm btn-primary-custom">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                        </td>
-                    </tr>
-
-                    <!-- Placeholder -->
-                    <tr th:if="${pendingOrders == null or pendingOrders.isEmpty()}"
-                        th:each="i : ${#numbers.sequence(1, 5)}">
-                        <td><strong>#DH000</strong></td>
-                        <td>Khách hàng</td>
-                        <td class="text-danger fw-bold">0 đ</td>
-                        <td>
-                            <button class="btn btn-sm btn-primary-custom">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-                <div class="p-3 text-center border-top">
-                    <a href="/admin/donhang" class="text-decoration-none">
-                        Xem tất cả đơn hàng <i class="fas fa-arrow-right"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
+        <h4>Đơn hàng gần đây</h4>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Mã đơn</th>
+                <th>Khách hàng</th>
+                <th>Ngày</th>
+                <th>Tổng tiền</th>
+                <th>Trạng thái</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="order : ${recentOrders}">
+                <td th:text="${order.id}"></td>
+                <td th:text="${order.customerName}"></td>
+                <td th:text="${order.date}"></td>
+                <td th:text="${order.total}"></td>
+                <td th:text="${order.status}"></td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 </div>
-
-<th:block layout:fragment="scripts">
-    <script>
-        // TODO THÀNH VIÊN 4: Lấy dữ liệu chart từ ThongKeService
-        const chartData = /*[[${chartData}]]*/ null;
-
-        // Default data nếu chưa có
-        const labels = chartData ? chartData.map(d => d[0]) : ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
-        const data = chartData ? chartData.map(d => d[1]) : [2500000, 3200000, 2800000, 4100000, 3900000, 4500000, 5200000];
-
-        const ctx = document.getElementById('revenueChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Doanh thu (VNĐ)',
-                    data: data,
-                    backgroundColor: 'rgba(231, 76, 60, 0.1)',
-                    borderColor: 'rgba(231, 76, 60, 1)',
-                    borderWidth: 3,
-                    tension: 0.4,
-                    fill: true,
-                    pointRadius: 5,
-                    pointHoverRadius: 7,
-                    pointBackgroundColor: 'rgba(231, 76, 60, 1)',
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function (context) {
-                                return 'Doanh thu: ' + context.parsed.y.toLocaleString('vi-VN') + ' đ';
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            callback: function (value) {
-                                return (value / 1000000).toFixed(1) + 'M';
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
-        // Auto refresh every 30 seconds
-        setInterval(() => {
-            location.reload();
-        }, 30000);
-    </script>
-</th:block>
 </body>
 </html>
-

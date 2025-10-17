@@ -49,7 +49,8 @@ public class AdminBaiVietController {
         // Page<BaiViet> baiVietPage = baiVietService.findWithFilters(search, trangThai, pageable);
 
         model.addAttribute("message", "TODO TV4: Danh sách bài viết - Cần thêm phân trang");
-        return "admin/baiviet/list";
+        model.addAttribute("post", new BaiViet()); // 👈 tránh null
+        return "admin/posts";
     }
 
     /**
@@ -58,7 +59,7 @@ public class AdminBaiVietController {
     @GetMapping("/new")
     public String formTaoBaiViet(Model model) {
         model.addAttribute("baiViet", new BaiViet());
-        return "admin/baiviet/form";
+        return "admin/posts";
     }
 
     /**
@@ -79,7 +80,7 @@ public class AdminBaiVietController {
             RedirectAttributes redirectAttributes) {
 
         if (result.hasErrors()) {
-            return "admin/baiviet/form";
+            return "admin/posts";
         }
 
         // TODO TV4:
@@ -102,7 +103,7 @@ public class AdminBaiVietController {
         // model.addAttribute("baiViet", baiViet);
 
         model.addAttribute("message", "TODO TV4: Form sửa bài viết");
-        return "admin/baiviet/form";
+        return "admin/posts";
     }
 
     /**
@@ -116,7 +117,7 @@ public class AdminBaiVietController {
             RedirectAttributes redirectAttributes) {
 
         if (result.hasErrors()) {
-            return "admin/baiviet/form";
+            return "admin/posts";
         }
 
         // TODO TV4: Update bài viết

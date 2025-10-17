@@ -66,7 +66,7 @@ public class AdminDonHangController {
 
         model.addAttribute("currentPage", "donhang");
         model.addAttribute("pageTitle", "Quản lý đơn hàng");
-        return "admin/donhang/list";
+        return "admin/orders";
     }
 
     // =============================
@@ -91,9 +91,9 @@ public class AdminDonHangController {
 
         model.addAttribute("currentPage", "donhang");
         model.addAttribute("pageTitle", "Chi tiết đơn hàng");
-        return "admin/donhang/detail";
+        return "admin/orders";
     }
-
+//
     // =============================
     // TODO TV3: Endpoint 3 - Cập nhật trạng thái
     // HƯỚNG DẪN:

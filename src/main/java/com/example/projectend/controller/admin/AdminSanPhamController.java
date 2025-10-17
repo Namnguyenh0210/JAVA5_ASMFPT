@@ -1,5 +1,7 @@
 package com.example.projectend.controller.admin;
 
+import java.util.ArrayList;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -7,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import com.example.projectend.entity.SanPham;
 
 /**
  * ADMIN SAN PHAM CONTROLLER - Quản lý sản phẩm (Admin)
@@ -66,10 +70,10 @@ public class AdminSanPhamController {
         //
         // List<LoaiSanPham> loaiList = loaiSanPhamService.findAll();
         // model.addAttribute("loaiList", loaiList);
-
+    	model.addAttribute("products", new ArrayList<SanPham>());
         model.addAttribute("currentPage", "sanpham");
         model.addAttribute("pageTitle", "Quản lý sản phẩm");
-        return "admin/sanpham/list";
+        return "admin/products";
     }
 
     // =============================
@@ -84,7 +88,7 @@ public class AdminSanPhamController {
 
         model.addAttribute("currentPage", "sanpham");
         model.addAttribute("pageTitle", "Thêm sản phẩm mới");
-        return "admin/sanpham/form";
+        return "admin/products";
     }
 
     // =============================
@@ -141,7 +145,7 @@ public class AdminSanPhamController {
 
         model.addAttribute("currentPage", "sanpham");
         model.addAttribute("pageTitle", "Sửa sản phẩm");
-        return "admin/sanpham/form";
+        return "admin/products";
     }
 
     // =============================
