@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:fragment="head(title)">
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title th:text="${title} + ' - Tết Market'">Tết Market</title>
 
-    <!-- Common CSS -->
-    <link rel="stylesheet" th:href="@{/css/common.css?v=20251003}">
+    <!-- Common CSS with cache busting - use simple version number -->
+    <link rel="stylesheet" th:href="@{/css/common.css?v=20251017}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
     <!-- Page specific CSS will be inserted here -->
@@ -19,6 +20,11 @@
 
     <!-- Favicon -->
     <link rel="icon" th:href="@{/img/favicon.ico}" type="image/x-icon">
+
+    <!-- Prevent CSS cache -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
 </head>
 
 <body>
@@ -31,23 +37,73 @@
                 <span>🧧 Tết Market</span>
             </a>
 
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+
             <nav class="nav" id="mainNav">
-                <a class="nav-link" href="/" th:classappend="${currentPage == 'home' ? 'active' : ''}">Trang Chủ</a>
-                <a class="nav-link" href="/sanpham" th:classappend="${currentPage == 'sanpham' ? 'active' : ''}">Sản
-                    Phẩm</a>
-                <a class="nav-link" href="/gioithieu" th:classappend="${currentPage == 'gioithieu' ? 'active' : ''}">Giới
-                    Thiệu</a>
-                <a class="nav-link" href="/kienthuc" th:classappend="${currentPage == 'kienthuc' ? 'active' : ''}">Kiến
-                    Thức</a>
-                <a class="nav-link" href="/lienhe" th:classappend="${currentPage == 'lienhe' ? 'active' : ''}">Liên
-                    Hệ</a>
-                <a class="nav-link" href="/giohang" th:classappend="${currentPage == 'giohang' ? 'active' : ''}">
+                <a class="nav-link" href="/" th:classappend="${currentPage == 'home' ? 'active' : ''}">
+                    <i class="fas fa-home"></i> Trang Chủ
+                </a>
+                <a class="nav-link" href="/sanpham" th:classappend="${currentPage == 'sanpham' ? 'active' : ''}">
+                    <i class="fas fa-shopping-bag"></i> Sản Phẩm
+                </a>
+                <a class="nav-link" href="/gioithieu" th:classappend="${currentPage == 'gioithieu' ? 'active' : ''}">
+                    <i class="fas fa-info-circle"></i> Giới Thiệu
+                </a>
+                <a class="nav-link" href="/kienthuc" th:classappend="${currentPage == 'kienthuc' ? 'active' : ''}">
+                    <i class="fas fa-book"></i> Kiến Thức
+                </a>
+                <a class="nav-link" href="/lienhe" th:classappend="${currentPage == 'lienhe' ? 'active' : ''}">
+                    <i class="fas fa-envelope"></i> Liên Hệ
+                </a>
+                <a class="nav-link" href="/giohang" th:classappend="${currentPage == 'giohang' ? 'active' : ''}" style="position: relative;">
                     <i class="fas fa-shopping-cart"></i> Giỏ Hàng
-                    <span class="cart-count" id="cartCount">0</span>
+                    <span class="cart-count" id="cartCount" style="display: none;">0</span>
                 </a>
-                <a class="nav-link" href="/login" th:classappend="${currentPage == 'login' ? 'active' : ''}">
-                    <i class="fas fa-user"></i> Đăng Nhập
+
+                <!-- Hiển thị nút Đăng Nhập khi chưa đăng nhập -->
+                <a sec:authorize="!isAuthenticated()" class="nav-link" href="/login" th:classappend="${currentPage == 'login' ? 'active' : ''}" style="background: rgba(251, 191, 36, 0.2); border: 1px solid var(--primary-gold);">
+                    <i class="fas fa-sign-in-alt"></i> Đăng Nhập
                 </a>
+
+                <!-- Hiển thị Avatar và Dropdown khi đã đăng nhập -->
+                <div sec:authorize="isAuthenticated()" class="user-menu">
+                    <div class="user-avatar" onclick="toggleUserDropdown()">
+                        <img th:src="'https://ui-avatars.com/api/?name=' + ${#authentication.name} + '&background=fbbf24&color=991b1b&bold=true&size=40'"
+                             alt="Avatar" class="avatar-img">
+                        <span class="user-name" sec:authentication="name">User</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <strong sec:authentication="name">user@example.com</strong>
+                            <small sec:authorize="hasRole('ADMIN')">Quản trị viên</small>
+                            <small sec:authorize="hasRole('STAFF')">Nhân viên</small>
+                            <small sec:authorize="hasRole('USER')">Khách hàng</small>
+                        </div>
+                        <a href="/profile" class="dropdown-item">
+                            <i class="fas fa-user-circle"></i> Thông tin cá nhân
+                        </a>
+                        <a href="/profile#orders" class="dropdown-item">
+                            <i class="fas fa-box"></i> Đơn hàng của tôi
+                        </a>
+                        <a href="/profile#addresses" class="dropdown-item">
+                            <i class="fas fa-map-marker-alt"></i> Địa chỉ giao hàng
+                        </a>
+                        <a href="/profile#password" class="dropdown-item">
+                            <i class="fas fa-key"></i> Đổi mật khẩu
+                        </a>
+                        <hr class="dropdown-divider">
+                        <a sec:authorize="hasAnyRole('ADMIN', 'STAFF')" href="/admin" class="dropdown-item">
+                            <i class="fas fa-cog"></i> Quản trị hệ thống
+                        </a>
+                        <hr sec:authorize="hasAnyRole('ADMIN', 'STAFF')" class="dropdown-divider">
+                        <a href="/logout" class="dropdown-item logout">
+                            <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                        </a>
+                    </div>
+                </div>
             </nav>
         </div>
     </div>
@@ -112,8 +168,8 @@
 
 <!-- Common Scripts Fragment -->
 <div th:fragment="scripts">
-    <script th:src="@{/js/common.js?v=20251003}"></script>
-    <script th:src="@{/js/main.js?v=20251003}"></script>
+    <script th:src="@{/js/common.js?v=20251017}"></script>
+    <script th:src="@{/js/main.js?v=20251017}"></script>
 </div>
 </body>
 </html>

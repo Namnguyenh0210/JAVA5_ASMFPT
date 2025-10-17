@@ -75,133 +75,90 @@
 <section class="featured-products">
     <div class="container">
         <h2 class="section-title text-center">Sản Phẩm Nổi Bật</h2>
-        <div class="row">
-            <div class="col-3">
+
+        <!-- Kiểm tra nếu có sản phẩm -->
+        <div th:if="${sanPhamNoiBat != null and !sanPhamNoiBat.isEmpty()}" class="row">
+            <div class="col-3" th:each="sp : ${sanPhamNoiBat}">
                 <div class="product-card">
-                    <div class="product-image">
-                        <img alt="Giỏ quà Tết" src="https://picsum.photos/300/300?random=1">
-                        <div class="product-badge">Hot</div>
-                    </div>
-                    <div class="product-info">
-                        <h4>Giỏ Quà Tết An Khang</h4>
-                        <p class="product-price">500.000đ</p>
-                        <button class="btn btn-primary w-full">
-                            <i class="fas fa-cart-plus"></i> Thêm Vào Giỏ
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="col-3">
-                <div class="product-card">
-                    <div class="product-image">
-                        <img alt="Hộp quà Tết" src="https://picsum.photos/300/300?random=2">
-                        <div class="product-badge sale">Sale</div>
-                    </div>
-                    <div class="product-info">
-                        <h4>Hộp Quà Tết Phát Tài</h4>
-                        <p class="product-price">1.200.000đ</p>
-                        <button class="btn btn-primary w-full">
-                            <i class="fas fa-cart-plus"></i> Thêm Vào Giỏ
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="col-3">
-                <div class="product-card">
-                    <div class="product-image">
-                        <img alt="Mứt Tết" src="https://picsum.photos/300/300?random=3">
-                    </div>
-                    <div class="product-info">
-                        <h4>Mứt Dừa Non 500g</h4>
-                        <p class="product-price">150.000đ</p>
-                        <button class="btn btn-primary w-full">
-                            <i class="fas fa-cart-plus"></i> Thêm Vào Giỏ
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="col-3">
-                <div class="product-card">
-                    <div class="product-image">
-                        <img alt="Bao lì xì" src="https://picsum.photos/300/300?random=4">
-                        <div class="product-badge new">New</div>
-                    </div>
-                    <div class="product-info">
-                        <h4>Bao Lì Xì Vàng <span th:text="${tetYear}">2026</span></h4>
-                        <p class="product-price">30.000đ</p>
-                        <button class="btn btn-primary w-full">
-                            <i class="fas fa-cart-plus"></i> Thêm Vào Giỏ
-                        </button>
-                    </div>
+                    <a th:href="@{/sanpham/{id}(id=${sp.maSP})}" class="product-link">
+                        <div class="product-image">
+                            <img th:alt="${sp.tenSP}"
+                                 th:src="${sp.hinhAnh != null && !sp.hinhAnh.isEmpty()} ? ${sp.hinhAnh} : 'https://picsum.photos/300/300?random=' + ${sp.maSP}"
+                                 onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'">
+                            <div class="product-badge" th:if="${sp.soLuong < 20}">Hot</div>
+                        </div>
+                        <div class="product-info">
+                            <h4 th:text="${sp.tenSP}">Tên sản phẩm</h4>
+                            <p class="product-price" th:text="${#numbers.formatDecimal(sp.gia, 0, 'POINT', 0, 'COMMA')} + 'đ'">0đ</p>
+                            <button class="btn btn-primary w-full" type="button"
+                                    th:onclick="'addToCart(' + ${sp.maSP} + ')'">
+                                <i class="fas fa-cart-plus"></i> Thêm Vào Giỏ
+                            </button>
+                        </div>
+                    </a>
                 </div>
             </div>
         </div>
-        <div class="text-center mt-4">
-            <a class="btn btn-outline btn-lg" href="/sanpham">
-                <i class="fas fa-arrow-right"></i> Xem Tất Cả Sản Phẩm
+
+        <!-- Thông báo nếu không có sản phẩm -->
+        <div th:if="${sanPhamNoiBat == null or sanPhamNoiBat.isEmpty()}" class="text-center">
+            <p>Chưa có sản phẩm nào. Vui lòng import database trước.</p>
+        </div>
+
+        <div class="text-center" style="margin-top: 2rem;">
+            <a class="btn btn-primary btn-lg" href="/sanpham">
+                <i class="fas fa-eye"></i> Xem Tất Cả Sản Phẩm
             </a>
         </div>
     </div>
 </section>
 
-<!-- Testimonials Section -->
-<section class="testimonials">
+<!-- Categories Section -->
+<section class="categories" th:if="${danhMuc != null and !danhMuc.isEmpty()}">
     <div class="container">
-        <h2 class="section-title text-center">Khách Hàng Nói Gì?</h2>
+        <h2 class="section-title text-center">Danh Mục Sản Phẩm</h2>
         <div class="row">
-            <div class="col-4">
-                <div class="testimonial-card">
-                    <div class="testimonial-content">
-                        <div class="stars">⭐⭐⭐⭐⭐</div>
-                        <p>"Sản phẩm chất lượng, giao hàng nhanh. Gia đình tôi rất hài lòng với giỏ quà Tết năm
-                            nay!"</p>
+            <div class="col-3" th:each="dm : ${danhMuc}">
+                <a th:href="@{/sanpham(loai=${dm.maLoai})}" class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-gift"></i>
                     </div>
-                    <div class="testimonial-author">
-                        <strong>Chị Lan Anh</strong>
-                        <span>Khách hàng thân thiết</span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-4">
-                <div class="testimonial-card">
-                    <div class="testimonial-content">
-                        <div class="stars">⭐⭐⭐⭐⭐</div>
-                        <p>"Mứt ngon, đóng gói đẹp. Sẽ tiếp tục ủng hộ shop trong những dịp lễ tết sắp tới."</p>
-                    </div>
-                    <div class="testimonial-author">
-                        <strong>Anh Minh Tuấn</strong>
-                        <span>Đại lý phân phối</span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-4">
-                <div class="testimonial-card">
-                    <div class="testimonial-content">
-                        <div class="stars">⭐⭐⭐⭐⭐</div>
-                        <p>"Dịch vụ tuyệt vời, tư vấn nhiệt tình. Quà Tết năm nay được cả nhà khen ngợi!"</p>
-                    </div>
-                    <div class="testimonial-author">
-                        <strong>Cô Hương</strong>
-                        <span>Khách hàng VIP</span>
-                    </div>
-                </div>
+                    <h3 th:text="${dm.tenLoai}">Danh mục</h3>
+                </a>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Newsletter Section -->
-<section class="newsletter">
+<!-- News Section -->
+<section class="news" th:if="${tinTuc != null and !tinTuc.isEmpty()}">
     <div class="container">
-        <div class="newsletter-content">
-            <h2>Đăng Ký Nhận Thông Tin Ưu Đãi</h2>
-            <p>Nhận ngay mã giảm giá 10% cho đơn hàng đầu tiên!</p>
-            <form class="newsletter-form">
-                <input class="form-control" placeholder="Nhập email của bạn..." required type="email">
-                <button class="btn btn-secondary" type="submit">
-                    <i class="fas fa-paper-plane"></i> Đăng Ký
-                </button>
-            </form>
+        <h2 class="section-title text-center">Tin Tức & Kiến Thức</h2>
+        <div class="row">
+            <div class="col-4" th:each="bv : ${tinTuc}">
+                <div class="news-card">
+                    <a th:href="@{/kienthuc/{id}(id=${bv.maBV})}">
+                        <div class="news-image">
+                            <img th:alt="${bv.tieuDe}"
+                                 th:src="${bv.hinhAnh != null && !bv.hinhAnh.isEmpty()} ? ${bv.hinhAnh} : 'https://picsum.photos/400/250?random=' + ${bv.maBV}"
+                                 onerror="this.src='https://via.placeholder.com/400x250?text=No+Image'">
+                        </div>
+                        <div class="news-info">
+                            <h4 th:text="${bv.tieuDe}">Tiêu đề bài viết</h4>
+                            <p class="news-date">
+                                <i class="far fa-calendar"></i>
+                                <span th:text="${#temporals.format(bv.ngayDang, 'dd/MM/yyyy')}">01/01/2025</span>
+                            </p>
+                            <p class="news-excerpt" th:text="${#strings.abbreviate(bv.noiDung, 100)}">Nội dung tóm tắt...</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="text-center" style="margin-top: 2rem;">
+            <a class="btn btn-secondary btn-lg" href="/kienthuc">
+                <i class="fas fa-book"></i> Xem Thêm Bài Viết
+            </a>
         </div>
     </div>
 </section>
@@ -211,7 +168,14 @@
 
 <!-- Scripts -->
 <th:block th:replace="~{fragments/layout :: scripts}"></th:block>
-<script th:src="@{/js/home.js?v=20251003}"></script>
+
+<script>
+    function addToCart(productId) {
+        // TODO: Implement add to cart functionality
+        alert('Thêm sản phẩm ' + productId + ' vào giỏ hàng');
+    }
+</script>
+
 </body>
 
 </html>

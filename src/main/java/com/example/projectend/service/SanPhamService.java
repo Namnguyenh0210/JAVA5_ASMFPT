@@ -6,7 +6,9 @@ import com.example.projectend.repository.LoaiSanPhamRepository;
 import com.example.projectend.repository.SanPhamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -65,7 +67,7 @@ public class SanPhamService {
     // Option 2: Dùng Pageable:
     //   return sanPhamRepository.findAll(PageRequest.of(0, limit, Sort.by("ngayTao").descending())).getContent();
     public List<SanPham> getFeaturedProducts(int limit) {
-        return List.of(); // TODO TV2: Implement
+        return sanPhamRepository.findTop8ByOrderByNgayTaoDesc();
     }
 
     // =============================
@@ -81,7 +83,25 @@ public class SanPhamService {
     public Page<SanPham> findWithFilters(String search, Integer loaiId,
                                          BigDecimal minPrice, BigDecimal maxPrice,
                                          String sort, Pageable pageable) {
-        return sanPhamRepository.findAll(pageable); // TODO TV2: Implement filter logic
+        // Xử lý sort
+        Sort sortObj = Sort.by(Sort.Direction.DESC, "ngayTao");
+        if (sort != null) {
+            switch (sort) {
+                case "gia-tang":
+                    sortObj = Sort.by(Sort.Direction.ASC, "gia");
+                    break;
+                case "gia-giam":
+                    sortObj = Sort.by(Sort.Direction.DESC, "gia");
+                    break;
+                case "moi":
+                default:
+                    sortObj = Sort.by(Sort.Direction.DESC, "ngayTao");
+                    break;
+            }
+        }
+
+        Pageable pageableWithSort = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sortObj);
+        return sanPhamRepository.findAll(pageableWithSort);
     }
 
     // =============================
@@ -90,7 +110,7 @@ public class SanPhamService {
     // Tạo query trong Repository:
     // List<SanPham> findTop6ByLoaiSanPham_MaLoaiAndMaSPNotOrderByNgayTaoDesc(Integer loaiId, Integer excludeId);
     public List<SanPham> findRelatedProducts(Integer loaiId, Integer excludeId, int limit) {
-        return List.of(); // TODO TV2: Implement
+        return sanPhamRepository.findTop6ByLoaiSanPham_MaLoaiAndMaSPNotOrderByNgayTaoDesc(loaiId, excludeId);
     }
 
     // =============================
@@ -99,7 +119,7 @@ public class SanPhamService {
     // Tạo query trong Repository:
     // List<SanPham> findTop10ByTenSPContainingIgnoreCase(String keyword);
     public List<SanPham> searchByKeyword(String keyword, int limit) {
-        return List.of(); // TODO TV2: Implement
+        return sanPhamRepository.findTop10ByTenSPContainingIgnoreCaseOrderByNgayTaoDesc(keyword);
     }
 
     // =============================
@@ -128,7 +148,7 @@ public class SanPhamService {
     // TODO TV2: Method 5 - Lấy tất cả danh mục (cho menu filter)
     // HƯỚNG DẪN: return loaiSanPhamRepository.findAll();
     public List<LoaiSanPham> getAllCategories() {
-        return loaiSanPhamRepository.findAll(); // TODO TV2: Gỡ comment nếu cần
+        return loaiSanPhamRepository.findAll();
     }
 
     // =============================
@@ -140,7 +160,11 @@ public class SanPhamService {
     //     sanPhamRepository.save(sp.get());
     // }
     public void incrementLuotXem(Integer id) {
-        // TODO TV2: Implement tăng lượt xem
+        Optional<SanPham> sp = sanPhamRepository.findById(id);
+        if (sp.isPresent()) {
+            // TODO: Thêm field luotXem trong entity nếu cần
+            sanPhamRepository.save(sp.get());
+        }
     }
 
     // =============================

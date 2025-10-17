@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layouts/admin-base}">
+<head>
+    <title>Quản lý bài viết - Admin Panel</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="page-title">
+        <i class="fas fa-newspaper"></i>
+        <span>Quản lý bài viết</span>
+    </div>
+
+    <!-- TODO: THÀNH VIÊN 4 - Nút tạo bài viết mới + Bộ lọc -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <form method="get" action="/admin/baiviet" class="row g-2">
+                        <div class="col-md-7">
+                            <input type="text" name="search" class="form-control"
+                                   placeholder="Tìm theo tiêu đề..."
+                                   th:value="${param.search}">
+                        </div>
+                        <div class="col-md-3">
+                            <select name="trangThai" class="form-select">
+                                <option value="">-- Trạng thái --</option>
+                                <option value="true">Đã xuất bản</option>
+                                <option value="false">Nháp</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a href="/admin/baiviet/new" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Tạo bài viết mới
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TODO: THÀNH VIÊN 4 - Danh sách bài viết dạng grid hoặc table -->
+    <div class="row">
+        <!-- TODO TV4: Loop qua danh sách bài viết -->
+        <!-- VÍ DỤ:
+        <div class="col-md-4 mb-4" th:each="bv : ${baiVietPage.content}">
+            <div class="card h-100">
+                <img th:src="@{/img/} + ${bv.hinhAnh}" class="card-img-top" alt="Ảnh bài viết"
+                     style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${bv.tieuDe}"></h5>
+                    <p class="card-text" th:text="${#strings.abbreviate(bv.noiDung, 100)}"></p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted" th:text="${#temporals.format(bv.ngayTao, 'dd/MM/yyyy')}"></small>
+                        <span class="badge"
+                              th:classappend="${bv.trangThai} ? 'bg-success' : 'bg-secondary'"
+                              th:text="${bv.trangThai ? 'Đã xuất bản' : 'Nháp'}"></span>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a th:href="@{/admin/baiviet/{id}/edit(id=${bv.maBV})}"
+                       class="btn btn-sm btn-primary">
+                        <i class="fas fa-edit"></i> Sửa
+                    </a>
+                    <form th:action="@{/admin/baiviet/{id}/toggle-status(id=${bv.maBV})}"
+                          method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-sm btn-warning">
+                            <i class="fas fa-sync"></i> Đổi trạng thái
+                        </button>
+                    </form>
+                    <form th:action="@{/admin/baiviet/{id}/delete(id=${bv.maBV})}"
+                          method="post" style="display:inline;"
+                          onsubmit="return confirm('Xác nhận xóa bài viết?')">
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        -->
+
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-newspaper fa-4x text-muted mb-3"></i>
+                    <h5 class="text-muted">TODO TV4: Hiển thị danh sách bài viết</h5>
+                    <p class="text-muted mb-0">Implement CRUD trong AdminBaiVietController và BaiVietService</p>
+                    <a href="/admin/baiviet/new" class="btn btn-primary mt-3">
+                        <i class="fas fa-plus"></i> Tạo bài viết đầu tiên
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TODO: THÀNH VIÊN 4 - Phân trang -->
+    <nav aria-label="Phân trang" class="mt-4">
+        <p class="text-muted text-center">TODO TV4: Thêm phân trang</p>
+    </nav>
+
+</div>
+</body>
+</html>
+

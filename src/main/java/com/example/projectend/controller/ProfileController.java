@@ -1,8 +1,18 @@
 package com.example.projectend.controller;
 
+import com.example.projectend.entity.DiaChi;
+import com.example.projectend.entity.DonHang;
+import com.example.projectend.entity.TaiKhoan;
+import com.example.projectend.repository.DiaChiRepository;
+import com.example.projectend.repository.DonHangRepository;
+import com.example.projectend.repository.TaiKhoanRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.util.HashMap;
@@ -11,168 +21,181 @@ import java.util.Map;
 
 /**
  * PROFILE CONTROLLER - Quản lý thông tin cá nhân & đơn hàng
- * <p>
- * =============================
- * PHÂN CÔNG: TV2 + TV3 (PHỤ THUỘC!)
- * =============================
- * TODO TV2 - CẦN LÀM:
- * <p>
- * 1. GET /profile - Hiển thị thông tin cá nhân
- * → Load user info, địa chỉ, đơn hàng gần đây
- * → Gọi donHangService.getDonHangByKhachHang() (TV3 làm)
- * <p>
- * 2. POST /profile/update - Cập nhật thông tin
- * → Gọi taiKhoanService.updateProfile() (TV3 làm)
- * <p>
- * 3. POST /profile/change-password - Đổi mật khẩu
- * → Gọi taiKhoanService.changePassword() (TV3 làm)
- * <p>
- * TODO TV3 - CẦN LÀM:
- * <p>
- * 4. GET /profile/orders/{id} - Chi tiết đơn hàng
- * → Load đơn: donHangService.findByIdAndKhachHang()
- * → Load chi tiết: donHangService.getChiTietDonHang()
- * <p>
- * 5. POST /profile/orders/{id}/cancel - Hủy đơn
- * → Gọi donHangService.cancelOrder()
- * <p>
- * THỜI GIAN: TV2 (1 ngày) + TV3 (1 ngày)
- * =============================
  */
 @Controller
 public class ProfileController {
 
-    // TODO TV2: Inject services
-    // @Autowired private TaiKhoanService taiKhoanService;
-    // @Autowired private DiaChiService diaChiService;
+    @Autowired
+    private TaiKhoanRepository taiKhoanRepository;
 
-    // TODO TV3: Inject DonHangService
-    // @Autowired private DonHangService donHangService;
+    @Autowired
+    private DiaChiRepository diaChiRepository;
 
-    // =============================
-    // TODO TV2: Endpoint 1 - Trang profile
+    @Autowired
+    private DonHangRepository donHangRepository;
+
     @GetMapping("/profile")
     public String profile(Model model, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
         model.addAttribute("currentPage", "profile");
 
-        // TODO TV2: Load dữ liệu
-        // HƯỚNG DẪN:
-        // TaiKhoan tk = taiKhoanService.findByEmail(principal.getName());
-        // model.addAttribute("user", tk);
-        //
-        // List<DiaChi> diaChiList = diaChiService.getDiaChiByTaiKhoan(tk);
-        // model.addAttribute("diaChiList", diaChiList);
-        //
-        // // Đơn hàng gần đây (TV3 cần làm method này)
-        // Page<DonHang> donHangPage = donHangService.getDonHangByKhachHang(tk, PageRequest.of(0, 5));
-        // model.addAttribute("donHangPage", donHangPage);
+        // Lấy email của người dùng hiện tại
+        String email = principal.getName();
+
+        // Tìm thông tin tài khoản theo email
+        TaiKhoan taiKhoan = taiKhoanRepository.findByEmail(email).orElse(null);
+        if (taiKhoan == null) {
+            model.addAttribute("error", "Không tìm thấy tài khoản của bạn.");
+            return "error/403";
+        }
+
+        model.addAttribute("taiKhoan", taiKhoan);
+
+        // Tìm danh sách địa chỉ của tài khoản
+        List<DiaChi> diaChiList = diaChiRepository.findAllByMaTK(taiKhoan.getMaTK());
+        model.addAttribute("diaChiList", diaChiList);
+
+        // Lấy danh sách đơn hàng của khách hàng (sắp xếp mới nhất trước)
+        List<DonHang> donHangList = donHangRepository.findByKhachHangOrderByNgayDatDesc(taiKhoan);
+        model.addAttribute("donHangList", donHangList);
 
         Map<String, String> breadcrumbItem = new HashMap<>();
         breadcrumbItem.put("name", "Thông tin cá nhân");
         breadcrumbItem.put("url", null);
         model.addAttribute("breadcrumbItems", List.of(breadcrumbItem));
-        model.addAttribute("pageTitle", "Thông tin cá nhân - Cửa hàng đồ Tết");
+        model.addAttribute("pageTitle", "Thông tin cá nhân - Tết Market");
+
         return "profile";
     }
 
-    // =============================
-    // TODO TV2: Endpoint 2 - Cập nhật thông tin
-    // HƯỚNG DẪN:
-    // @PostMapping("/profile/update")
-    // public String updateProfile(
-    //         @RequestParam String hoTen,
-    //         @RequestParam String soDienThoai,
-    //         Principal principal,
-    //         RedirectAttributes redirectAttributes) {
-    //
-    //     try {
-    //         TaiKhoan tk = taiKhoanService.findByEmail(principal.getName());
-    //         taiKhoanService.updateProfile(tk, hoTen, soDienThoai); // TV3 làm method này
-    //
-    //         redirectAttributes.addFlashAttribute("success", "Cập nhật thành công!");
-    //     } catch (Exception e) {
-    //         redirectAttributes.addFlashAttribute("error", e.getMessage());
-    //     }
-    //
-    //     return "redirect:/profile";
-    // }
+    @PostMapping("/profile/update")
+    public String updateProfile(
+            @RequestParam String hoTen,
+            @RequestParam(required = false) String soDienThoai,
+            Principal principal,
+            RedirectAttributes redirectAttributes) {
 
-    // =============================
-    // TODO TV2: Endpoint 3 - Đổi mật khẩu
-    // HƯỚNG DẪN:
-    // @PostMapping("/profile/change-password")
-    // public String changePassword(
-    //         @RequestParam String currentPassword,
-    //         @RequestParam String newPassword,
-    //         @RequestParam String confirmPassword,
-    //         Principal principal,
-    //         RedirectAttributes redirectAttributes) {
-    //
-    //     try {
-    //         TaiKhoan tk = taiKhoanService.findByEmail(principal.getName());
-    //
-    //         // Validate
-    //         if (!tk.getMatKhau().equals(currentPassword)) {
-    //             redirectAttributes.addFlashAttribute("error", "Mật khẩu hiện tại không đúng");
-    //             return "redirect:/profile";
-    //         }
-    //
-    //         if (!newPassword.equals(confirmPassword)) {
-    //             redirectAttributes.addFlashAttribute("error", "Mật khẩu xác nhận không khớp");
-    //             return "redirect:/profile";
-    //         }
-    //
-    //         taiKhoanService.changePassword(tk, newPassword); // TV3 làm method này
-    //         redirectAttributes.addFlashAttribute("success", "Đổi mật khẩu thành công!");
-    //     } catch (Exception e) {
-    //         redirectAttributes.addFlashAttribute("error", e.getMessage());
-    //     }
-    //
-    //     return "redirect:/profile";
-    // }
+        if (principal == null) {
+            return "redirect:/login";
+        }
 
-    // =============================
-    // TODO TV3: Endpoint 4 - Chi tiết đơn hàng
-    // HƯỚNG DẪN:
-    // @GetMapping("/profile/orders/{id}")
-    // public String orderDetail(@PathVariable Integer id, Model model, Principal principal) {
-    //
-    //     TaiKhoan tk = taiKhoanService.findByEmail(principal.getName());
-    //
-    //     Optional<DonHang> donHangOpt = donHangService.findByIdAndKhachHang(id, tk);
-    //     if (donHangOpt.isEmpty()) {
-    //         return "redirect:/profile?error=notfound";
-    //     }
-    //
-    //     DonHang donHang = donHangOpt.get();
-    //     model.addAttribute("donHang", donHang);
-    //
-    //     List<DonHangChiTiet> chiTiet = donHangService.getChiTietDonHang(donHang);
-    //     model.addAttribute("chiTiet", chiTiet);
-    //
-    //     model.addAttribute("pageTitle", "Chi tiết đơn hàng #" + id);
-    //     return "order-detail";
-    // }
+        try {
+            String email = principal.getName();
+            TaiKhoan taiKhoan = taiKhoanRepository.findByEmail(email).orElse(null);
 
-    // =============================
-    // TODO TV3: Endpoint 5 - Hủy đơn hàng
-    // HƯỚNG DẪN:
-    // @PostMapping("/profile/orders/{id}/cancel")
-    // public String cancelOrder(@PathVariable Integer id, Principal principal, RedirectAttributes redirectAttributes) {
-    //
-    //     try {
-    //         TaiKhoan tk = taiKhoanService.findByEmail(principal.getName());
-    //         boolean success = donHangService.cancelOrder(id, tk);
-    //
-    //         if (success) {
-    //             redirectAttributes.addFlashAttribute("success", "Hủy đơn hàng thành công");
-    //         } else {
-    //             redirectAttributes.addFlashAttribute("error", "Không thể hủy đơn hàng này");
-    //         }
-    //     } catch (Exception e) {
-    //         redirectAttributes.addFlashAttribute("error", e.getMessage());
-    //     }
-    //
-    //     return "redirect:/profile";
-    // }
+            if (taiKhoan == null) {
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy tài khoản!");
+                return "redirect:/profile";
+            }
+
+            // Cập nhật thông tin
+            taiKhoan.setHoTen(hoTen);
+            taiKhoan.setSoDienThoai(soDienThoai);
+            taiKhoanRepository.save(taiKhoan);
+
+            redirectAttributes.addFlashAttribute("success", "Cập nhật thông tin thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
+        }
+
+        return "redirect:/profile";
+    }
+
+    @PostMapping("/profile/change-password")
+    public String changePassword(
+            @RequestParam String oldPassword,
+            @RequestParam String newPassword,
+            @RequestParam String confirmPassword,
+            Principal principal,
+            RedirectAttributes redirectAttributes) {
+
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            String email = principal.getName();
+            TaiKhoan taiKhoan = taiKhoanRepository.findByEmail(email).orElse(null);
+
+            if (taiKhoan == null) {
+                redirectAttributes.addFlashAttribute("errorPassword", "Không tìm thấy tài khoản!");
+                return "redirect:/profile#password";
+            }
+
+            // Kiểm tra mật khẩu cũ
+            if (!taiKhoan.getMatKhau().equals(oldPassword)) {
+                redirectAttributes.addFlashAttribute("errorPassword", "Mật khẩu cũ không đúng!");
+                return "redirect:/profile#password";
+            }
+
+            // Kiểm tra mật khẩu mới
+            if (newPassword.length() < 6) {
+                redirectAttributes.addFlashAttribute("errorPassword", "Mật khẩu mới phải có ít nhất 6 ký tự!");
+                return "redirect:/profile#password";
+            }
+
+            // Kiểm tra xác nhận mật khẩu
+            if (!newPassword.equals(confirmPassword)) {
+                redirectAttributes.addFlashAttribute("errorPassword", "Mật khẩu xác nhận không khớp!");
+                return "redirect:/profile#password";
+            }
+
+            // Cập nhật mật khẩu
+            taiKhoan.setMatKhau(newPassword);
+            taiKhoanRepository.save(taiKhoan);
+
+            redirectAttributes.addFlashAttribute("successPassword", "Đổi mật khẩu thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorPassword", "Có lỗi xảy ra: " + e.getMessage());
+        }
+
+        return "redirect:/profile#password";
+    }
+
+    @PostMapping("/profile/address/add")
+    public String addAddress(
+            @RequestParam String diaChiChiTiet,
+            @RequestParam(required = false, defaultValue = "false") boolean macDinh,
+            Principal principal,
+            RedirectAttributes redirectAttributes) {
+
+        if (principal == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            String email = principal.getName();
+            TaiKhoan taiKhoan = taiKhoanRepository.findByEmail(email).orElse(null);
+
+            if (taiKhoan == null) {
+                redirectAttributes.addFlashAttribute("errorAddress", "Không tìm thấy tài khoản!");
+                return "redirect:/profile#addresses";
+            }
+
+            // Nếu địa chỉ mới là mặc định, bỏ mặc định các địa chỉ khác
+            if (macDinh) {
+                List<DiaChi> danhSachDiaChi = diaChiRepository.findAllByMaTK(taiKhoan.getMaTK());
+                for (DiaChi dc : danhSachDiaChi) {
+                    dc.setMacDinh(false);
+                    diaChiRepository.save(dc);
+                }
+            }
+
+            // Tạo địa chỉ mới
+            DiaChi diaChiMoi = new DiaChi();
+            diaChiMoi.setTaiKhoan(taiKhoan);
+            diaChiMoi.setDiaChiChiTiet(diaChiChiTiet);
+            diaChiMoi.setMacDinh(macDinh);
+            diaChiRepository.save(diaChiMoi);
+
+            redirectAttributes.addFlashAttribute("successAddress", "Thêm địa chỉ thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorAddress", "Có lỗi xảy ra: " + e.getMessage());
+        }
+
+        return "redirect:/profile#addresses";
+    }
 }

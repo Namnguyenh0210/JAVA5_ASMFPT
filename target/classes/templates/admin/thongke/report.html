@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/admin-base}">
+<head>
+    <title>Báo cáo thống kê - Admin Panel</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="page-title">
+        <i class="fas fa-chart-line"></i>
+        <span>Báo cáo thống kê chi tiết</span>
+    </div>
+
+    <!-- Date Range Filter -->
+    <div class="filter-card">
+        <form class="row g-3" th:action="@{/admin/thongke}" method="get">
+            <div class="col-md-3">
+                <label class="form-label">Từ ngày</label>
+                <input type="date" class="form-control" name="startDate" th:value="${param.startDate}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Đến ngày</label>
+                <input type="date" class="form-control" name="endDate" th:value="${param.endDate}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Loại báo cáo</label>
+                <select class="form-select" name="type">
+                    <option value="revenue">Doanh thu</option>
+                    <option value="products">Sản phẩm</option>
+                    <option value="customers">Khách hàng</option>
+                    <option value="orders">Đơn hàng</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">&nbsp;</label>
+                <button type="submit" class="btn btn-primary-custom w-100">
+                    <i class="fas fa-search"></i> Xem báo cáo
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card">
+                <h6 class="text-muted mb-2">Tổng doanh thu</h6>
+                <h3 class="fw-bold text-danger"
+                    th:text="${tongDoanhThu != null ? #numbers.formatDecimal(tongDoanhThu, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}">
+                    0 đ</h3>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card">
+                <h6 class="text-muted mb-2">Tổng đơn hàng</h6>
+                <h3 class="fw-bold text-primary" th:text="${tongDonHang != null ? tongDonHang : 0}">0</h3>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card">
+                <h6 class="text-muted mb-2">Đơn trung bình</h6>
+                <h3 class="fw-bold text-success"
+                    th:text="${donTrungBinh != null ? #numbers.formatDecimal(donTrungBinh, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}">
+                    0 đ</h3>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="stat-card">
+                <h6 class="text-muted mb-2">Tổng khách hàng</h6>
+                <h3 class="fw-bold text-info" th:text="${tongKhachHang != null ? tongKhachHang : 0}">0</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="stat-card">
+                <h5 class="mb-4"><i class="fas fa-chart-bar"></i> Doanh thu theo thời gian</h5>
+                <canvas id="revenueChart" height="80"></canvas>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="stat-card">
+                <h5 class="mb-4"><i class="fas fa-chart-pie"></i> Phân bố đơn hàng</h5>
+                <canvas id="orderStatusChart" height="80"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Products & Customers -->
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="admin-table">
+                <div class="p-4 border-bottom">
+                    <h5 class="mb-0"><i class="fas fa-trophy"></i> Top sản phẩm bán chạy</h5>
+                </div>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Hạng</th>
+                        <th>Sản phẩm</th>
+                        <th>Đã bán</th>
+                        <th>Doanh thu</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${topProducts != null}" th:each="sp, stat : ${topProducts}">
+                        <td>
+                                <span class="badge"
+                                      th:classappend="${stat.count == 1 ? 'bg-warning' : (stat.count == 2 ? 'bg-secondary' : 'bg-info')}"
+                                      th:text="${stat.count}">1</span>
+                        </td>
+                        <td th:text="${sp[1]}">Sản phẩm</td>
+                        <td><strong th:text="${sp[2]}">0</strong></td>
+                        <td class="text-danger fw-bold"
+                            th:text="${#numbers.formatDecimal(sp[4], 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+            <div class="admin-table">
+                <div class="p-4 border-bottom">
+                    <h5 class="mb-0"><i class="fas fa-crown"></i> Top khách hàng VIP</h5>
+                </div>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Hạng</th>
+                        <th>Khách hàng</th>
+                        <th>Số đơn</th>
+                        <th>Tổng chi</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${topCustomers != null}" th:each="kh, stat : ${topCustomers}">
+                        <td>
+                                <span class="badge"
+                                      th:classappend="${stat.count == 1 ? 'bg-warning' : (stat.count == 2 ? 'bg-secondary' : 'bg-info')}"
+                                      th:text="${stat.count}">1</span>
+                        </td>
+                        <td th:text="${kh[1]}">Khách hàng</td>
+                        <td><strong th:text="${kh[2]}">0</strong></td>
+                        <td class="text-danger fw-bold"
+                            th:text="${#numbers.formatDecimal(kh[3], 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Button -->
+    <div class="text-center">
+        <button class="btn btn-success btn-lg" onclick="exportReport()">
+            <i class="fas fa-file-excel"></i> Xuất báo cáo Excel
+        </button>
+        <button class="btn btn-danger btn-lg" onclick="exportPDF()">
+            <i class="fas fa-file-pdf"></i> Xuất báo cáo PDF
+        </button>
+    </div>
+</div>
+
+<th:block layout:fragment="scripts">
+    <script>
+        // Revenue Chart
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(revenueCtx, {
+            type: 'bar',
+            data: {
+                labels: /*[[${chartLabels}]]*/ ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
+                datasets: [{
+                    label: 'Doanh thu (VNĐ)',
+                    data: /*[[${chartData}]]*/ [2500000, 3200000, 2800000, 4100000, 3900000, 4500000, 5200000],
+                    backgroundColor: 'rgba(231, 76, 60, 0.8)',
+                    borderColor: 'rgba(231, 76, 60, 1)',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {display: false}
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function (value) {
+                                return (value / 1000000).toFixed(1) + 'M';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Order Status Pie Chart
+        const statusCtx = document.getElementById('orderStatusChart').getContext('2d');
+        new Chart(statusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Chờ xác nhận', 'Đang giao', 'Hoàn thành', 'Đã hủy'],
+                datasets: [{
+                    data: /*[[${orderStatusData}]]*/ [15, 25, 120, 8],
+                    backgroundColor: [
+                        'rgba(255, 193, 7, 0.8)',
+                        'rgba(52, 152, 219, 0.8)',
+                        'rgba(39, 174, 96, 0.8)',
+                        'rgba(231, 76, 60, 0.8)'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        function exportReport() {
+            const params = new URLSearchParams(window.location.search);
+            window.location.href = '/admin/thongke/export?format=excel&' + params.toString();
+        }
+
+        function exportPDF() {
+            const params = new URLSearchParams(window.location.search);
+            window.location.href = '/admin/thongke/export?format=pdf&' + params.toString();
+        }
+    </script>
+</th:block>
+</body>
+</html>
+

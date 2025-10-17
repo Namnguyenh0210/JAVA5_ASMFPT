@@ -1,8 +1,17 @@
 package com.example.projectend.controller;
 
+import com.example.projectend.entity.BaiViet;
+import com.example.projectend.entity.LoaiSanPham;
+import com.example.projectend.entity.SanPham;
+import com.example.projectend.service.BaiVietService;
+import com.example.projectend.service.SanPhamService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import java.time.LocalDate;
+import java.util.List;
 
 /**
  * HOME CONTROLLER - Trang chủ website bán đồ Tết
@@ -37,27 +46,32 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomeController {
 
-    // TODO TV2: Bước 1 - Inject services (gỡ comment)
-    // @Autowired
-    // private SanPhamService sanPhamService;
-    //
-    // @Autowired
-    // private BaiVietService baiVietService;
+    @Autowired
+    private SanPhamService sanPhamService;
+
+    @Autowired
+    private BaiVietService baiVietService;
 
     @GetMapping("/")
     public String home(Model model) {
         model.addAttribute("currentPage", "home");
 
-        // TODO TV2: Bước 2 - Gỡ comment sau khi implement Service
-        // HƯỚNG DẪN:
-        // List<SanPham> sanPhamNoiBat = sanPhamService.getFeaturedProducts(8);
-        // model.addAttribute("sanPhamNoiBat", sanPhamNoiBat);
-        //
-        // List<BaiViet> tinTuc = baiVietService.getFeaturedPosts(3);
-        // model.addAttribute("tinTuc", tinTuc);
-        //
-        // List<LoaiSanPham> danhMuc = sanPhamService.getAllCategories();
-        // model.addAttribute("danhMuc", danhMuc);
+        // Lấy 8 sản phẩm nổi bật
+        List<SanPham> sanPhamNoiBat = sanPhamService.getFeaturedProducts(8);
+        model.addAttribute("sanPhamNoiBat", sanPhamNoiBat);
+
+        // Lấy 3 bài viết mới nhất
+        List<BaiViet> tinTuc = baiVietService.getFeaturedPosts(3);
+        model.addAttribute("tinTuc", tinTuc);
+
+        // Lấy danh mục (cho menu)
+        List<LoaiSanPham> danhMuc = sanPhamService.getAllCategories();
+        model.addAttribute("danhMuc", danhMuc);
+
+        // Thêm năm hiện tại và năm Tết
+        int currentYear = LocalDate.now().getYear();
+        model.addAttribute("currentYear", currentYear);
+        model.addAttribute("tetYear", currentYear + 1);
 
         model.addAttribute("pageTitle", "Trang chủ - Cửa hàng đồ Tết Nguyên Đán 2025");
         return "home";
