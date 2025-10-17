@@ -1,8 +1,14 @@
 package com.example.projectend.repository;
 
 import com.example.projectend.entity.SanPham;
+import com.example.projectend.entity.LoaiSanPham;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * SAN PHAM REPOSITORY
@@ -17,14 +23,30 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
     // =============================
     // TODO THÀNH VIÊN 3 - Queries FE
     // =============================
-    // List<SanPham> findByLoaiSanPham(LoaiSanPham loai);
-    // List<SanPham> findByTenSPContainingIgnoreCase(String keyword);
-    // List<SanPham> findTop6ByOrderByNgayTaoDesc();
-    // List<SanPham> findByGiaBetween(BigDecimal min, BigDecimal max);
+    // Lấy sản phẩm nổi bật (mới nhất)
+    List<SanPham> findTop8ByOrderByNgayTaoDesc();
+
+    // Tìm kiếm theo tên
+    List<SanPham> findTop10ByTenSPContainingIgnoreCaseOrderByNgayTaoDesc(String keyword);
+
+    // Lấy sản phẩm cùng loại (sản phẩm liên quan)
+    List<SanPham> findTop6ByLoaiSanPham_MaLoaiAndMaSPNotOrderByNgayTaoDesc(Integer loaiId, Integer excludeId);
+
+    // Tìm theo loại sản phẩm
+    List<SanPham> findByLoaiSanPham_MaLoaiOrderByNgayTaoDesc(Integer maLoai);
+
+    // Tìm kiếm theo tên
+    List<SanPham> findByTenSPContainingIgnoreCaseOrderByNgayTaoDesc(String keyword);
+
+    // Lấy sản phẩm theo khoảng giá
+    List<SanPham> findByGiaBetweenOrderByNgayTaoDesc(BigDecimal minPrice, BigDecimal maxPrice);
 
     // =============================
     // TODO THÀNH VIÊN 4 - Queries Admin
     // =============================
-    // List<SanPham> findBySoLuongLessThan(Integer threshold);
-    // List<SanPham> findByNgayTaoBetween(LocalDateTime start, LocalDateTime end);
+    // Cảnh báo tồn kho thấp
+    List<SanPham> findBySoLuongLessThanOrderBySoLuongAsc(Integer threshold);
+
+    // Đếm số lượng sản phẩm
+    long count();
 }

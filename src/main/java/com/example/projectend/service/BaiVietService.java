@@ -61,6 +61,7 @@ public class BaiVietService {
         return baiVietRepository.findByTieuDeContainingIgnoreCaseAndTrangThaiOrderByNgayDangDesc(keyword, "Hiển thị", pageable);
     }
 
+    // Lấy bài viết nổi bật cho trang chủ
     public List<BaiViet> getFeaturedPosts(int limit) {
         return baiVietRepository.findTop3ByTrangThaiOrderByNgayDangDesc("Hiển thị");
     }

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
     <th:block th:replace="~{fragments/layout :: head('Đăng Nhập')}"></th:block>
@@ -20,6 +21,18 @@
     <i class="fas fa-home"></i>
     <span>Về Trang Chủ</span>
 </a>
+
+<!-- Profile or Login Button -->
+<div sec:authorize="isAuthenticated()" class="profile-menu">
+    <div class="profile-circle">
+        <a href="/profile" title="Thông tin cá nhân">
+            <img src="/img/default-avatar.png" alt="Profile" class="profile-avatar">
+        </a>
+    </div>
+</div>
+<div sec:authorize="!isAuthenticated()" class="login-button">
+    <a href="/login" class="btn btn-primary">Đăng nhập</a>
+</div>
 
 <!-- Main Login Wrapper -->
 <div class="register-wrapper">
@@ -99,7 +112,7 @@
                     </div>
 
                     <!-- Login Form -->
-                    <form id="loginForm" method="post" th:action="@{/login}">
+                    <form id="loginForm" method="post" th:action="@{/perform-login}">
                         <div class="form-floating-enhanced">
                             <i class="input-icon fas fa-envelope"></i>
                             <input autocomplete="email"

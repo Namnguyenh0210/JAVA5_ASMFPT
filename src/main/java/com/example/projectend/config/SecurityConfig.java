@@ -34,33 +34,36 @@ public class SecurityConfig {
                         // ==================== PUBLIC ====================
                         .requestMatchers("/", "/home", "/sanpham", "/sanpham/**").permitAll()
                         .requestMatchers("/gioithieu", "/kienthuc", "/lienhe").permitAll()
-                        .requestMatchers("/login", "/register", "/403").permitAll()
+                        .requestMatchers("/login", "/perform-login", "/register", "/403").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/img/**", "/images/**", "/static/**").permitAll()
                         .requestMatchers("/api/public/**").permitAll()
+                        .requestMatchers("/error").permitAll()
 
                         // ==================== GIỎ HÀNG ====================
                         .requestMatchers("/giohang", "/giohang/**").permitAll()
 
                         // ==================== PHÂN QUYỀN ADMIN ====================
                         .requestMatchers("/admin/accounts/**", "/admin/reports/**").hasRole("ADMIN")
-                        .requestMatchers("/admin/**").hasAnyRole("ADMIN", "NHÂNVIÊN")
+                        .requestMatchers("/admin/**").hasAnyRole("ADMIN", "NHANVIEN")
 
                         // ==================== PHẢI ĐĂNG NHẬP ====================
                         .requestMatchers("/checkout", "/checkout/**").authenticated()
                         .requestMatchers("/profile", "/profile/**").authenticated()
 
                         // ==================== CÒN LẠI ====================
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .loginProcessingUrl("/login")
+                        .loginProcessingUrl("/perform-login")
                         .usernameParameter("email")
                         .passwordParameter("password")
+                        .defaultSuccessUrl("/", true)
                         .successHandler((request, response, authentication) -> {
                             // Điều hướng theo vai trò sau khi đăng nhập
                             String role = authentication.getAuthorities().iterator().next().getAuthority();
-                            if (role.equals("ROLE_ADMIN") || role.equals("ROLE_NHÂNVIÊN")) {
+                            System.out.println("=== DEBUG: Login successful with role: " + role);
+                            if (role.equals("ROLE_ADMIN") || role.equals("ROLE_NHANVIEN")) {
                                 response.sendRedirect("/admin");
                             } else {
                                 response.sendRedirect("/");
@@ -77,7 +80,8 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .csrf(csrf -> csrf.disable())
-                .exceptionHandling(ex -> ex.accessDeniedPage("/403"));
+                .exceptionHandling(ex -> ex
+                        .accessDeniedPage("/403"));
 
         return http.build();
     }

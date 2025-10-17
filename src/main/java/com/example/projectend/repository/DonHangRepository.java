@@ -1,12 +1,14 @@
 package com.example.projectend.repository;
 
 import com.example.projectend.entity.DonHang;
+import com.example.projectend.entity.TaiKhoan;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * DON HANG REPOSITORY
@@ -19,7 +21,7 @@ public interface DonHangRepository extends JpaRepository<DonHang, Integer> {
     // TODO: NGƯỜI 3 - FRONTEND (LỊCH SỬ ĐƠN HÀNG KHÁCH)
     // ========================================
     // Lịch sử đơn khách hàng (mới nhất trước)
-    // List<DonHang> findByKhachHangOrderByNgayDatDesc(TaiKhoan khachHang);
+    List<DonHang> findByKhachHangOrderByNgayDatDesc(TaiKhoan khachHang);
     // Lịch sử theo trạng thái (ví dụ: chỉ đơn Hoàn tất / Đang giao)
     // List<DonHang> findByKhachHangAndTrangThaiDonHangOrderByNgayDatDesc(TaiKhoan khachHang, TrangThaiDonHang tt);
 
