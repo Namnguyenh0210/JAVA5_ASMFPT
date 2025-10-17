@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.List;
  * - THÀNH VIÊN 4: Thêm query cảnh báo tồn kho, thống kê hỗ trợ admin
  */
 @Repository
-public interface SanPhamRepository extends JpaRepository<SanPham, Integer> {
+public interface SanPhamRepository extends JpaRepository<SanPham, Integer>, JpaSpecificationExecutor<SanPham> {
 
     // =============================
     // TODO THÀNH VIÊN 3 - Queries FE

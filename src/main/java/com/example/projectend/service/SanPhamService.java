@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -83,25 +84,29 @@ public class SanPhamService {
     public Page<SanPham> findWithFilters(String search, Integer loaiId,
                                          BigDecimal minPrice, BigDecimal maxPrice,
                                          String sort, Pageable pageable) {
-        // Xử lý sort
-        Sort sortObj = Sort.by(Sort.Direction.DESC, "ngayTao");
-        if (sort != null) {
-            switch (sort) {
-                case "gia-tang":
-                    sortObj = Sort.by(Sort.Direction.ASC, "gia");
-                    break;
-                case "gia-giam":
-                    sortObj = Sort.by(Sort.Direction.DESC, "gia");
-                    break;
-                case "moi":
-                default:
-                    sortObj = Sort.by(Sort.Direction.DESC, "ngayTao");
-                    break;
-            }
+        Specification<SanPham> spec = Specification.where(null);
+        if (search != null && !search.isEmpty()) {
+            spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("tenSP")), "%" + search.toLowerCase() + "%"));
         }
-
-        Pageable pageableWithSort = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sortObj);
-        return sanPhamRepository.findAll(pageableWithSort);
+        if (loaiId != null) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("loaiSanPham").get("maLoai"), loaiId));
+        }
+        if (minPrice != null && maxPrice != null) {
+            spec = spec.and((root, query, cb) -> cb.between(root.get("gia"), minPrice, maxPrice));
+        } else if (minPrice != null) {
+            spec = spec.and((root, query, cb) -> cb.greaterThanOrEqualTo(root.get("gia"), minPrice));
+        } else if (maxPrice != null) {
+            spec = spec.and((root, query, cb) -> cb.lessThanOrEqualTo(root.get("gia"), maxPrice));
+        }
+        // Sắp xếp
+        Sort sortObj = Sort.by(Sort.Direction.DESC, "ngayTao");
+        if ("gia-tang".equals(sort)) {
+            sortObj = Sort.by(Sort.Direction.ASC, "gia");
+        } else if ("gia-giam".equals(sort)) {
+            sortObj = Sort.by(Sort.Direction.DESC, "gia");
+        }
+        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sortObj);
+        return sanPhamRepository.findAll(spec, sortedPageable);
     }
 
     // =============================

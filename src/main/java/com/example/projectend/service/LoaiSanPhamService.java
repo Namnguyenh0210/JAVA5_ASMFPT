@@ -5,7 +5,6 @@ import com.example.projectend.repository.LoaiSanPhamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,7 +36,7 @@ public class LoaiSanPhamService {
     // TODO TV2: Method 1 - Lấy tất cả danh mục
     // HƯỚNG DẪN: return repo.findAll();
     public List<LoaiSanPham> findAll() {
-        return Collections.emptyList(); // TODO TV2: Implement
+        return repo.findAll();
     }
 
     // =============================
