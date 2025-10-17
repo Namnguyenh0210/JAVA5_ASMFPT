@@ -43,7 +43,7 @@ public class AdminTaiKhoanController {
 
         // TODO TV3: Implement logic
         model.addAttribute("message", "TODO TV3: Danh sách tài khoản - Thêm phân trang và filter");
-        return "admin/taikhoan/list";
+        return "admin/accounts";
     }
 
     /**
@@ -55,7 +55,7 @@ public class AdminTaiKhoanController {
     @GetMapping("/{id}")
     public String chiTietTaiKhoan(@PathVariable Integer id, Model model) {
         // TODO TV3: Implement
-        return "admin/taikhoan/detail";
+        return "admin/accounts";
     }
 
     /**

@@ -9,13 +9,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * SECURITY CONFIG - ASM WEB BÁN HÀNG TẾT
+ * SECURITY CONFIG - ASM WEB BÁN HÀNG
  * ĐĂNG NHẬP BẰNG EMAIL + MẬT KHẨU PLAIN TEXT
- * <p>
+ *
  * PHÂN QUYỀN:
- * - ROLE_KHÁCHHÀNG: Khách hàng thông thường
- * - ROLE_NHÂNVIÊN: Nhân viên (có quyền admin)
- * - ROLE_ADMIN: Quản trị viên cao nhất
+ * - ROLE_KHÁCHHÀNG: Khách hàng
+ * - ROLE_NHÂNVIÊN: Nhân viên
+ * - ROLE_ADMIN: Quản trị viên
  */
 @Configuration
 @EnableWebSecurity
@@ -23,6 +23,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
+        // ⚠️ Chỉ dùng NoOp cho demo — thực tế nên dùng BCrypt
         return NoOpPasswordEncoder.getInstance();
     }
 
@@ -30,24 +31,25 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        // Public pages - ai cũng vào được
+                        // ==================== PUBLIC ====================
                         .requestMatchers("/", "/home", "/sanpham", "/sanpham/**").permitAll()
                         .requestMatchers("/gioithieu", "/kienthuc", "/lienhe").permitAll()
                         .requestMatchers("/login", "/register", "/403").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/img/**", "/images/**", "/static/**").permitAll()
                         .requestMatchers("/api/public/**").permitAll()
 
-                        // Giỏ hàng - ai cũng vào được (kể cả chưa đăng nhập)
+                        // ==================== GIỎ HÀNG ====================
                         .requestMatchers("/giohang", "/giohang/**").permitAll()
 
-                        // Admin pages - Chỉ ADMIN hoặc NHÂN VIÊN (không dấu cách)
+                        // ==================== PHÂN QUYỀN ADMIN ====================
+                        .requestMatchers("/admin/accounts/**", "/admin/reports/**").hasRole("ADMIN")
                         .requestMatchers("/admin/**").hasAnyRole("ADMIN", "NHÂNVIÊN")
 
-                        // Checkout & Profile - Phải đăng nhập
+                        // ==================== PHẢI ĐĂNG NHẬP ====================
                         .requestMatchers("/checkout", "/checkout/**").authenticated()
                         .requestMatchers("/profile", "/profile/**").authenticated()
 
-                        // Còn lại phải đăng nhập
+                        // ==================== CÒN LẠI ====================
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -56,7 +58,7 @@ public class SecurityConfig {
                         .usernameParameter("email")
                         .passwordParameter("password")
                         .successHandler((request, response, authentication) -> {
-                            // Chuyển hướng theo role
+                            // Điều hướng theo vai trò sau khi đăng nhập
                             String role = authentication.getAuthorities().iterator().next().getAuthority();
                             if (role.equals("ROLE_ADMIN") || role.equals("ROLE_NHÂNVIÊN")) {
                                 response.sendRedirect("/admin");
