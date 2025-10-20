@@ -3,197 +3,297 @@
 
 <head>
     <th:block th:replace="~{fragments/layout :: head('Liên Hệ')}"></th:block>
-    <link rel="stylesheet" th:href="@{/css/lienhe.css?v=1}">
+    <link rel="stylesheet" th:href="@{/css/lienhe.css}">
 </head>
 
 <body>
-<!-- Header chung -->
+<!-- Header -->
 <th:block th:replace="~{fragments/layout :: header}"></th:block>
 
 <!-- Breadcrumb -->
-<th:block th:replace="~{fragments/layout :: breadcrumb(${breadcrumbItems})}"></th:block>
+<th:block th:replace="~{fragments/layout :: breadcrumb(items=${breadcrumbItems})}"></th:block>
 
-<!-- Contact Section -->
-<section class="contact-section">
+<!-- Page Header -->
+<section class="page-header">
     <div class="container">
-        <div class="contact-header">
-            <h1>📞 Liên Hệ Với Chúng Tôi</h1>
-            <p>Hãy để lại thông tin để chúng tôi có thể hỗ trợ bạn tốt nhất!</p>
+        <div class="header-content">
+            <div class="header-icon">📞</div>
+            <h1>Liên Hệ Với Chúng Tôi</h1>
+            <p>Đội ngũ chuyên viên của chúng tôi luôn sẵn sàng hỗ trợ bạn 24/7</p>
         </div>
+    </div>
+</section>
 
-        <div class="contact-content">
-            <!-- Contact Info -->
-            <div class="contact-info">
-                <h2>Thông Tin Liên Hệ</h2>
+<!-- Contact Cards Section -->
+<section class="contact-cards-section">
+    <div class="container">
+        <div class="contact-cards">
+            <div class="contact-card">
+                <div class="card-icon">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <h3>Địa Chỉ Cửa Hàng</h3>
+                <p>123 Quang Trung, Gò Vấp<br>TP. Hồ Chí Minh, Việt Nam</p>
+            </div>
 
-                <div class="info-item">
-                    <div class="info-icon">
-                        <i class="fas fa-map-marker-alt"></i>
-                    </div>
-                    <div class="info-content">
-                        <h3>Địa Chỉ</h3>
-                        <p th:text="${shopAddress}">123 Đường ABC, Quận XYZ, TP.HCM</p>
-                    </div>
+            <div class="contact-card">
+                <div class="card-icon">
+                    <i class="fas fa-phone-alt"></i>
+                </div>
+                <h3>Hotline</h3>
+                <p><a href="tel:0909123456">0909.123.456</a></p>
+                <p class="sub-text">Miễn phí tư vấn</p>
+            </div>
+
+            <div class="contact-card">
+                <div class="card-icon">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <h3>Email</h3>
+                <p><a href="mailto:info@tetmarket.com">info@tetmarket.com</a></p>
+                <p class="sub-text">Phản hồi trong 24h</p>
+            </div>
+
+            <div class="contact-card">
+                <div class="card-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h3>Giờ Làm Việc</h3>
+                <p>Thứ 2 - Chủ Nhật<br>8:00 - 22:00</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main Contact Section -->
+<section class="contact-main-section">
+    <div class="container">
+        <div class="contact-layout">
+            <!-- Contact Form -->
+            <div class="form-wrapper">
+                <div class="form-header">
+                    <h2>Gửi Tin Nhắn Cho Chúng Tôi</h2>
+                    <p>Điền thông tin bên dưới và chúng tôi sẽ liên hệ lại với bạn sớm nhất</p>
                 </div>
 
-                <div class="info-item">
-                    <div class="info-icon">
-                        <i class="fas fa-phone"></i>
+                <form action="/lienhe/gui" class="contact-form" method="post" th:object="${contactForm}">
+                    <!-- Success Message -->
+                    <div class="alert alert-success" th:if="${successMessage != null}">
+                        <i class="fas fa-check-circle"></i>
+                        <span th:text="${successMessage}"></span>
                     </div>
-                    <div class="info-content">
-                        <h3>Điện Thoại</h3>
-                        <p th:text="${shopPhone}">0909 123 456</p>
-                    </div>
-                </div>
 
-                <div class="info-item">
-                    <div class="info-icon">
-                        <i class="fas fa-envelope"></i>
-                    </div>
-                    <div class="info-content">
-                        <h3>Email</h3>
-                        <p th:text="${shopEmail}">contact@tetmarket.com</p>
-                    </div>
-                </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="hoTen">
+                                <i class="fas fa-user"></i>
+                                Họ và Tên *
+                            </label>
+                            <input type="text" id="hoTen" name="hoTen" th:field="*{hoTen}"
+                                   placeholder="Nguyễn Văn A" required>
+                            <span class="error-message" th:if="${#fields.hasErrors('hoTen')}"
+                                  th:errors="*{hoTen}"></span>
+                        </div>
 
-                <div class="info-item">
-                    <div class="info-icon">
-                        <i class="fas fa-clock"></i>
+                        <div class="form-group">
+                            <label for="soDienThoai">
+                                <i class="fas fa-phone"></i>
+                                Số Điện Thoại *
+                            </label>
+                            <input type="tel" id="soDienThoai" name="soDienThoai" th:field="*{soDienThoai}"
+                                   placeholder="0909 123 456" required>
+                            <span class="error-message" th:if="${#fields.hasErrors('soDienThoai')}"
+                                  th:errors="*{soDienThoai}"></span>
+                        </div>
                     </div>
-                    <div class="info-content">
-                        <h3>Giờ Làm Việc</h3>
-                        <p th:text="${shopHours}">8:00 - 22:00 hàng ngày</p>
+
+                    <div class="form-group">
+                        <label for="email">
+                            <i class="fas fa-envelope"></i>
+                            Email *
+                        </label>
+                        <input type="email" id="email" name="email" th:field="*{email}"
+                               placeholder="example@email.com" required>
+                        <span class="error-message" th:if="${#fields.hasErrors('email')}"
+                              th:errors="*{email}"></span>
                     </div>
+
+                    <div class="form-group">
+                        <label for="tieuDe">
+                            <i class="fas fa-tag"></i>
+                            Tiêu Đề *
+                        </label>
+                        <input type="text" id="tieuDe" name="tieuDe" th:field="*{tieuDe}"
+                               placeholder="Tiêu đề liên hệ của bạn" required>
+                        <span class="error-message" th:if="${#fields.hasErrors('tieuDe')}"
+                              th:errors="*{tieuDe}"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="noiDung">
+                            <i class="fas fa-comment-dots"></i>
+                            Nội Dung *
+                        </label>
+                        <textarea id="noiDung" name="noiDung" th:field="*{noiDung}" rows="6"
+                                  placeholder="Vui lòng mô tả chi tiết yêu cầu của bạn..." required></textarea>
+                        <span class="error-message" th:if="${#fields.hasErrors('noiDung')}"
+                              th:errors="*{noiDung}"></span>
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Gửi Tin Nhắn</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Info Sidebar -->
+            <div class="info-sidebar">
+                <!-- Why Choose Us -->
+                <div class="info-box">
+                    <h3>
+                        <i class="fas fa-star"></i>
+                        Vì Sao Chọn Chúng Tôi?
+                    </h3>
+                    <ul class="feature-list">
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <span>Sản phẩm chất lượng cao</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <span>Giao hàng nhanh chóng</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <span>Hỗ trợ 24/7</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-check-circle"></i>
+                            <span>Giá cả cạnh tranh</span>
+                        </li>
+                    </ul>
                 </div>
 
                 <!-- Social Links -->
-                <div class="social-section">
-                    <h3>Kết Nối Với Chúng Tôi</h3>
+                <div class="info-box social-box">
+                    <h3>
+                        <i class="fas fa-share-alt"></i>
+                        Kết Nối Với Chúng Tôi
+                    </h3>
                     <div class="social-links">
-                        <a class="social-link facebook" href="#">
-                            <i class="fab fa-facebook"></i>
+                        <a href="#" class="social-link facebook" aria-label="Facebook">
+                            <i class="fab fa-facebook-f"></i>
                             <span>Facebook</span>
                         </a>
-                        <a class="social-link instagram" href="#">
+                        <a href="#" class="social-link instagram" aria-label="Instagram">
                             <i class="fab fa-instagram"></i>
                             <span>Instagram</span>
                         </a>
-                        <a class="social-link youtube" href="#">
+                        <a href="#" class="social-link youtube" aria-label="YouTube">
                             <i class="fab fa-youtube"></i>
                             <span>YouTube</span>
                         </a>
+                        <a href="#" class="social-link zalo" aria-label="Zalo">
+                            <i class="fas fa-comment"></i>
+                            <span>Zalo</span>
+                        </a>
                     </div>
                 </div>
-            </div>
 
-            <!-- Contact Form -->
-            <div class="contact-form-section">
-                <h2>Gửi Tin Nhắn</h2>
-                <form action="/lienhe/gui" class="contact-form" method="post">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="hoTen">Họ Tên *</label>
-                            <input id="hoTen" name="hoTen" required type="text">
-                        </div>
-                        <div class="form-group">
-                            <label for="soDienThoai">Số Điện Thoại *</label>
-                            <input id="soDienThoai" name="soDienThoai" required type="tel">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="email">Email *</label>
-                        <input id="email" name="email" required type="email">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="chuDe">Chủ Đề</label>
-                        <select id="chuDe" name="chuDe">
-                            <option value="tuvanthumuaqua">Tư vấn thứ mua quà</option>
-                            <option value="khieunaichatluong">Khiếu nại chất lượng</option>
-                            <option value="hopdongdoitac">Hợp đồng đối tác</option>
-                            <option value="khac">Khác</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="noiDung">Nội Dung *</label>
-                        <textarea id="noiDung" name="noiDung" placeholder="Vui lòng mô tả chi tiết yêu cầu của bạn..."
-                                  required
-                                  rows="6"></textarea>
-                    </div>
-
-                    <button class="submit-btn" type="submit">
-                        <i class="fas fa-paper-plane"></i>
-                        Gửi Tin Nhắn
-                    </button>
-
-                    <!-- TODO: NGƯỜI 3 - Thêm hiển thị thông báo thành công/lỗi -->
-                    <div class="alert alert-success" th:if="${message != null && messageType == 'success'}"
-                         th:text="${message}"></div>
-                    <div class="alert alert-error" th:if="${message != null && messageType == 'error'}"
-                         th:text="${message}"></div>
-                </form>
+                <!-- Quick Contact -->
+                <div class="info-box quick-contact">
+                    <h3>
+                        <i class="fas fa-headset"></i>
+                        Liên Hệ Nhanh
+                    </h3>
+                    <p>Cần tư vấn ngay?</p>
+                    <a href="tel:0909123456" class="quick-call-btn">
+                        <i class="fas fa-phone-alt"></i>
+                        Gọi Ngay: 0909.123.456
+                    </a>
+                </div>
             </div>
         </div>
+    </div>
+</section>
 
-        <!-- Map Section -->
-        <div class="map-section">
-            <h2>Vị Trí Cửa Hàng</h2>
-            <div class="map-container">
-                <!-- TODO: NGƯỜI 3 - Tích hợp Google Maps API -->
-                <iframe allowfullscreen=""
-                        height="400" loading="lazy"
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.4609289721735!2d106.66829841531493!3d10.776889992319736!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752ed2392c44df%3A0xd2ecb62e0d050fe9!2sFPT%20University%20HCMC!5e0!3m2!1sen!2s!4v1609459200000!5m2!1sen!2s"
-                        style="border:0;" width="100%"></iframe>
-            </div>
+<!-- Map Section -->
+<section class="map-section">
+    <div class="container">
+        <div class="map-header">
+            <h2>
+                <i class="fas fa-map-marked-alt"></i>
+                Vị Trí Cửa Hàng
+            </h2>
+            <p>Ghé thăm showroom của chúng tôi để trải nghiệm sản phẩm trực tiếp</p>
+        </div>
+        <div class="map-container">
+            <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.4609289721735!2d106.66829841531493!3d10.776889992319736!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752ed2392c44df%3A0xd2ecb62e0d050fe9!2sFPT%20University%20HCMC!5e0!3m2!1sen!2s!4v1609459200000!5m2!1sen!2s"
+                width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="faq-section">
+    <div class="container">
+        <div class="faq-header">
+            <h2>
+                <i class="fas fa-question-circle"></i>
+                Câu Hỏi Thường Gặp
+            </h2>
+            <p>Tìm câu trả lời nhanh cho các thắc mắc phổ biến</p>
         </div>
 
-        <!-- FAQ Section -->
-        <div class="faq-section">
-            <h2>Câu Hỏi Thường Gặp</h2>
-            <div class="faq-list">
-                <div class="faq-item">
-                    <h3 class="faq-question">
-                        <i class="fas fa-question-circle"></i>
-                        Có giao hàng tận nơi không?
-                    </h3>
-                    <div class="faq-answer">
-                        <p>Có, chúng tôi giao hàng tận nơi trong phạm vi TP.HCM và các tỉnh lân cận. Phí giao hàng sẽ
-                            được tính theo khoảng cách.</p>
-                    </div>
+        <div class="faq-grid">
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-shipping-fast"></i>
+                    <h3>Có giao hàng tận nơi không?</h3>
                 </div>
+                <p class="faq-answer">Có, chúng tôi giao hàng tận nơi toàn quốc. Nội thành TP.HCM miễn phí với đơn hàng từ 500k.</p>
+            </div>
 
-                <div class="faq-item">
-                    <h3 class="faq-question">
-                        <i class="fas fa-question-circle"></i>
-                        Thời gian giao hàng là bao lâu?
-                    </h3>
-                    <div class="faq-answer">
-                        <p>Đối với nội thành TP.HCM: 1-2 ngày. Đối với các tỉnh: 2-5 ngày tùy theo địa điểm.</p>
-                    </div>
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-clock"></i>
+                    <h3>Thời gian giao hàng?</h3>
                 </div>
+                <p class="faq-answer">Nội thành: 1-2 ngày. Ngoại thành và tỉnh: 2-5 ngày tùy địa điểm.</p>
+            </div>
 
-                <div class="faq-item">
-                    <h3 class="faq-question">
-                        <i class="fas fa-question-circle"></i>
-                        Có thể đổi trả hàng không?
-                    </h3>
-                    <div class="faq-answer">
-                        <p>Có, bạn có thể đổi trả trong vòng 7 ngày nếu sản phẩm chưa sử dụng và còn nguyên bao bì.</p>
-                    </div>
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-undo-alt"></i>
+                    <h3>Chính sách đổi trả?</h3>
                 </div>
+                <p class="faq-answer">Đổi trả trong 7 ngày nếu sản phẩm lỗi hoặc không đúng mô tả.</p>
+            </div>
 
-                <div class="faq-item">
-                    <h3 class="faq-question">
-                        <i class="fas fa-question-circle"></i>
-                        Có nhận đặt hàng số lượng lớn không?
-                    </h3>
-                    <div class="faq-answer">
-                        <p>Có, chúng tôi nhận đặt hàng số lượng lớn cho doanh nghiệp với giá ưu đãi. Vui lòng liên hệ
-                            trực tiếp để được tư vấn.</p>
-                    </div>
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-credit-card"></i>
+                    <h3>Hình thức thanh toán?</h3>
                 </div>
+                <p class="faq-answer">Chuyển khoản, COD, thẻ tín dụng, ví điện tử (Momo, ZaloPay).</p>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-box-open"></i>
+                    <h3>Đặt hàng số lượng lớn?</h3>
+                </div>
+                <p class="faq-answer">Có ưu đãi đặc biệt cho đơn hàng doanh nghiệp. Liên hệ: 0909.123.456</p>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question">
+                    <i class="fas fa-gift"></i>
+                    <h3>Có dịch vụ gói quà không?</h3>
+                </div>
+                <p class="faq-answer">Miễn phí gói quà sang trọng cho mọi đơn hàng.</p>
             </div>
         </div>
     </div>
@@ -204,46 +304,6 @@
 
 <!-- Scripts -->
 <th:block th:replace="~{fragments/layout :: scripts}"></th:block>
-<script>
-    // FAQ toggle
-    document.querySelectorAll('.faq-question').forEach(question => {
-        question.addEventListener('click', () => {
-            const faqItem = question.parentElement;
-            const answer = faqItem.querySelector('.faq-answer');
-
-            // Toggle active class
-            faqItem.classList.toggle('active');
-
-            // Toggle answer visibility
-            if (faqItem.classList.contains('active')) {
-                answer.style.maxHeight = answer.scrollHeight + 'px';
-            } else {
-                answer.style.maxHeight = '0';
-            }
-        });
-    });
-
-    // Form validation
-    const form = document.querySelector('.contact-form');
-    form.addEventListener('submit', function (e) {
-        const requiredFields = form.querySelectorAll('[required]');
-        let isValid = true;
-
-        requiredFields.forEach(field => {
-            if (!field.value.trim()) {
-                field.classList.add('error');
-                isValid = false;
-            } else {
-                field.classList.remove('error');
-            }
-        });
-
-        if (!isValid) {
-            e.preventDefault();
-            alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
-        }
-    });
-</script>
 </body>
 
 

@@ -94,28 +94,23 @@ public class SanPhamService {
             spec = spec.and((root, query, cb) -> cb.equal(root.get("loaiSanPham").get("maLoai"), loaiId));
         }
 
-        // Cải thiện logic tìm kiếm theo khoảng giá
+        // Accurate price filtering: normalize min/max (swap if needed) and apply strict comparisons
         if (minPrice != null && maxPrice != null) {
-            // Nếu có cả min và max, tìm sản phẩm trong khoảng hoặc gần với khoảng giá
-            BigDecimal range = maxPrice.subtract(minPrice);
-            BigDecimal expandedMin = minPrice.subtract(range.multiply(new BigDecimal("0.2"))); // -20%
-            BigDecimal expandedMax = maxPrice.add(range.multiply(new BigDecimal("0.2"))); // +20%
-
-            spec = spec.and((root, query, cb) -> cb.or(
-                // Sản phẩm trong khoảng giá chính xác (ưu tiên)
-                cb.between(root.get("gia"), minPrice, maxPrice),
-                // Sản phẩm gần với khoảng giá (mở rộng 20%)
-                cb.and(
-                    cb.greaterThanOrEqualTo(root.get("gia"), expandedMin),
-                    cb.lessThanOrEqualTo(root.get("gia"), expandedMax)
-                )
-            ));
+            // Ensure minPrice <= maxPrice
+            if (minPrice.compareTo(maxPrice) > 0) {
+                BigDecimal tmp = minPrice;
+                minPrice = maxPrice;
+                maxPrice = tmp;
+            }
+            final BigDecimal finalMin = minPrice;
+            final BigDecimal finalMax = maxPrice;
+            spec = spec.and((root, query, cb) -> cb.between(root.get("gia"), finalMin, finalMax));
         } else if (minPrice != null) {
-            // Chỉ có giá tối thiểu
-            spec = spec.and((root, query, cb) -> cb.greaterThanOrEqualTo(root.get("gia"), minPrice));
+            final BigDecimal finalMin = minPrice;
+            spec = spec.and((root, query, cb) -> cb.greaterThanOrEqualTo(root.get("gia"), finalMin));
         } else if (maxPrice != null) {
-            // Chỉ có giá tối đa
-            spec = spec.and((root, query, cb) -> cb.lessThanOrEqualTo(root.get("gia"), maxPrice));
+            final BigDecimal finalMax = maxPrice;
+            spec = spec.and((root, query, cb) -> cb.lessThanOrEqualTo(root.get("gia"), finalMax));
         }
 
         // Sắp xếp ưu tiên sản phẩm trong khoảng giá chính xác

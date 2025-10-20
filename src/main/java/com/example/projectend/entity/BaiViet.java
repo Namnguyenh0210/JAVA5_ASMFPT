@@ -112,6 +112,42 @@ public class BaiViet {
         this.trangThai = trangThai;
     }
 
+    /**
+     * Lấy tóm tắt bài viết (200 ký tự đầu tiên từ nội dung)
+     */
+    public String getTomTat() {
+        if (noiDung == null || noiDung.isEmpty()) {
+            return "";
+        }
+        // Remove HTML tags for summary
+        String cleanText = noiDung.replaceAll("<[^>]*>", "");
+        if (cleanText.length() <= 200) {
+            return cleanText;
+        }
+        return cleanText.substring(0, 200) + "...";
+    }
+
+    /**
+     * Alias for backward compatibility
+     */
+    public Integer getId() {
+        return maBV;
+    }
+
+    /**
+     * Get NgayTao for templates that use this field name
+     */
+    public LocalDateTime getNgayTao() {
+        return ngayDang;
+    }
+
+    /**
+     * Get LuotXem - default to 0 for now (can be added to DB later)
+     */
+    public Integer getLuotXem() {
+        return 0; // TODO: Add view count tracking later
+    }
+
     @Override
     public String toString() {
         return "BaiViet{" +

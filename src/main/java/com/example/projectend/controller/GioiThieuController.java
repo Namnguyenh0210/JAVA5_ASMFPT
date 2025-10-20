@@ -4,6 +4,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * GIOI THIEU CONTROLLER - Trang giới thiệu
  * PHÂN CÔNG:
@@ -28,6 +32,14 @@ public class GioiThieuController {
         // TODO THÀNH VIÊN 3: model.addAttribute("mission", "Mang hương vị Tết đến mọi nhà");
         // TODO THÀNH VIÊN 3: model.addAttribute("vision", "Trở thành nền tảng quà Tết hàng đầu");
         model.addAttribute("pageTitle", "Giới thiệu - Cửa hàng đồ Tết");
+
+        // Add breadcrumb data
+        Map<String, String> breadcrumbItem = new HashMap<>();
+        breadcrumbItem.put("name", "Giới Thiệu");
+        breadcrumbItem.put("url", null);
+        List<Map<String, String>> breadcrumbItems = List.of(breadcrumbItem);
+        model.addAttribute("breadcrumbItems", breadcrumbItems);
+
         return "gioithieu";
     }
 

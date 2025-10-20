@@ -9,7 +9,8 @@
 <th:block th:replace="~{fragments/layout :: header}"></th:block>
 
 <!-- Breadcrumb -->
-<th:block th:replace="~{fragments/layout :: breadcrumb(${[{name:'Sản Phẩm'}]})}"></th:block>
+<!-- Use named fragment parameter `items` to avoid Thymeleaf parse errors -->
+<th:block th:replace="~{fragments/layout :: breadcrumb(items=${[{name:'Sản Phẩm'}]})}"></th:block>
 
 <!-- Page Header -->
 <section class="page-header">
@@ -53,7 +54,9 @@
                             Tìm Kiếm
                         </h3>
                         <div class="search-wrapper">
-                            <input class="search-input" name="search" placeholder="Tìm sản phẩm..."
+                            <!-- Accessible label for search input -->
+                            <label for="searchInput" class="sr-only">Tìm kiếm sản phẩm</label>
+                            <input id="searchInput" class="search-input" name="search" placeholder="Tìm sản phẩm..."
                                    type="text" th:value="${search}">
                             <button class="search-btn" type="submit">
                                 <i class="fas fa-search"></i>
@@ -92,27 +95,61 @@
                     <div class="filter-section">
                         <h3 class="filter-title">
                             <i class="fas fa-dollar-sign"></i>
-                            Khoảng Giá (x1000 VNĐ)
+                            Khoảng Giá
                         </h3>
                         <div class="price-range">
                             <div class="price-input-group">
-                                <label class="price-label">Từ</label>
-                                <input class="price-input" id="priceMin" name="minPrice"
-                                       type="number" th:value="${minPrice != null ? minPrice / 1000 : 0}"
-                                       min="0" step="100" placeholder="0">
+                                <div class="price-input-wrapper">
+                                    <label class="price-label" for="priceMin">Từ</label>
+                                    <div class="input-with-currency">
+                                        <input class="price-input" id="priceMin" name="minPrice"
+                                               type="number" th:value="${minPrice}"
+                                               min="0" step="1000" placeholder="0" aria-label="Giá tối thiểu">
+                                        <span class="currency-symbol">₫</span>
+                                    </div>
+                                </div>
+
+                                <div class="price-separator">—</div>
+
+                                <div class="price-input-wrapper">
+                                    <label class="price-label" for="priceMax">Đến</label>
+                                    <div class="input-with-currency">
+                                        <input class="price-input" id="priceMax" name="maxPrice"
+                                               type="number" th:value="${maxPrice}"
+                                               min="0" step="1000" placeholder="1000000" aria-label="Giá tối đa">
+                                        <span class="currency-symbol">₫</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="price-input-group">
-                                <label class="price-label">Đến</label>
-                                <input class="price-input" id="priceMax" name="maxPrice"
-                                       type="number" th:value="${maxPrice != null ? maxPrice / 1000 : 100}"
-                                       min="0" step="100" placeholder="100">
-                            </div>
-                            <button class="price-apply-btn" type="submit" onclick="convertPriceToVND()">Áp Dụng</button>
                         </div>
+
+                        <!-- Quick price presets -->
+                        <div class="price-presets">
+                            <button type="button" class="preset-btn" onclick="setPrice(0, 50000)">
+                                <span class="preset-label">Dưới 50K</span>
+                            </button>
+                            <button type="button" class="preset-btn" onclick="setPrice(50000, 100000)">
+                                <span class="preset-label">50K - 100K</span>
+                            </button>
+                            <button type="button" class="preset-btn" onclick="setPrice(100000, 200000)">
+                                <span class="preset-label">100K - 200K</span>
+                            </button>
+                            <button type="button" class="preset-btn" onclick="setPrice(200000, 500000)">
+                                <span class="preset-label">200K - 500K</span>
+                            </button>
+                            <button type="button" class="preset-btn" onclick="setPrice(500000, null)">
+                                <span class="preset-label">Trên 500K</span>
+                            </button>
+                        </div>
+
+                        <button class="price-apply-btn" type="submit">
+                            <i class="fas fa-filter"></i>
+                            Áp Dụng
+                        </button>
                     </div>
 
                     <button class="clear-filters-btn" type="button" onclick="clearFilters()">
-                        <i class="fas fa-times"></i>
+                        <i class="fas fa-times-circle"></i>
                         Xóa Bộ Lọc
                     </button>
                 </form>
@@ -434,24 +471,36 @@
         }, 3000);
     }
 
-    // Adjust price input value
-    function adjustPrice(inputId, delta) {
-        const input = document.getElementById(inputId);
-        let newValue = parseInt(input.value) + delta;
-        if (newValue < 0) newValue = 0;
-        input.value = newValue;
+    // Set price range for quick preset buttons
+    function setPrice(min, max) {
+        const minInput = document.getElementById('priceMin');
+        const maxInput = document.getElementById('priceMax');
+        if (minInput) minInput.value = min;
+        if (maxInput) maxInput.value = max;
+
+        // Submit form automatically
+        document.getElementById('filterForm').submit();
     }
 
-    // Convert price from thousands to VND before submit
-    function convertPriceToVND() {
-        const priceMin = document.getElementById('priceMin');
-        const priceMax = document.getElementById('priceMax');
+    // Apply quick preset (inputs are in thousands)
+    function applyPresetPrice(minK, maxK) {
+        const minInput = document.getElementById('priceMin');
+        const maxInput = document.getElementById('priceMax');
+        if (minInput) minInput.value = minK;
+        if (maxInput) maxInput.value = maxK;
 
-        // Convert from thousands to actual VND (multiply by 1000)
-        priceMin.value = parseInt(priceMin.value) * 1000;
-        priceMax.value = parseInt(priceMax.value) * 1000;
+        // Update hidden fields too so immediate effect
+        convertPriceToVND();
+    }
 
-        return true; // Allow form submission
+    // Ensure hidden VND fields are synchronized on any form submit (covers Enter key and non-button submits)
+    const filterForm = document.getElementById('filterForm');
+    if (filterForm) {
+        filterForm.addEventListener('submit', function(e) {
+            // Update hidden inputs before letting the form submit
+            convertPriceToVND();
+            // small timeout not necessary; convertPriceToVND is synchronous
+        });
     }
 </script>
 </body>

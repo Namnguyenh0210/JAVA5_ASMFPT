@@ -1,35 +1,411 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <title th:text="${pageTitle}">Giới thiệu - Cửa hàng đồ Tết</title>
+    <th:block th:replace="~{fragments/layout :: head('Giới Thiệu')}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/gioithieu.css}">
 </head>
 <body>
-<header>
-    <nav>
-        <a th:href="@{/}">← Về trang chủ</a> |
-        <a th:href="@{/sanpham}">Sản phẩm</a> |
-        <a th:href="@{/giohang}">Giỏ hàng</a> |
-        <a th:href="@{/login}">Đăng nhập</a>
-    </nav>
-</header>
+<!-- Header -->
+<th:block th:replace="~{fragments/layout :: header}"></th:block>
 
-<main>
-    <h1>Giới Thiệu Cửa Hàng</h1>
-    <p><strong>TODO: NGƯỜI 3</strong> - Hoàn thiện trang giới thiệu</p>
+<!-- Breadcrumb -->
+<th:block th:replace="~{fragments/layout :: breadcrumb(items=${breadcrumbItems})}"></th:block>
 
-    <div class="temp-content">
-        <h3>Về Chúng Tôi</h3>
-        <p>Cửa hàng đồ Tết uy tín, chuyên cung cấp:</p>
-        <ul>
-            <li>🧺 Giỏ quà Tết cao cấp</li>
-            <li>🎁 Hộp quà sang trọng</li>
-            <li>🍯 Mứt bánh kẹo đặc sản</li>
-            <li>💰 Bao lì xì may mắn</li>
-        </ul>
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="header-icon">🧧</div>
+            <h1>Về Tết Market</h1>
+            <p>Mang Tết đến mọi nhà - Lan tỏa niềm vui và may mắn</p>
+        </div>
     </div>
-</main>
+</section>
+
+<!-- Company Story Section -->
+<section class="story-section">
+    <div class="container">
+        <div class="story-layout">
+            <div class="story-image">
+                <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1" alt="Tết Market Story">
+                <div class="image-badge">
+                    <span class="badge-year">Thành lập 2015</span>
+                </div>
+            </div>
+            <div class="story-content">
+                <h2 class="section-title">
+                    <span class="title-icon">📖</span>
+                    Câu Chuyện Của Chúng Tôi
+                </h2>
+                <p class="lead-text">Tết Market ra đời từ khát vọng mang đến cho mọi gia đình Việt những món quà Tết ý nghĩa, chất lượng cao với giá cả hợp lý.</p>
+                <p>Bắt đầu từ một cửa hàng nhỏ tại TP.HCM, chúng tôi đã không ngừng phát triển và trở thành một trong những thương hiệu quà Tết uy tín hàng đầu Việt Nam.</p>
+                <p>Với hơn <strong>8 năm kinh nghiệm</strong>, chúng tôi tự hào đã phục vụ hơn <strong>100,000 khách hàng</strong> và đối tác doanh nghiệp trên toàn quốc.</p>
+
+                <div class="story-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">8+</span>
+                        <span class="stat-label">Năm Kinh Nghiệm</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">100K+</span>
+                        <span class="stat-label">Khách Hàng</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">500+</span>
+                        <span class="stat-label">Sản Phẩm</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Mission & Vision Section -->
+<section class="mission-vision-section">
+    <div class="container">
+        <div class="mv-grid">
+            <div class="mv-card mission-card">
+                <div class="mv-icon">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+                <h3>Sứ Mệnh</h3>
+                <p>Mang đến những món quà Tết chất lượng cao, ý nghĩa và tiện lợi cho mọi gia đình Việt. Giúp mọi người thể hiện tình cảm và lan tỏa niềm vui trong dịp Tết cổ truyền.</p>
+            </div>
+
+            <div class="mv-card vision-card">
+                <div class="mv-icon">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <h3>Tầm Nhìn</h3>
+                <p>Trở thành nền tảng mua sắm quà Tết hàng đầu Việt Nam, mang văn hóa Tết Việt đến gần hơn với mọi người, dù ở bất kỳ đâu trên thế giới.</p>
+            </div>
+
+            <div class="mv-card values-card">
+                <div class="mv-icon">
+                    <i class="fas fa-gem"></i>
+                </div>
+                <h3>Giá Trị Cốt Lõi</h3>
+                <p>Chất lượng - Uy tín - Tận tâm. Chúng tôi cam kết mang đến sản phẩm chất lượng cao nhất với dịch vụ khách hàng tận tâm và chuyên nghiệp.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us Section -->
+<section class="why-choose-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">
+                <span class="title-icon">⭐</span>
+                Tại Sao Chọn Tết Market?
+            </h2>
+            <p class="section-subtitle">6 lý do khiến khách hàng tin tưởng và lựa chọn chúng tôi</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-certificate"></i>
+                </div>
+                <h3>Chất Lượng Đảm Bảo</h3>
+                <p>Sản phẩm chính hãng, nguồn gốc rõ ràng, đạt chuẩn VSATTP</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-truck-fast"></i>
+                </div>
+                <h3>Giao Hàng Nhanh</h3>
+                <p>Giao hàng toàn quốc, nội thành 24h, đóng gói cẩn thận</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-tags"></i>
+                </div>
+                <h3>Giá Cả Hợp Lý</h3>
+                <p>Cam kết giá tốt nhất thị trường, nhiều ưu đãi hấp dẫn</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-gift"></i>
+                </div>
+                <h3>Đa Dạng Sản Phẩm</h3>
+                <p>Hơn 500 mẫu quà Tết, phù hợp mọi đối tượng và ngân sách</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <h3>Hỗ Trợ 24/7</h3>
+                <p>Đội ngũ tư vấn chuyên nghiệp, nhiệt tình hỗ trợ mọi lúc</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-undo-alt"></i>
+                </div>
+                <h3>Đổi Trả Dễ Dàng</h3>
+                <p>Chính sách đổi trả linh hoạt trong 7 ngày, hoàn tiền 100%</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="statistics-section">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-number" data-target="100000">0</span>
+                    <span class="stat-plus">+</span>
+                    <p class="stat-label">Khách Hàng Tin Dùng</p>
+                </div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-icon">
+                    <i class="fas fa-shopping-bag"></i>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-number" data-target="500000">0</span>
+                    <span class="stat-plus">+</span>
+                    <p class="stat-label">Đơn Hàng Thành Công</p>
+                </div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-icon">
+                    <i class="fas fa-box"></i>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-number" data-target="500">0</span>
+                    <span class="stat-plus">+</span>
+                    <p class="stat-label">Sản Phẩm Chất Lượng</p>
+                </div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-icon">
+                    <i class="fas fa-award"></i>
+                </div>
+                <div class="stat-content">
+                    <span class="stat-number" data-target="98">0</span>
+                    <span class="stat-plus">%</span>
+                    <p class="stat-label">Khách Hàng Hài Lòng</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Product Categories Preview -->
+<section class="categories-preview-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">
+                <span class="title-icon">🎁</span>
+                Danh Mục Sản Phẩm
+            </h2>
+            <p class="section-subtitle">Khám phá bộ sưu tập quà Tết đa dạng của chúng tôi</p>
+        </div>
+
+        <div class="categories-grid">
+            <a href="/sanpham?loai=1" class="category-preview-card">
+                <div class="category-image">
+                    <img src="https://images.unsplash.com/photo-1609261732154-0a6f9b5b7d49" alt="Giỏ quà Tết">
+                </div>
+                <div class="category-info">
+                    <h3>🧺 Giỏ Quà Tết</h3>
+                    <p>Cao cấp, sang trọng</p>
+                    <span class="category-count">120+ sản phẩm</span>
+                </div>
+            </a>
+
+            <a href="/sanpham?loai=2" class="category-preview-card">
+                <div class="category-image">
+                    <img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb" alt="Hộp quà Tết">
+                </div>
+                <div class="category-info">
+                    <h3>🎁 Hộp Quà Tết</h3>
+                    <p>Tinh tế, ý nghĩa</p>
+                    <span class="category-count">150+ sản phẩm</span>
+                </div>
+            </a>
+
+            <a href="/sanpham?loai=3" class="category-preview-card">
+                <div class="category-image">
+                    <img src="https://images.unsplash.com/photo-1486427944299-d1955d23e34d" alt="Mứt bánh kẹo">
+                </div>
+                <div class="category-info">
+                    <h3>🍯 Mứt - Bánh Kẹo</h3>
+                    <p>Ngon, sạch, an toàn</p>
+                    <span class="category-count">200+ sản phẩm</span>
+                </div>
+            </a>
+
+            <a href="/sanpham?loai=4" class="category-preview-card">
+                <div class="category-image">
+                    <img src="https://images.unsplash.com/photo-1607472586893-edb57bdc0e39" alt="Bao lì xì">
+                </div>
+                <div class="category-info">
+                    <h3>💰 Bao Lì Xì & Trang Trí</h3>
+                    <p>May mắn, phú quý</p>
+                    <span class="category-count">80+ sản phẩm</span>
+                </div>
+            </a>
+        </div>
+
+        <div class="section-cta">
+            <a href="/sanpham" class="cta-btn">
+                <span>Xem Tất Cả Sản Phẩm</span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">
+                <span class="title-icon">💬</span>
+                Khách Hàng Nói Gì Về Chúng Tôi
+            </h2>
+            <p class="section-subtitle">Những phản hồi chân thực từ khách hàng</p>
+        </div>
+
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <div class="testimonial-rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <p class="testimonial-text">"Quà Tết rất đẹp và chất lượng, giao hàng nhanh. Tôi đã giới thiệu cho nhiều bạn bè và đồng nghiệp."</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">
+                        <img src="https://ui-avatars.com/api/?name=Nguyen+Van+A&background=dc2626&color=fff" alt="Avatar">
+                    </div>
+                    <div class="author-info">
+                        <h4>Nguyễn Văn A</h4>
+                        <p>Khách hàng thân thiết</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="testimonial-card">
+                <div class="testimonial-rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <p class="testimonial-text">"Công ty mình đặt 100 giỏ quà Tết cho nhân viên, chất lượng tuyệt vời và giá rất hợp lý. Sẽ tiếp tục hợp tác!"</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">
+                        <img src="https://ui-avatars.com/api/?name=Tran+Thi+B&background=fbbf24&color=000" alt="Avatar">
+                    </div>
+                    <div class="author-info">
+                        <h4>Trần Thị B</h4>
+                        <p>Giám đốc ABC Corp</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="testimonial-card">
+                <div class="testimonial-rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+                <p class="testimonial-text">"Dịch vụ khách hàng rất tốt, nhiệt tình tư vấn. Sản phẩm đóng gói đẹp, thích hợp làm quà tặng!"</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">
+                        <img src="https://ui-avatars.com/api/?name=Le+Van+C&background=10b981&color=fff" alt="Avatar">
+                    </div>
+                    <div class="author-info">
+                        <h4>Lê Văn C</h4>
+                        <p>Khách hàng</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Sẵn Sàng Mua Sắm Quà Tết?</h2>
+            <p>Khám phá ngay bộ sưu tập quà Tết cao cấp của chúng tôi</p>
+            <div class="cta-buttons">
+                <a href="/sanpham" class="btn btn-primary">
+                    <i class="fas fa-shopping-bag"></i>
+                    Mua Sắm Ngay
+                </a>
+                <a href="/lienhe" class="btn btn-secondary">
+                    <i class="fas fa-phone-alt"></i>
+                    Liên Hệ Tư Vấn
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<th:block th:replace="~{fragments/layout :: footer}"></th:block>
+
+<!-- Scripts -->
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+<script>
+    // Counter animation for statistics
+    document.addEventListener('DOMContentLoaded', function() {
+        const counters = document.querySelectorAll('.stat-number');
+        const speed = 200;
+
+        const animateCounter = (counter) => {
+            const target = +counter.getAttribute('data-target');
+            const count = +counter.innerText;
+            const increment = target / speed;
+
+            if (count < target) {
+                counter.innerText = Math.ceil(count + increment);
+                setTimeout(() => animateCounter(counter), 10);
+            } else {
+                counter.innerText = target.toLocaleString();
+            }
+        };
+
+        const observerOptions = {
+            threshold: 0.5
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const counter = entry.target;
+                    animateCounter(counter);
+                    observer.unobserve(counter);
+                }
+            });
+        }, observerOptions);
+
+        counters.forEach(counter => observer.observe(counter));
+    });
+</script>
 </body>
 </html>
-

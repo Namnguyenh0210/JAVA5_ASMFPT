@@ -66,12 +66,16 @@ public class SanPhamController {
             @RequestParam(defaultValue = "moi") String sort,
             Model model) {
 
+        // Không cần nhân x1000 nữa - người dùng nhập giá VNĐ trực tiếp
+        
         model.addAttribute("currentPage", "sanpham");
         PageRequest pageable = PageRequest.of(page, size);
         Page<SanPham> sanPhamPage = sanPhamService.findWithFilters(search, loai, minPrice, maxPrice, sort, pageable);
         model.addAttribute("sanPhamPage", sanPhamPage);
         List<LoaiSanPham> categories = loaiSanPhamService.findAll();
         model.addAttribute("categories", categories);
+        
+        // Keep filter values for display
         model.addAttribute("search", search);
         model.addAttribute("loai", loai);
         model.addAttribute("minPrice", minPrice);
