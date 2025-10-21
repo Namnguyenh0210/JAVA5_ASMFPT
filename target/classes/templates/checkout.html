@@ -1,315 +1,263 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/base}">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="${pageTitle}">Thanh toán - Cửa hàng đồ Tết</title>
-    <link rel="stylesheet" th:href="@{/css/checkout.css?v=1}">
+    <th:block th:replace="~{fragments/layout :: head('Thanh toán đơn hàng')}"></th:block>
+    <link rel="stylesheet" th:href="@{/css/checkout.css}">
 </head>
 <body>
-<div layout:fragment="content">
-    <div class="checkout-container">
-        <div class="container">
-            <!-- Breadcrumb -->
-            <nav aria-label="breadcrumb" th:if="${breadcrumbItems}">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
-                    <li class="breadcrumb-item" th:each="item : ${breadcrumbItems}">
-                        <a th:if="${item.url}" th:href="${item.url}" th:text="${item.name}">Link</a>
-                        <span th:unless="${item.url}" th:text="${item.name}">Current</span>
-                    </li>
-                </ol>
-            </nav>
+<!-- Header -->
+<th:block th:replace="~{fragments/layout :: header}"></th:block>
 
-            <h1 class="text-center mb-4">
-                <i class="fas fa-shopping-bag"></i> Thanh toán đơn hàng
-            </h1>
-
-            <form id="checkoutForm" th:action="@{/checkout/process}" method="post">
-                <div class="row">
-                    <!-- Left Column - Thông tin giao hàng -->
-                    <div class="col-lg-8">
-                        <!-- 1. Địa chỉ giao hàng -->
-                        <div class="checkout-card">
-                            <div class="section-title">
-                                <i class="fas fa-map-marker-alt"></i> Địa chỉ giao hàng
-                            </div>
-
-                            <!-- TODO THÀNH VIÊN 3: Load danh sách địa chỉ từ model -->
-                            <div th:if="${diaChiList != null and !diaChiList.isEmpty()}">
-                                <div th:each="dc : ${diaChiList}" class="address-card"
-                                     th:classappend="${dc.macDinh} ? 'selected' : ''">
-                                    <label class="d-flex align-items-start w-100">
-                                        <input type="radio" name="diaChiId" th:value="${dc.maDC}"
-                                               th:checked="${dc.macDinh}" required>
-                                        <div class="flex-grow-1">
-                                            <div class="fw-bold">
-                                                <i class="fas fa-home"></i>
-                                                <span th:text="${dc.diaChiChiTiet}">123 Nguyễn Văn Linh, Q7, TP.HCM</span>
-                                            </div>
-                                            <span th:if="${dc.macDinh}" class="badge bg-success mt-2">Mặc định</span>
-                                        </div>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <!-- Thêm địa chỉ mới -->
-                            <div class="mt-3">
-                                <a href="#" class="btn-add-address" data-bs-toggle="modal"
-                                   data-bs-target="#addAddressModal">
-                                    <i class="fas fa-plus-circle"></i> Thêm địa chỉ mới
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- 2. Sản phẩm đặt hàng -->
-                        <div class="checkout-card">
-                            <div class="section-title">
-                                <i class="fas fa-box-open"></i> Sản phẩm đặt hàng
-                            </div>
-
-                            <!-- TODO THÀNH VIÊN 3: Load items từ giỏ hàng -->
-                            <div th:if="${cartItems != null and !cartItems.isEmpty()}">
-                                <div th:each="item : ${cartItems}" class="product-item">
-                                    <img th:src="${item.sanPham.hinhAnh}" th:alt="${item.sanPham.tenSP}"
-                                         class="product-img" onerror="this.src='https://via.placeholder.com/80'">
-                                    <div class="product-info">
-                                        <h6 class="mb-1" th:text="${item.sanPham.tenSP}">Giỏ quà Tết An Khang</h6>
-                                        <small class="text-muted">
-                                            Số lượng: <span th:text="${item.soLuong}">2</span>
-                                        </small>
-                                    </div>
-                                    <div class="text-end">
-                                        <div class="fw-bold text-danger"
-                                             th:text="${#numbers.formatDecimal(item.sanPham.gia * item.soLuong, 0, 'COMMA', 0, 'POINT')} + ' đ'">
-                                            1.000.000 đ
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Placeholder khi chưa có dữ liệu -->
-                            <div th:if="${cartItems == null or cartItems.isEmpty()}" class="text-center py-4">
-                                <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
-                                <p class="text-muted">Giỏ hàng trống. <a href="/sanpham">Mua sắm ngay!</a></p>
-                            </div>
-                        </div>
-
-                        <!-- 3. Phương thức thanh toán -->
-                        <div class="checkout-card">
-                            <div class="section-title">
-                                <i class="fas fa-credit-card"></i> Phương thức thanh toán
-                            </div>
-
-                            <!-- TODO THÀNH VIÊN 3: Load PTTT từ database -->
-                            <div th:if="${phuongThucThanhToanList != null and !phuongThucThanhToanList.isEmpty()}">
-                                <div th:each="pttt : ${phuongThucThanhToanList}" class="payment-method">
-                                    <input type="radio" name="phuongThucThanhToanId" th:value="${pttt.maPTTT}"
-                                           th:checked="${ptttStat.first}" required>
-                                    <div class="payment-icon">
-                                        <i class="fas" th:classappend="${pttt.tenPTTT.contains('COD') ? 'fa-money-bill-wave' :
-                                                                        pttt.tenPTTT.contains('Momo') ? 'fa-wallet' :
-                                                                        pttt.tenPTTT.contains('Ngân hàng') ? 'fa-university' :
-                                                                        'fa-credit-card'}"></i>
-                                    </div>
-                                    <div>
-                                        <div class="fw-bold" th:text="${pttt.tenPTTT}">Thanh toán khi nhận hàng (COD)
-                                        </div>
-                                        <small class="text-muted">Thanh toán trực tiếp cho shipper</small>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Placeholder -->
-                            <div th:if="${phuongThucThanhToanList == null or phuongThucThanhToanList.isEmpty()}">
-                                <div class="payment-method">
-                                    <input type="radio" name="phuongThucThanhToanId" value="1" checked required>
-                                    <div class="payment-icon"><i class="fas fa-money-bill-wave"></i></div>
-                                    <div>
-                                        <div class="fw-bold">Thanh toán khi nhận hàng (COD)</div>
-                                        <small class="text-muted">Thanh toán trực tiếp cho shipper</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 4. Ghi chú đơn hàng -->
-                        <div class="checkout-card">
-                            <div class="section-title">
-                                <i class="fas fa-comment-alt"></i> Ghi chú đơn hàng (tùy chọn)
-                            </div>
-                            <textarea name="ghiChu" class="form-control" rows="3"
-                                      placeholder="Ghi chú thêm về đơn hàng (thời gian giao, địa chỉ chi tiết...)"></textarea>
-                        </div>
-                    </div>
-
-                    <!-- Right Column - Tóm tắt đơn hàng -->
-                    <div class="col-lg-4">
-                        <div class="checkout-card sticky-top" style="top: 20px;">
-                            <div class="section-title">
-                                <i class="fas fa-receipt"></i> Tóm tắt đơn hàng
-                            </div>
-
-                            <div class="order-summary">
-                                <!-- TODO THÀNH VIÊN 3: Tính toán tổng tiền -->
-                                <div class="summary-row">
-                                    <span>Tạm tính:</span>
-                                    <span th:text="${tongTien != null ? #numbers.formatDecimal(tongTien, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}">
-                                        1.500.000 đ
-                                    </span>
-                                </div>
-                                <div class="summary-row">
-                                    <span>Phí vận chuyển:</span>
-                                    <span class="shipping-fee" id="shippingFee"
-                                          th:text="${phiShip != null ? #numbers.formatDecimal(phiShip, 0, 'COMMA', 0, 'POINT') + ' đ' : 'Miễn phí'}">
-                                        Miễn phí
-                                    </span>
-                                </div>
-                                <div class="summary-row total">
-                                    <span>Tổng cộng:</span>
-                                    <span id="totalAmount"
-                                          th:text="${(tongTien != null and phiShip != null) ? #numbers.formatDecimal(tongTien + phiShip, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}">
-                                        1.500.000 đ
-                                    </span>
-                                </div>
-                            </div>
-
-                            <button type="submit" class="btn-place-order mt-4">
-                                <i class="fas fa-check-circle"></i> Đặt hàng ngay
-                            </button>
-
-                            <div class="text-center mt-3">
-                                <small class="text-muted">
-                                    <i class="fas fa-shield-alt"></i>
-                                    Thanh toán an toàn & bảo mật
-                                </small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal thêm địa chỉ mới -->
-    <div class="modal fade" id="addAddressModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-map-marker-alt"></i> Thêm địa chỉ mới</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="addAddressForm">
-                        <div class="mb-3">
-                            <label class="form-label">Địa chỉ chi tiết <span class="text-danger">*</span></label>
-                            <textarea class="form-control" name="diaChiChiTiet" rows="3" required
-                                      placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố"></textarea>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="macDinh" id="setDefault">
-                            <label class="form-check-label" for="setDefault">
-                                Đặt làm địa chỉ mặc định
-                            </label>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="button" class="btn btn-danger" onclick="submitAddAddress()">
-                        <i class="fas fa-save"></i> Lưu địa chỉ
-                    </button>
-                </div>
+<!-- Cart Header - Giống giỏ hàng -->
+<div class="cart-header-section">
+    <div class="container">
+        <h1 class="cart-title">
+            <span class="icon">💳</span>
+            Thanh Toán Đơn Hàng
+        </h1>
+        <div class="cart-progress">
+            <div class="progress-step">
+                <div class="step-icon">1</div>
+                <span>Giỏ Hàng</span>
+            </div>
+            <div class="progress-line"></div>
+            <div class="progress-step active">
+                <div class="step-icon">2</div>
+                <span>Thanh Toán</span>
+            </div>
+            <div class="progress-line"></div>
+            <div class="progress-step">
+                <div class="step-icon">3</div>
+                <span>Hoàn Tất</span>
             </div>
         </div>
     </div>
 </div>
 
-<!-- JavaScript -->
-<th:block layout:fragment="scripts">
-    <script>
-        // TODO THÀNH VIÊN 3: Xử lý AJAX thêm địa chỉ
-        function submitAddAddress() {
-            const form = document.getElementById('addAddressForm');
-            const formData = new FormData(form);
+<!-- Checkout Content - Layout giống giỏ hàng -->
+<section class="cart-section">
+    <div class="container">
+        <form id="checkoutForm" method="post" action="/checkout/place-order">
+            <div class="cart-content">
+                <!-- Left: Billing Details & Product List -->
+                <div class="cart-items">
+                    <!-- THÔNG TIN THANH TOÁN -->
+                    <div class="table-header">
+                        <div class="header-item header-product">THÔNG TIN THANH TOÁN</div>
+                    </div>
 
-            fetch('/checkout/api/address/add', {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Thêm địa chỉ thành công!');
-                        location.reload();
-                    } else {
-                        alert('Lỗi: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Có lỗi xảy ra, vui lòng thử lại!');
-                });
-        }
+                    <div class="billing-form">
+                        <div class="form-group">
+                            <label>Họ tên <span class="required">*</span></label>
+                            <input type="text" name="hoTen" class="form-input"
+                                   th:value="${user != null ? user.hoTen : ''}"
+                                   placeholder="Nhập họ tên của bạn" required>
+                        </div>
 
-        // TODO THÀNH VIÊN 4: Tính phí ship theo địa chỉ
-        document.querySelectorAll('input[name="diaChiId"]').forEach(radio => {
-            radio.addEventListener('change', function () {
-                const diaChiId = this.value;
-                fetch(`/checkout/api/shipping-fee?diaChiId=${diaChiId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            document.getElementById('shippingFee').textContent =
-                                data.phiShip === 0 ? 'Miễn phí' : data.phiShip.toLocaleString('vi-VN') + ' đ';
-                            // Cập nhật tổng tiền
-                            updateTotalAmount();
-                        }
-                    });
-            });
-        });
+                        <div class="form-group">
+                            <label>Email <span class="required">*</span></label>
+                            <input type="email" name="email" class="form-input"
+                                   th:value="${user != null ? user.email : ''}"
+                                   placeholder="Nhập email của bạn" required>
+                        </div>
 
-        // Highlight địa chỉ được chọn
-        document.querySelectorAll('.address-card').forEach(card => {
-            card.addEventListener('click', function () {
-                document.querySelectorAll('.address-card').forEach(c => c.classList.remove('selected'));
-                this.classList.add('selected');
-                this.querySelector('input[type="radio"]').checked = true;
-            });
-        });
+                        <div class="form-group">
+                            <label>Mật khẩu <span class="required">*</span></label>
+                            <input type="password" name="matKhau" class="form-input"
+                                   placeholder="Nhập mật khẩu" required>
+                        </div>
 
-        // Highlight phương thức thanh toán
-        document.querySelectorAll('.payment-method').forEach(method => {
-            method.addEventListener('click', function () {
-                document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
-                this.classList.add('selected');
-                this.querySelector('input[type="radio"]').checked = true;
-            });
-        });
+                        <div class="form-group">
+                            <label>Số điện thoại <span class="required">*</span></label>
+                            <input type="tel" name="soDienThoai" class="form-input"
+                                   th:value="${user != null ? user.soDienThoai : ''}"
+                                   placeholder="Nhập số điện thoại" required>
+                        </div>
 
-        // Validate form trước khi submit
-        document.getElementById('checkoutForm').addEventListener('submit', function (e) {
-            const diaChiChecked = document.querySelector('input[name="diaChiId"]:checked');
-            const ptttChecked = document.querySelector('input[name="phuongThucThanhToanId"]:checked');
+                        <div class="form-group">
+                            <label>Địa chỉ mặc định <span class="required">*</span></label>
+                            <div class="address-input-group">
+                                <input type="text" name="diaChi" class="form-input"
+                                       th:value="${defaultAddress != null ? defaultAddress.diaChiChiTiet : ''}"
+                                       placeholder="Nhập địa chỉ giao hàng" required>
+                                <button type="button" class="btn-change-address">Thay đổi địa chỉ</button>
+                            </div>
+                        </div>
 
-            if (!diaChiChecked) {
-                e.preventDefault();
-                alert('Vui lòng chọn địa chỉ giao hàng!');
-                return;
-            }
+                        <div class="form-group">
+                            <label>Ghi chú đơn hàng (tùy chọn)</label>
+                            <textarea name="ghiChu" class="form-textarea" rows="4"
+                                      placeholder="Ghi chú về đơn hàng, ví dụ: thời gian hay chỉ dẫn địa điểm giao hàng chi tiết hơn."></textarea>
+                        </div>
+                    </div>
 
-            if (!ptttChecked) {
-                e.preventDefault();
-                alert('Vui lòng chọn phương thức thanh toán!');
-                return;
-            }
+                    <!-- DANH SÁCH SẢN PHẨM -->
+                    <div class="table-header product-list-header">
+                        <div class="header-item header-product">SẢN PHẨM</div>
+                        <div class="header-item header-center">ĐƠN GIÁ</div>
+                        <div class="header-item header-center">SỐ LƯỢNG</div>
+                        <div class="header-item header-center">THÀNH TIỀN</div>
+                    </div>
 
-            // Hiển thị loading
-            const btn = this.querySelector('button[type="submit"]');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
-        });
-    </script>
-</th:block>
+                    <!-- Empty Cart Notice -->
+                    <div th:if="${cartItems == null or #lists.isEmpty(cartItems)}" class="empty-cart-notice">
+                        <div class="empty-icon">🛒</div>
+                        <h3>Giỏ hàng trống</h3>
+                        <p>Hãy thêm sản phẩm để thanh toán</p>
+                        <a href="/sanpham" class="btn btn-primary">
+                            <i class="fas fa-shopping-bag"></i>
+                            Mua Sắm Ngay
+                        </a>
+                    </div>
+
+                    <!-- Product List -->
+                    <div th:unless="${cartItems == null or #lists.isEmpty(cartItems)}">
+                        <div th:each="item : ${cartItems}" class="cart-item">
+                            <div class="item-product">
+                                <div class="product-image">
+                                    <img th:src="${item.product.hinhAnh != null && !item.product.hinhAnh.isEmpty() ? item.product.hinhAnh : 'https://picsum.photos/200/200?random=' + item.product.maSP}"
+                                         th:alt="${item.product.name}">
+                                </div>
+                                <div class="product-info">
+                                    <h3 th:text="${item.product.name}">Tên sản phẩm</h3>
+                                    <div class="product-category">
+                                        <i class="fas fa-tag"></i>
+                                        <span th:text="${item.product.category != null ? item.product.category : 'Danh mục'}">Danh mục</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="item-price">
+                                <span class="current-price" th:text="${#numbers.formatDecimal(item.product.price, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</span>
+                            </div>
+                            <div class="item-quantity">
+                                <span th:text="${item.quantity}">1</span>
+                            </div>
+                            <div class="item-total">
+                                <span class="total-price" th:text="${#numbers.formatDecimal(item.total, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</span>
+                            </div>
+                        </div>
+
+                        <!-- Cart Actions -->
+                        <div class="cart-actions">
+                            <div class="left-actions">
+                                <!-- Empty for layout -->
+                            </div>
+                            <div class="right-actions">
+                                <a class="btn btn-secondary" th:href="@{/giohang}">
+                                    <i class="fas fa-arrow-left"></i>
+                                    Quay Lại Giỏ Hàng
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Order Summary -->
+                <div class="cart-summary">
+                    <div class="summary-card">
+                        <h3 class="summary-title">ĐƠN HÀNG CỦA BẠN</h3>
+                        <div class="summary-content">
+                            <div class="summary-row">
+                                <span>Tạm tính (<span th:text="${cartItems != null ? cartItems.size() : 0}">0</span> sản phẩm):</span>
+                                <span id="subtotalAmount" th:text="${#numbers.formatDecimal(orderSubtotal != null ? orderSubtotal : 0,0,'COMMA',0,'POINT')} + 'đ'">0đ</span>
+                            </div>
+
+                            <div class="summary-row">
+                                <span>Giảm giá:</span>
+                                <span class="discount">0đ</span>
+                            </div>
+
+                            <div class="summary-row">
+                                <span>Phí vận chuyển:</span>
+                                <span class="shipping-fee">
+                                    <span class="free-shipping">MIỄN PHÍ</span>
+                                </span>
+                            </div>
+
+                            <div class="summary-row total-row">
+                                <span>Tổng cộng:</span>
+                                <span class="total-amount" th:text="${#numbers.formatDecimal(orderTotal != null ? orderTotal : 0,0,'COMMA',0,'POINT')} + 'đ'">0đ</span>
+                            </div>
+
+                            <!-- Voucher -->
+                            <div class="voucher-section">
+                                <h4>Mã Giảm Giá</h4>
+                                <div class="voucher-input">
+                                    <input class="voucher-code" placeholder="Nhập mã giảm giá..." type="text">
+                                    <button type="button" class="voucher-apply-btn">Áp Dụng</button>
+                                </div>
+                                <div class="available-vouchers">
+                                    <div class="voucher-item">
+                                        <div class="voucher-info">
+                                            <div class="voucher-code-text">NEWYEAR2025</div>
+                                            <div class="voucher-desc">Giảm 10% đơn hàng từ 1 triệu</div>
+                                        </div>
+                                        <button type="button" class="voucher-select">Chọn</button>
+                                    </div>
+                                    <div class="voucher-item">
+                                        <div class="voucher-info">
+                                            <div class="voucher-code-text">FREESHIP</div>
+                                            <div class="voucher-desc">Miễn phí vận chuyển &lt;5km</div>
+                                        </div>
+                                        <button type="button" class="voucher-select">Chọn</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Payment Methods -->
+                            <div class="payment-methods">
+                                <h4 style="margin-bottom: 0.75rem; font-size: 0.938rem; font-weight: 700;">Phương thức thanh toán</h4>
+                                <label class="payment-method">
+                                    <input type="radio" name="paymentMethod" value="BANK" checked>
+                                    <div class="method-content">
+                                        <i class="fas fa-money-bill-wave"></i>
+                                        <span>Chuyển khoản ngân hàng</span>
+                                    </div>
+                                </label>
+
+                                <label class="payment-method">
+                                    <input type="radio" name="paymentMethod" value="COD">
+                                    <div class="method-content">
+                                        <i class="fas fa-hand-holding-usd"></i>
+                                        <span>Trả tiền mặt khi nhận hàng</span>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <!-- Checkout Button -->
+                            <button type="submit" class="checkout-btn">
+                                <i class="fas fa-credit-card"></i>
+                                Tiến Hành Thanh Toán
+                            </button>
+
+                            <!-- Security Info -->
+                            <div class="security-info">
+                                <div class="security-item">
+                                    <i class="fas fa-shield-alt"></i>
+                                    <span>Bảo mật thanh toán 100%</span>
+                                </div>
+                                <div class="security-item">
+                                    <i class="fas fa-undo"></i>
+                                    <span>Đổi trả trong 7 ngày</span>
+                                </div>
+                                <div class="security-item">
+                                    <i class="fas fa-shipping-fast"></i>
+                                    <span>Giao hàng nhanh 24h</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+<!-- Footer -->
+<th:block th:replace="~{fragments/layout :: footer}"></th:block>
+
+<!-- Scripts -->
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+<script th:src="@{/js/checkout.js}"></script>
 </body>
 </html>
