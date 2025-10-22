@@ -200,6 +200,34 @@ public class DonHangService {
     }
 
     // =============================
+    // TODO TV3: Method 7b - Cập nhật trạng thái và nhân viên
+    @Transactional
+    public boolean updateTrangThaiWithStaff(Integer donHangId, String trangThaiMoi, TaiKhoan nhanVien) {
+        Optional<DonHang> dhOpt = donHangRepository.findById(donHangId);
+
+        if (!dhOpt.isPresent()) {
+            return false;
+        }
+
+        TrangThaiDonHang ttdh = trangThaiDonHangRepository.findByTenTTDH(trangThaiMoi).orElse(null);
+        if (ttdh == null) {
+            return false;
+        }
+
+        DonHang dh = dhOpt.get();
+        dh.setTrangThaiDonHang(ttdh); // Set đối tượng Entity
+
+        // Cập nhật nhân viên nếu có
+        if (nhanVien != null) {
+            dh.setNhanVien(nhanVien);
+        }
+
+        donHangRepository.save(dh);
+
+        return true;
+    }
+
+    // =============================
     // TODO TV3: Method 8 - Lấy đơn chờ xác nhận (dashboard)
     public List<DonHang> getPendingOrders(int limit) {
         TrangThaiDonHang ttdh = trangThaiDonHangRepository.findByTenTTDH("Chờ xác nhận").orElse(null);
@@ -245,6 +273,13 @@ public class DonHangService {
 
     public long countAll() {
         return donHangRepository.count();
+    }
+
+    // Lấy đơn hàng gần đây
+    public List<DonHang> getRecentOrders(int limit) {
+        return donHangRepository.findAll(
+            PageRequest.of(0, limit, org.springframework.data.domain.Sort.by("ngayDat").descending())
+        ).getContent();
     }
 
     // =============================

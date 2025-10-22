@@ -15,6 +15,7 @@
 /Users/nam.nguyenh/Desktop/JAVA5_ASMFPT/src/main/java/com/example/projectend/controller/AuthController.java
 /Users/nam.nguyenh/Desktop/JAVA5_ASMFPT/src/main/java/com/example/projectend/ProjectendApplication.java
 /Users/nam.nguyenh/Desktop/JAVA5_ASMFPT/src/main/java/com/example/projectend/controller/admin/AdminBaiVietController.java
+/Users/nam.nguyenh/Desktop/JAVA5_ASMFPT/src/main/java/com/example/projectend/controller/admin/StaffDashboardController.java
 /Users/nam.nguyenh/Desktop/JAVA5_ASMFPT/src/main/java/com/example/projectend/entity/SanPham.java
 /Users/nam.nguyenh/Desktop/JAVA5_ASMFPT/src/main/java/com/example/projectend/controller/ProfileController.java
 /Users/nam.nguyenh/Desktop/JAVA5_ASMFPT/src/main/java/com/example/projectend/service/GioHangService.java
@@ -40,11 +41,13 @@
 /Users/nam.nguyenh/Desktop/JAVA5_ASMFPT/src/main/java/com/example/projectend/entity/BaiViet.java
 /Users/nam.nguyenh/Desktop/JAVA5_ASMFPT/src/main/java/com/example/projectend/controller/GioHangController.java
 /Users/nam.nguyenh/Desktop/JAVA5_ASMFPT/src/main/java/com/example/projectend/repository/PhuongThucThanhToanRepository.java
+/Users/nam.nguyenh/Desktop/JAVA5_ASMFPT/src/main/java/com/example/projectend/controller/staff/StaffBaiVietController.java
 /Users/nam.nguyenh/Desktop/JAVA5_ASMFPT/src/main/java/com/example/projectend/entity/ThongKe.java
 /Users/nam.nguyenh/Desktop/JAVA5_ASMFPT/src/main/java/com/example/projectend/entity/DonHang.java
 /Users/nam.nguyenh/Desktop/JAVA5_ASMFPT/src/main/java/com/example/projectend/entity/VaiTro.java
 /Users/nam.nguyenh/Desktop/JAVA5_ASMFPT/src/main/java/com/example/projectend/service/DiaChiService.java
 /Users/nam.nguyenh/Desktop/JAVA5_ASMFPT/src/main/java/com/example/projectend/controller/admin/AdminDonHangController.java
+/Users/nam.nguyenh/Desktop/JAVA5_ASMFPT/src/main/java/com/example/projectend/controller/staff/StaffDonHangController.java
 /Users/nam.nguyenh/Desktop/JAVA5_ASMFPT/src/main/java/com/example/projectend/controller/GioiThieuController.java
 /Users/nam.nguyenh/Desktop/JAVA5_ASMFPT/src/main/java/com/example/projectend/entity/TaiKhoan.java
 /Users/nam.nguyenh/Desktop/JAVA5_ASMFPT/src/main/java/com/example/projectend/repository/ThongKeRepository.java

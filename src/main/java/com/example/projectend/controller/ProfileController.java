@@ -6,7 +6,11 @@ import com.example.projectend.entity.TaiKhoan;
 import com.example.projectend.repository.DiaChiRepository;
 import com.example.projectend.repository.DonHangRepository;
 import com.example.projectend.repository.TaiKhoanRepository;
+import com.example.projectend.service.DonHangService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +38,9 @@ public class ProfileController {
     @Autowired
     private DonHangRepository donHangRepository;
 
+    @Autowired
+    private DonHangService donHangService;
+
     @GetMapping("/profile")
     public String profile(Model model, Principal principal) {
         if (principal == null) {
@@ -58,7 +65,7 @@ public class ProfileController {
         List<DiaChi> diaChiList = diaChiRepository.findAllByMaTK(taiKhoan.getMaTK());
         model.addAttribute("diaChiList", diaChiList);
 
-        // Lấy danh sách đơn hàng của khách hàng (sắp xếp mới nhất trước)
+        // Lấy danh sách đơn hàng thật từ database (mới nhất trước)
         List<DonHang> donHangList = donHangRepository.findByKhachHangOrderByNgayDatDesc(taiKhoan);
         model.addAttribute("donHangList", donHangList);
 
@@ -106,7 +113,7 @@ public class ProfileController {
 
     @PostMapping("/profile/change-password")
     public String changePassword(
-            @RequestParam String oldPassword,
+            @RequestParam String currentPassword,
             @RequestParam String newPassword,
             @RequestParam String confirmPassword,
             Principal principal,
@@ -125,25 +132,19 @@ public class ProfileController {
                 return "redirect:/profile#password";
             }
 
-            // Kiểm tra mật khẩu cũ
-            if (!taiKhoan.getMatKhau().equals(oldPassword)) {
-                redirectAttributes.addFlashAttribute("errorPassword", "Mật khẩu cũ không đúng!");
+            // Kiểm tra mật khẩu hiện tại
+            if (!taiKhoan.getMatKhau().equals(currentPassword)) {
+                redirectAttributes.addFlashAttribute("errorPassword", "Mật khẩu hiện tại không đúng!");
                 return "redirect:/profile#password";
             }
 
-            // Kiểm tra mật khẩu mới
-            if (newPassword.length() < 6) {
-                redirectAttributes.addFlashAttribute("errorPassword", "Mật khẩu mới phải có ít nhất 6 ký tự!");
-                return "redirect:/profile#password";
-            }
-
-            // Kiểm tra xác nhận mật khẩu
+            // Kiểm tra mật khẩu mới khớp
             if (!newPassword.equals(confirmPassword)) {
-                redirectAttributes.addFlashAttribute("errorPassword", "Mật khẩu xác nhận không khớp!");
+                redirectAttributes.addFlashAttribute("errorPassword", "Mật khẩu mới không khớp!");
                 return "redirect:/profile#password";
             }
 
-            // Cập nhật mật khẩu
+            // Cập nhật mật khẩu mới
             taiKhoan.setMatKhau(newPassword);
             taiKhoanRepository.save(taiKhoan);
 
@@ -155,10 +156,9 @@ public class ProfileController {
         return "redirect:/profile#password";
     }
 
-    @PostMapping("/profile/address/add")
-    public String addAddress(
-            @RequestParam String diaChiChiTiet,
-            @RequestParam(required = false, defaultValue = "false") boolean macDinh,
+    @PostMapping("/profile/cancel-order")
+    public String cancelOrder(
+            @RequestParam Integer orderId,
             Principal principal,
             RedirectAttributes redirectAttributes) {
 
@@ -171,31 +171,21 @@ public class ProfileController {
             TaiKhoan taiKhoan = taiKhoanRepository.findByEmail(email).orElse(null);
 
             if (taiKhoan == null) {
-                redirectAttributes.addFlashAttribute("errorAddress", "Không tìm thấy tài khoản!");
-                return "redirect:/profile#addresses";
+                redirectAttributes.addFlashAttribute("error", "Không tìm thấy tài khoản!");
+                return "redirect:/profile#orders";
             }
 
-            // Nếu địa chỉ mới là mặc định, bỏ mặc định các địa chỉ khác
-            if (macDinh) {
-                List<DiaChi> danhSachDiaChi = diaChiRepository.findAllByMaTK(taiKhoan.getMaTK());
-                for (DiaChi dc : danhSachDiaChi) {
-                    dc.setMacDinh(false);
-                    diaChiRepository.save(dc);
-                }
+            boolean success = donHangService.cancelOrder(orderId, taiKhoan);
+
+            if (success) {
+                redirectAttributes.addFlashAttribute("successOrder", "Hủy đơn hàng thành công!");
+            } else {
+                redirectAttributes.addFlashAttribute("errorOrder", "Không thể hủy đơn hàng này!");
             }
-
-            // Tạo địa chỉ mới
-            DiaChi diaChiMoi = new DiaChi();
-            diaChiMoi.setTaiKhoan(taiKhoan);
-            diaChiMoi.setDiaChiChiTiet(diaChiChiTiet);
-            diaChiMoi.setMacDinh(macDinh);
-            diaChiRepository.save(diaChiMoi);
-
-            redirectAttributes.addFlashAttribute("successAddress", "Thêm địa chỉ thành công!");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorAddress", "Có lỗi xảy ra: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("errorOrder", "Có lỗi xảy ra: " + e.getMessage());
         }
 
-        return "redirect:/profile#addresses";
+        return "redirect:/profile#orders";
     }
 }

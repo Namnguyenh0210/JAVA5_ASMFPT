@@ -1,4 +1,4 @@
-// JS for checkout page: address, voucher, etc.
+// JS for checkout page: address, etc.
 // Hiệu ứng toast/thông báo đẹp
 function showToast(msg, type = 'success') {
     let toast = document.createElement('div');
@@ -53,26 +53,7 @@ function deleteAddress(id) {
         modal.remove();
     };
 }
-function applyVoucher() {
-    var code = document.getElementById('voucherInput').value.trim().toUpperCase();
-    applyVoucherCode(code);
-}
-function applyVoucherCode(code) {
-    let msg = '', type = 'error';
-    if(code === 'FREESHIP') {
-        msg = 'Áp dụng thành công: Miễn phí vận chuyển!';
-        type = 'success';
-    } else if(code === 'GIAM10') {
-        msg = 'Áp dụng thành công: Giảm 10% cho đơn từ 1 triệu!';
-        type = 'success';
-    } else {
-        msg = 'Mã voucher không hợp lệ hoặc không đủ điều kiện.';
-    }
-    let voucherMsg = document.getElementById('voucher-message');
-    voucherMsg.innerText = msg;
-    voucherMsg.className = type === 'success' ? 'voucher-success' : 'voucher-error';
-    showToast(msg, type);
-}
+
 // Đóng modal khi lưu địa chỉ thành công
 if(document.getElementById('addressForm')) {
     document.getElementById('addressForm').onsubmit = function(e) {

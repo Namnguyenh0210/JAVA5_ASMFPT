@@ -1,18 +1,4 @@
--- ===========================
--- FULL SQL: WebBanHangTet (SQL Server)
--- Chạy toàn bộ file này trong SSMS
--- ===========================
 
-/* 1. Xoá DB cũ (nếu có) - cẩn thận trước khi chạy */
-IF
-EXISTS (SELECT name FROM master.dbo.sysdatabases WHERE name = N'WebBanHangTet')
-BEGIN
-    ALTER
-DATABASE WebBanHangTet SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
-    DROP
-DATABASE WebBanHangTet;
-END
-GO
 
 CREATE
 DATABASE WebBanHangTet;
@@ -267,112 +253,118 @@ VALUES (N'Giỏ quà Tết'),
 -- Ảnh dùng placeholder (Unsplash / Picsum)
 -- ==========================
 
--- ===== Giỏ quà Tết (12 sp) =====
+-- ===== Giỏ quà Tết (12 sp) - Link ảnh giữ nguyên như yêu cầu trước (MaLoai = 1) =====
 INSERT INTO SanPham (TenSP, MoTa, Gia, SoLuong, HinhAnh, MaLoai)
-VALUES (N'Giỏ quà Tết An Khang', N'Giỏ quà cao cấp gồm trà thượng hạng, bánh quy, hạt dinh dưỡng', 550000, 120,
-        'https://images.unsplash.com/photo-1609261732154-0a6f9b5b7d49', 1),
-       (N'Giỏ quà Tết Sum Vầy', N'Giỏ quà phong cách truyền thống, hộp trang trí đỏ, nhiều món ngon', 690000, 90,
-        'https://images.unsplash.com/photo-1611143669185-5c6c1a2b174c', 1),
-       (N'Giỏ quà Tết Lộc Phát', N'Giỏ gồm rượu vang, socola, bánh nhập khẩu', 820000, 60,
-        'https://images.unsplash.com/photo-1589712189131-b9e7b7db3f59', 1),
-       (N'Giỏ quà Tết Phúc Lộc Thọ', N'Giỏ quà sang trọng, thích hợp tặng đối tác và sếp', 750000, 50,
-        'https://images.unsplash.com/photo-1600369671797-485c4e3765b9', 1),
-       (N'Giỏ quà Tết Kim Cương', N'Giỏ cao cấp với trà cao cấp và hũ mứt thủ công', 1500000, 30,
-        'https://images.unsplash.com/photo-1597740898170-d2b3a5e4cbec', 1),
-       (N'Giỏ quà Tết Vạn Phúc', N'Giỏ quà truyền thống, nhiều loại mứt và bánh khô', 480000, 180,
-        'https://images.unsplash.com/photo-1609072218762-d2b90d3c2e3b', 1),
-       (N'Giỏ quà Tết Hạnh Phúc', N'Giỏ quà gồm trà, mứt dừa, hạt điều, hộp bánh', 580000, 130,
-        'https://images.unsplash.com/photo-1597740898170-d2b3a5e4cbec', 1),
-       (N'Giỏ quà Tết Bình An', N'Giỏ gọn nhẹ, phù hợp quà tặng gia đình nhỏ', 490000, 140,
-        'https://picsum.photos/seed/gio1/400/300', 1),
-       (N'Giỏ quà Tết Tài Lộc', N'Giỏ nhiều tầng, thiết kế đẹp, quà tặng doanh nghiệp', 990000, 45,
-        'https://picsum.photos/seed/gio2/400/300', 1),
-       (N'Giỏ quà Tết Hương Quê', N'Giỏ quà vùng miền: kẹo, mứt đặc sản', 420000, 160,
-        'https://picsum.photos/seed/gio3/400/300', 1),
-       (N'Giỏ quà Tết Thanh Lịch', N'Giỏ quà tối giản, hộp gỗ, phù hợp tặng sếp', 1250000, 35,
-        'https://picsum.photos/seed/gio4/400/300', 1),
-       (N'Giỏ quà Tết Gold', N'Giỏ quà Premium, hộp trang trí kim loại, nhiều món nhập khẩu', 1990000, 20,
-        'https://picsum.photos/seed/gio5/400/300', 1);
+VALUES 
+(N'Giỏ quà Tết An Khang', N'Giỏ quà cao cấp gồm trà thượng hạng, bánh quy, hạt dinh dưỡng', 550000, 120,
+ 'https://quatangcongty.org/wp-content/uploads/2023/10/cac-mau-gio-qua-tet-dep-2.jpg', 1),
+(N'Giỏ quà Tết Sum Vầy', N'Giỏ quà phong cách truyền thống, hộp trang trí đỏ, nhiều món ngon', 690000, 90,
+ 'https://quatangcongty.org/wp-content/uploads/2023/10/cac-mau-gio-qua-tet-dep-2.jpg', 1),
+(N'Giỏ quà Tết Lộc Phát', N'Giỏ gồm rượu vang, socola, bánh nhập khẩu', 820000, 60,
+ 'https://quatangcongty.org/wp-content/uploads/2023/10/cac-mau-gio-qua-tet-dep-2.jpg', 1),
+(N'Giỏ quà Tết Phúc Lộc Thọ', N'Giỏ quà sang trọng, thích hợp tặng đối tác và sếp', 750000, 50,
+ 'https://quatangcongty.org/wp-content/uploads/2023/10/cac-mau-gio-qua-tet-dep-2.jpg', 1),
+(N'Giỏ quà Tết Kim Cương', N'Giỏ cao cấp với trà cao cấp và hũ mứt thủ công', 1500000, 30,
+ 'https://quatangcongty.org/wp-content/uploads/2023/10/cac-mau-gio-qua-tet-dep-2.jpg', 1),
+(N'Giỏ quà Tết Vạn Phúc', N'Giỏ quà truyền thống, nhiều loại mứt và bánh khô', 480000, 180,
+ 'https://quatangcongty.org/wp-content/uploads/2023/10/cac-mau-gio-qua-tet-dep-2.jpg', 1),
+(N'Giỏ quà Tết Hạnh Phúc', N'Giỏ quà gồm trà, mứt dừa, hạt điều, hộp bánh', 580000, 130,
+ 'https://quatangcongty.org/wp-content/uploads/2023/10/cac-mau-gio-qua-tet-dep-2.jpg', 1),
+(N'Giỏ quà Tết Bình An', N'Giỏ gọn nhẹ, phù hợp quà tặng gia đình nhỏ', 490000, 140,
+ 'https://quatangcongty.org/wp-content/uploads/2023/10/cac-mau-gio-qua-tet-dep-2.jpg', 1),
+(N'Giỏ quà Tết Tài Lộc', N'Giỏ nhiều tầng, thiết kế đẹp, quà tặng doanh nghiệp', 990000, 45,
+ 'https://quatangcongty.org/wp-content/uploads/2023/10/cac-mau-gio-qua-tet-dep-2.jpg', 1),
+(N'Giỏ quà Tết Hương Quê', N'Giỏ quà vùng miền: kẹo, mứt đặc sản', 420000, 160,
+ 'https://quatangcongty.org/wp-content/uploads/2023/10/cac-mau-gio-qua-tet-dep-2.jpg', 1),
+(N'Giỏ quà Tết Thanh Lịch', N'Giỏ quà tối giản, hộp gỗ, phù hợp tặng sếp', 1250000, 35,
+ 'https://quatangcongty.org/wp-content/uploads/2023/10/cac-mau-gio-qua-tet-dep-2.jpg', 1),
+(N'Giỏ quà Tết Gold', N'Giỏ quà Premium, hộp trang trí kim loại, nhiều món nhập khẩu', 1990000, 20,
+ 'https://quatangcongty.org/wp-content/uploads/2023/10/cac-mau-gio-qua-tet-dep-2.jpg', 1);
 
--- ===== Hộp quà Tết (12 sp) =====
+-- ===== Hộp quà Tết (12 sp) - Link ảnh giữ nguyên như yêu cầu trước (MaLoai = 2) =====
 INSERT INTO SanPham (TenSP, MoTa, Gia, SoLuong, HinhAnh, MaLoai)
-VALUES (N'Hộp quà Tết Phát Tài (S)', N'Hộp quà quyến rũ cho bạn bè, gồm trà và mứt cao cấp', 350000, 200,
-        'https://images.unsplash.com/photo-1587300003388-59208cc962cb', 2),
-       (N'Hộp quà Tết Phát Tài (M)', N'Phiên bản trung, thêm socola nhập khẩu', 650000, 150,
-        'https://images.unsplash.com/photo-1610022191401-9b3b6b50b0aa', 2),
-       (N'Hộp quà Tết Phát Tài (L)', N'Phiên bản lớn, sang trọng, thích hợp biếu đối tác', 1200000, 80,
-        'https://images.unsplash.com/photo-1589712108067-1a347b2d7e33', 2),
-       (N'Hộp quà Tết Ruby', N'Hộp quà thiết kế độc đáo, chất lượng cao', 1350000, 40,
-        'https://images.unsplash.com/photo-1609599232800-d3d5f8c11b49', 2),
-       (N'Hộp quà Tết Bình An', N'Gồm trà sen, hạt điều, mứt đặc sản', 950000, 70,
-        'https://picsum.photos/seed/hop1/400/300', 2),
-       (N'Hộp quà Premium Vang & Socola', N'Hộp sang trọng với rượu vang, socola cao cấp', 2200000, 15,
-        'https://picsum.photos/seed/hop2/400/300', 2),
-       (N'Hộp quà Tết Thiện Ý', N'Hộp quà thiết kế cây treo may mắn', 480000, 160,
-        'https://picsum.photos/seed/hop3/400/300', 2),
-       (N'Hộp quà Tết Xuân Về', N'Bộ quà gồm mứt, bánh, trà, hộp quà đỏ', 720000, 120,
-        'https://picsum.photos/seed/hop4/400/300', 2),
-       (N'Hộp quà Tết Quý Tộc', N'Hộp quà limited edition, hộp gỗ sơn mài', 3500000, 8,
-        'https://picsum.photos/seed/hop5/400/300', 2),
-       (N'Hộp quà Tết Mini (Corporate)', N'Hộp quà nhỏ gọn cho sự kiện công ty', 180000, 300,
-        'https://picsum.photos/seed/hop6/400/300', 2),
-       (N'Hộp quà Tết Hảo Hạng', N'Hộp kết hợp trà, mứt và bánh handmade', 860000, 95,
-        'https://picsum.photos/seed/hop7/400/300', 2),
-       (N'Hộp quà Tết An Vui', N'Hộp quà tinh tế, in logo theo yêu cầu (corporate)', 1500000, 25,
-        'https://picsum.photos/seed/hop8/400/300', 2);
+VALUES
+(N'Hộp quà Tết Phát Tài (S)', N'Hộp quà quyến rũ cho bạn bè, gồm trà và mứt cao cấp', 350000, 200,
+ 'https://happybox.vn/wp-content/uploads/2023/12/hop-qua-tet-happybox-HPH244-1.webp', 2),
+(N'Hộp quà Tết Phát Tài (M)', N'Phiên bản trung, thêm socola nhập khẩu', 650000, 150,
+ 'https://happybox.vn/wp-content/uploads/2023/12/hop-qua-tet-happybox-HPH244-1.webp', 2),
+(N'Hộp quà Tết Phát Tài (L)', N'Phiên bản lớn, sang trọng, thích hợp biếu đối tác', 1200000, 80,
+ 'https://happybox.vn/wp-content/uploads/2023/12/hop-qua-tet-happybox-HPH244-1.webp', 2),
+(N'Hộp quà Tết Ruby', N'Hộp quà thiết kế độc đáo, chất lượng cao', 1350000, 40,
+ 'https://happybox.vn/wp-content/uploads/2023/12/hop-qua-tet-happybox-HPH244-1.webp', 2),
+(N'Hộp quà Tết Bình An', N'Gồm trà sen, hạt điều, mứt đặc sản', 950000, 70,
+ 'https://happybox.vn/wp-content/uploads/2023/12/hop-qua-tet-happybox-HPH244-1.webp', 2),
+(N'Hộp quà Premium Vang & Socola', N'Hộp sang trọng với rượu vang, socola cao cấp', 2200000, 15,
+ 'https://happybox.vn/wp-content/uploads/2023/12/hop-qua-tet-happybox-HPH244-1.webp', 2),
+(N'Hộp quà Tết Thiện Ý', N'Hộp quà thiết kế cây treo may mắn', 480000, 160,
+ 'https://happybox.vn/wp-content/uploads/2023/12/hop-qua-tet-happybox-HPH244-1.webp', 2),
+(N'Hộp quà Tết Xuân Về', N'Bộ quà gồm mứt, bánh, trà, hộp quà đỏ', 720000, 120,
+ 'https://happybox.vn/wp-content/uploads/2023/12/hop-qua-tet-happybox-HPH244-1.webp', 2),
+(N'Hộp quà Tết Quý Tộc', N'Hộp quà limited edition, hộp gỗ sơn mài', 3500000, 8,
+ 'https://happybox.vn/wp-content/uploads/2023/12/hop-qua-tet-happybox-HPH244-1.webp', 2),
+(N'Hộp quà Tết Mini (Corporate)', N'Hộp quà nhỏ gọn cho sự kiện công ty', 180000, 300,
+ 'https://happybox.vn/wp-content/uploads/2023/12/hop-qua-tet-happybox-HPH244-1.webp', 2),
+(N'Hộp quà Tết Hảo Hạng', N'Hộp kết hợp trà, mứt và bánh handmade', 860000, 95,
+ 'https://happybox.vn/wp-content/uploads/2023/12/hop-qua-tet-happybox-HPH244-1.webp', 2),
+(N'Hộp quà Tết An Vui', N'Hộp quà tinh tế, in logo theo yêu cầu (corporate)', 1500000, 25,
+ 'https://happybox.vn/wp-content/uploads/2023/12/hop-qua-tet-happybox-HPH244-1.webp', 2);
 
--- ===== Mứt - Bánh kẹo (12 sp) =====
+-- ===== Mứt - Bánh kẹo (12 sp) - Link ảnh giữ nguyên như yêu cầu trước (MaLoai = 3) =====
 INSERT INTO SanPham (TenSP, MoTa, Gia, SoLuong, HinhAnh, MaLoai)
-VALUES (N'Mứt dừa non hộp 500g', N'Mứt dừa thơm, béo, đóng hộp sang trọng', 150000, 400,
-        'https://images.unsplash.com/photo-1609599232800-d3d5f8c11b49', 3),
-       (N'Mứt gừng cay ngọt 300g', N'Mứt gừng ấm áp, vị cay nhẹ', 120000, 350,
-        'https://images.unsplash.com/photo-1576618148400-4a75e7e4c02e', 3),
-       (N'Mứt hạt sen sấy 300g', N'Mứt làm từ hạt sen thơm, ngọt thanh', 180000, 240,
-        'https://picsum.photos/seed/mut1/400/300', 3),
-       (N'Bánh quy bơ Đan Mạch 250g', N'Bánh quy giòn, hương bơ tự nhiên', 250000, 200,
-        'https://picsum.photos/seed/banh1/400/300', 3),
-       (N'Kẹo dẻo trái cây 200g', N'Hộp kẹo dẻo tổng hợp, màu sắc bắt mắt', 90000, 500,
-        'https://picsum.photos/seed/k1/400/300', 3),
-       (N'Hạt điều rang muối 500g', N'Hạt điều tuyển chọn, rang muối giòn', 220000, 300,
-        'https://picsum.photos/seed/hat1/400/300', 3),
-       (N'Bánh chưng mini (3 cái)', N'Bánh chưng mini tiện lợi, vị truyền thống', 180000, 180,
-        'https://picsum.photos/seed/bc1/400/300', 3),
-       (N'Mứt cam sấy 250g', N'Mứt cam hương vị tươi mát', 130000, 260, 'https://picsum.photos/seed/mut2/400/300', 3),
-       (N'Bánh phu thê hộp 10 cái', N'Bánh truyền thống, thích hợp mâm cỗ', 200000, 150,
-        'https://picsum.photos/seed/banh2/400/300', 3),
-       (N'Mứt dâu tằm 200g', N'Vị chua ngọt cân bằng, làm từ trái cây tươi', 140000, 210,
-        'https://picsum.photos/seed/mut3/400/300', 3),
-       (N'Kẹo hạnh nhân socola 200g', N'Kẹo socola bọc hạnh nhân', 190000, 220, 'https://picsum.photos/seed/k2/400/300',
-        3),
-       (N'Bánh biscotti hạt 250g', N'Bánh biscotti giòn, ăn cùng trà', 160000, 180,
-        'https://picsum.photos/seed/banh3/400/300', 3);
+VALUES
+(N'Mứt dừa non hộp 500g', N'Mứt dừa thơm, béo, đóng hộp sang trọng', 150000, 400,
+ 'https://gomsulongloan.vn/wp-content/uploads/2023/12/y-nghia-cua-khay-mut-ngay-tet-trong-van-hoa-co-truyen-1.jpg', 3),
+(N'Mứt gừng cay ngọt 300g', N'Mứt gừng ấm áp, vị cay nhẹ', 120000, 350,
+ 'https://gomsulongloan.vn/wp-content/uploads/2023/12/y-nghia-cua-khay-mut-ngay-tet-trong-van-hoa-co-truyen-1.jpg', 3),
+(N'Mứt hạt sen sấy 300g', N'Mứt làm từ hạt sen thơm, ngọt thanh', 180000, 240,
+ 'https://gomsulongloan.vn/wp-content/uploads/2023/12/y-nghia-cua-khay-mut-ngay-tet-trong-van-hoa-co-truyen-1.jpg', 3),
+(N'Bánh quy bơ Đan Mạch 250g', N'Bánh quy giòn, hương bơ tự nhiên', 250000, 200,
+ 'https://gomsulongloan.vn/wp-content/uploads/2023/12/y-nghia-cua-khay-mut-ngay-tet-trong-van-hoa-co-truyen-1.jpg', 3),
+(N'Kẹo dẻo trái cây 200g', N'Hộp kẹo dẻo tổng hợp, màu sắc bắt mắt', 90000, 500,
+ 'https://gomsulongloan.vn/wp-content/uploads/2023/12/y-nghia-cua-khay-mut-ngay-tet-trong-van-hoa-co-truyen-1.jpg', 3),
+(N'Hạt điều rang muối 500g', N'Hạt điều tuyển chọn, rang muối giòn', 220000, 300,
+ 'https://gomsulongloan.vn/wp-content/uploads/2023/12/y-nghia-cua-khay-mut-ngay-tet-trong-van-hoa-co-truyen-1.jpg', 3),
+(N'Bánh chưng mini (3 cái)', N'Bánh chưng mini tiện lợi, vị truyền thống', 180000, 180,
+ 'https://gomsulongloan.vn/wp-content/uploads/2023/12/y-nghia-cua-khay-mut-ngay-tet-trong-van-hoa-co-truyen-1.jpg', 3),
+(N'Mứt cam sấy 250g', N'Mứt cam hương vị tươi mát', 130000, 260,
+ 'https://gomsulongloan.vn/wp-content/uploads/2023/12/y-nghia-cua-khay-mut-ngay-tet-trong-van-hoa-co-truyen-1.jpg', 3),
+(N'Bánh phu thê hộp 10 cái', N'Bánh truyền thống, thích hợp mâm cỗ', 200000, 150,
+ 'https://gomsulongloan.vn/wp-content/uploads/2023/12/y-nghia-cua-khay-mut-ngay-tet-trong-van-hoa-co-truyen-1.jpg', 3),
+(N'Mứt dâu tằm 200g', N'Vị chua ngọt cân bằng, làm từ trái cây tươi', 140000, 210,
+ 'https://gomsulongloan.vn/wp-content/uploads/2023/12/y-nghia-cua-khay-mut-ngay-tet-trong-van-hoa-co-truyen-1.jpg', 3),
+(N'Kẹo hạnh nhân socola 200g', N'Kẹo socola bọc hạnh nhân', 190000, 220,
+ 'https://gomsulongloan.vn/wp-content/uploads/2023/12/y-nghia-cua-khay-mut-ngay-tet-trong-van-hoa-co-truyen-1.jpg', 3),
+(N'Bánh biscotti hạt 250g', N'Bánh biscotti giòn, ăn cùng trà', 160000, 180,
+ 'https://gomsulongloan.vn/wp-content/uploads/2023/12/y-nghia-cua-khay-mut-ngay-tet-trong-van-hoa-co-truyen-1.jpg', 3);
 
--- ===== Bao lì xì & Trang trí (12 sp) =====
+-- ===== Bao lì xì & Trang trí (12 sp) - Đã cập nhật link ảnh theo yêu cầu (MaLoai = 4) =====
 INSERT INTO SanPham (TenSP, MoTa, Gia, SoLuong, HinhAnh, MaLoai)
-VALUES (N'Bao lì xì vàng 2025 (10 cái)', N'Bao lì xì sang trọng, hoa văn truyền thống', 30000, 1000,
-        'https://images.unsplash.com/photo-1641373468097-2cfcb2a14c03', 4),
-       (N'Bao lì xì đỏ may mắn (10 cái)', N'Bao lì xì đỏ họa tiết rồng, phượng', 25000, 900,
-        'https://images.unsplash.com/photo-1611135903337-8a0b9a39d0e0', 4),
-       (N'Bao lì xì handmade (5 cái)', N'Bao lì xì thủ công, vải và nơ', 45000, 700,
-        'https://picsum.photos/seed/bao1/400/300', 4),
-       (N'Đèn lồng giấy mini (bộ 3)', N'Đèn lồng trang trí phòng khách, treo ban công', 55000, 600,
-        'https://images.unsplash.com/photo-1577680710819-4a9e868f9a05', 4),
-       (N'Trang trí Tết treo cửa (bộ 1)', N'Trang trí cờ đỏ, chữ Phúc Lộc Thọ', 75000, 400,
-        'https://picsum.photos/seed/tr1/400/300', 4),
-       (N'Bình hoa Tết sứ', N'Bình hoa làm quà tặng, họa tiết ngày Tết', 220000, 250,
-        'https://picsum.photos/seed/hoa1/400/300', 4),
-       (N'Dây treo may mắn 3 tầng', N'Dây treo treo cửa, quà tặng doanh nghiệp', 98000, 300,
-        'https://picsum.photos/seed/day1/400/300', 4),
-       (N'Phong bao lì xì in hình (10 cái)', N'In theo yêu cầu, logo công ty', 120000, 150,
-        'https://picsum.photos/seed/bao2/400/300', 4),
-       (N'Bộ trang trí bàn thờ Tết', N'Gồm bộ lọ, đĩa, khay nhỏ', 320000, 120,
-        'https://picsum.photos/seed/bantho/400/300', 4),
-       (N'Set Nến Tết thơm (4 cây)', N'Nến thơm trang trí, hương dịu nhẹ', 180000, 260,
-        'https://picsum.photos/seed/nen1/400/300', 4),
-       (N'Chậu cảnh mini (Tết)', N'Chậu cảnh giả/mini trang trí bàn', 150000, 220,
-        'https://picsum.photos/seed/cay1/400/300', 4),
-       (N'Sticker phong thủy 2025', N'Sticker trang trí, may mắn năm mới', 22000, 800,
-        'https://picsum.photos/seed/st1/400/300', 4);
+VALUES
+(N'Bao lì xì vàng 2025 (10 cái)', N'Bao lì xì sang trọng, hoa văn truyền thống', 30000, 1000,
+ 'https://nutscorner.net/wp-content/uploads/2022/09/trang-tri-bao-li-xi-tet-7.jpg', 4),
+(N'Bao lì xì đỏ may mắn (10 cái)', N'Bao lì xì đỏ họa tiết rồng, phượng', 25000, 900,
+ 'https://nutscorner.net/wp-content/uploads/2022/09/trang-tri-bao-li-xi-tet-7.jpg', 4),
+(N'Bao lì xì handmade (5 cái)', N'Bao lì xì thủ công, vải và nơ', 45000, 700,
+ 'https://nutscorner.net/wp-content/uploads/2022/09/trang-tri-bao-li-xi-tet-7.jpg', 4),
+(N'Đèn lồng giấy mini (bộ 3)', N'Đèn lồng trang trí phòng khách, treo ban công', 55000, 600,
+ 'https://nutscorner.net/wp-content/uploads/2022/09/trang-tri-bao-li-xi-tet-7.jpg', 4),
+(N'Trang trí Tết treo cửa (bộ 1)', N'Trang trí cờ đỏ, chữ Phúc Lộc Thọ', 75000, 400,
+ 'https://nutscorner.net/wp-content/uploads/2022/09/trang-tri-bao-li-xi-tet-7.jpg', 4),
+(N'Bình hoa Tết sứ', N'Bình hoa làm quà tặng, họa tiết ngày Tết', 220000, 250,
+ 'https://nutscorner.net/wp-content/uploads/2022/09/trang-tri-bao-li-xi-tet-7.jpg', 4),
+(N'Dây treo may mắn 3 tầng', N'Dây treo treo cửa, quà tặng doanh nghiệp', 98000, 300,
+ 'https://nutscorner.net/wp-content/uploads/2022/09/trang-tri-bao-li-xi-tet-7.jpg', 4),
+(N'Phong bao lì xì in hình (10 cái)', N'In theo yêu cầu, logo công ty', 120000, 150,
+ 'https://nutscorner.net/wp-content/uploads/2022/09/trang-tri-bao-li-xi-tet-7.jpg', 4),
+(N'Bộ trang trí bàn thờ Tết', N'Gồm bộ lọ, đĩa, khay nhỏ', 320000, 120,
+ 'https://nutscorner.net/wp-content/uploads/2022/09/trang-tri-bao-li-xi-tet-7.jpg', 4),
+(N'Set Nến Tết thơm (4 cây)', N'Nến thơm trang trí, hương dịu nhẹ', 180000, 260,
+ 'https://nutscorner.net/wp-content/uploads/2022/09/trang-tri-bao-li-xi-tet-7.jpg', 4),
+(N'Chậu cảnh mini (Tết)', N'Chậu cảnh giả/mini trang trí bàn', 150000, 220,
+ 'https://nutscorner.net/wp-content/uploads/2022/09/trang-tri-bao-li-xi-tet-7.jpg', 4),
+(N'Sticker phong thủy 2025', N'Sticker trang trí, may mắn năm mới', 22000, 800,
+ 'https://nutscorner.net/wp-content/uploads/2022/09/trang-tri-bao-li-xi-tet-7.jpg', 4);
+
 
 -- ==========================
 -- 4. NHẬP KHO BAN ĐẦU (tạo lịch sử nhập kho cho nhiều sp)
@@ -523,6 +515,8 @@ FROM DonHang dh
          JOIN TrangThaiDonHang ttdh ON dh.MaTTDH = ttdh.MaTTDH
 ORDER BY dh.NgayDat DESC;
 GO
-SELECT * FROM DonHang;
 
 -- END OF SCRIPT
+
+SELECT * FROM SanPham
+SELECT * FROM BaiViet

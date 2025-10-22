@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
-@RequestMapping("/admin/products")
+@RequestMapping("/admin/sanpham")
 public class AdminSanPhamController {
 
     @Autowired
@@ -36,31 +36,36 @@ public class AdminSanPhamController {
         model.addAttribute("products", products);
         model.addAttribute("categories", categories);
         model.addAttribute("product", new SanPham());
+        model.addAttribute("isEdit", false); // Thêm dòng này
         model.addAttribute("currentPage", "sanpham");
         model.addAttribute("pageTitle", "Quản lý sản phẩm");
-        return "admin/products";
+        return "admin/sanpham";
     }
 
-    // 2. Form thêm / sửa sản phẩm
-    @GetMapping({"/add", "/edit/{id}"})
-    public String formSanPham(@PathVariable(required = false) Integer id, Model model) {
-        SanPham product = (id != null) ? sanPhamService.findById(id).orElse(new SanPham()) : new SanPham();
+    // 2. Form sửa sản phẩm
+    @GetMapping("/edit/{id}")
+    public String formSuaSanPham(@PathVariable Integer id, Model model) {
+        SanPham product = sanPhamService.findById(id).orElse(new SanPham());
         List<LoaiSanPham> categories = loaiSanPhamService.findAll();
+        List<SanPham> products = sanPhamService.findAll();
 
         model.addAttribute("product", product);
         model.addAttribute("categories", categories);
+        model.addAttribute("products", products);
+        model.addAttribute("isEdit", true);
         model.addAttribute("currentPage", "sanpham");
-        model.addAttribute("pageTitle", (id != null) ? "Sửa sản phẩm" : "Thêm sản phẩm mới");
-        return "admin/products";
+        model.addAttribute("pageTitle", "Sửa sản phẩm");
+        return "admin/sanpham";
     }
 
-    // 3. Lưu sản phẩm
+    // 3. Lưu sản phẩm (thêm mới hoặc cập nhật)
     @PostMapping("/save")
     public String luuSanPham(@ModelAttribute("product") SanPham product,
-                             @RequestParam("file") MultipartFile file,   // 👈 đổi sang "file"
+                             @RequestParam(value = "file", required = false) MultipartFile file,
                              RedirectAttributes redirectAttributes) {
         try {
-            if (!file.isEmpty()) {
+            // Xử lý upload ảnh
+            if (file != null && !file.isEmpty()) {
                 String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
                 Path uploadPath = Paths.get(UPLOAD_DIR);
 
@@ -71,22 +76,31 @@ public class AdminSanPhamController {
                 Files.copy(file.getInputStream(), uploadPath.resolve(fileName),
                         StandardCopyOption.REPLACE_EXISTING);
                 product.setHinhAnh(fileName);
+            } else if (product.getMaSP() != null) {
+                // Nếu đang sửa và không upload ảnh mới, giữ ảnh cũ
+                SanPham existingProduct = sanPhamService.findById(product.getMaSP()).orElse(null);
+                if (existingProduct != null && existingProduct.getHinhAnh() != null) {
+                    product.setHinhAnh(existingProduct.getHinhAnh());
+                }
             }
 
-            if (product.getNgayTao() == null) {
+            // Set ngày tạo cho sản phẩm mới
+            if (product.getMaSP() == null || product.getNgayTao() == null) {
                 product.setNgayTao(LocalDateTime.now());
             }
 
             sanPhamService.save(product);
-            redirectAttributes.addFlashAttribute("success", "Lưu sản phẩm thành công!");
+            redirectAttributes.addFlashAttribute("success",
+                product.getMaSP() == null ? "Thêm sản phẩm thành công!" : "Cập nhật sản phẩm thành công!");
         } catch (Exception e) {
+            e.printStackTrace();
             redirectAttributes.addFlashAttribute("error", "Lỗi khi lưu sản phẩm: " + e.getMessage());
         }
-        return "redirect:/admin/products";
+        return "redirect:/admin/sanpham";
     }
 
     // 4. Xóa sản phẩm
-    @GetMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
     public String xoaSanPham(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
         try {
             sanPhamService.deleteById(id);
@@ -94,6 +108,6 @@ public class AdminSanPhamController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Không thể xóa sản phẩm: " + e.getMessage());
         }
-        return "redirect:/admin/products";
+        return "redirect:/admin/sanpham";
     }
 }

@@ -30,4 +30,11 @@ public interface BaiVietRepository extends JpaRepository<BaiViet, Integer> {
 
     // Đếm số bài viết theo trạng thái
     long countByTrangThai(String trangThai);
+
+    // METHODS CHO STAFF (MỚI)
+    // Tìm tất cả bài viết của một tác giả
+    Page<BaiViet> findByTaiKhoan(TaiKhoan taiKhoan, Pageable pageable);
+
+    // Tìm bài viết của tác giả theo keyword
+    Page<BaiViet> findByTaiKhoanAndTieuDeContainingIgnoreCase(TaiKhoan taiKhoan, String tieuDe, Pageable pageable);
 }

@@ -97,23 +97,93 @@ public class BaiVietService {
     }
 
     // =============================
-    // TODO TV4: Method 3 - Bật/tắt hiển thị bài viết (đã có sẵn)
+    // TODO TV4: Method 3 - Bật/tắt hiển thị bài viết
     public void toggleStatus(Integer id) {
-        Optional<BaiViet> baiVietOpt = baiVietRepository.findById(id);
-        if (baiVietOpt.isPresent()) {
-            BaiViet bv = baiVietOpt.get();
-            String newStatus = "Hiển thị".equals(bv.getTrangThai()) ? "Ẩn" : "Hiển thị";
-            bv.setTrangThai(newStatus);
-            baiVietRepository.save(bv);
+        BaiViet baiViet = baiVietRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy bài viết"));
+
+        // Đổi trạng thái
+        if ("Hiển thị".equals(baiViet.getTrangThai())) {
+            baiViet.setTrangThai("Ẩn");
+        } else {
+            baiViet.setTrangThai("Hiển thị");
         }
+
+        baiVietRepository.save(baiViet);
     }
 
     // =============================
-    // TODO TV4: Method 4 - Xóa bài viết (đã có sẵn)
-    // HƯỚNG DẪN:
-    // Option 1 (Hard delete): baiVietRepository.deleteById(id);
-    // Option 2 (Soft delete): toggleStatus(id) để set TrangThai = "Đã xóa"
+    // TODO TV4: Method 4 - Xóa bài viết
     public void deleteById(Integer id) {
-        baiVietRepository.deleteById(id); // TODO TV4: Có thể đổi sang soft delete
+        if (!baiVietRepository.existsById(id)) {
+            throw new RuntimeException("Không tìm thấy bài viết");
+        }
+        baiVietRepository.deleteById(id);
+    }
+
+    // Đếm tổng số bài viết
+    public long countAll() {
+        return baiVietRepository.count();
+    }
+
+    // =============================
+    // METHODS CHO STAFF (MỚI)
+    // =============================
+
+    // Lấy bài viết của một tác giả (cho staff)
+    public Page<BaiViet> findByTacGia(TaiKhoan tacGia, Pageable pageable) {
+        return baiVietRepository.findByTaiKhoan(tacGia, pageable);
+    }
+
+    // Tìm kiếm bài viết của tác giả theo keyword
+    public Page<BaiViet> searchByTacGiaAndKeyword(TaiKhoan tacGia, String keyword, Pageable pageable) {
+        return baiVietRepository.findByTaiKhoanAndTieuDeContainingIgnoreCase(tacGia, keyword, pageable);
+    }
+
+    // Tạo bài viết mới (với upload ảnh)
+    public BaiViet createBaiViet(BaiViet baiViet, org.springframework.web.multipart.MultipartFile imageFile) throws Exception {
+        if (imageFile != null && !imageFile.isEmpty()) {
+            // Xử lý upload ảnh (giả sử lưu URL)
+            String imageUrl = saveImage(imageFile);
+            baiViet.setHinhAnh(imageUrl);
+        }
+
+        if (baiViet.getTrangThai() == null) {
+            baiViet.setTrangThai("Hiển thị");
+        }
+
+        return baiVietRepository.save(baiViet);
+    }
+
+    // Cập nhật bài viết (với upload ảnh)
+    public BaiViet updateBaiViet(BaiViet baiViet, org.springframework.web.multipart.MultipartFile imageFile) throws Exception {
+        BaiViet existing = baiVietRepository.findById(baiViet.getMaBV())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy bài viết"));
+
+        existing.setTieuDe(baiViet.getTieuDe());
+        existing.setNoiDung(baiViet.getNoiDung());
+        existing.setTrangThai(baiViet.getTrangThai());
+
+        if (imageFile != null && !imageFile.isEmpty()) {
+            String imageUrl = saveImage(imageFile);
+            existing.setHinhAnh(imageUrl);
+        }
+
+        return baiVietRepository.save(existing);
+    }
+
+    // Xóa bài viết
+    public void deleteBaiViet(Integer id) {
+        if (!baiVietRepository.existsById(id)) {
+            throw new RuntimeException("Không tìm thấy bài viết");
+        }
+        baiVietRepository.deleteById(id);
+    }
+
+    // Helper method để lưu ảnh (đơn giản hóa)
+    private String saveImage(org.springframework.web.multipart.MultipartFile file) throws Exception {
+        // TODO: Implement proper image upload to server/cloud
+        // Tạm thời trả về placeholder
+        return "https://picsum.photos/seed/" + System.currentTimeMillis() + "/800/400";
     }
 }

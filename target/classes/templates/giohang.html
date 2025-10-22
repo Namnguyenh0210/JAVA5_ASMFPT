@@ -151,45 +151,13 @@
                         </div>
 
                         <div class="summary-row">
-                            <span>Giảm giá:</span>
-                            <span class="discount" id="discountAmount">0đ</span>
-                        </div>
-
-                        <div class="summary-row">
                             <span>Phí vận chuyển:</span>
-                            <span class="shipping-fee">
-                                <span class="free-shipping" id="shippingFee">MIỄN PHÍ</span>
-                            </span>
+                            <span class="shipping-fee" id="shippingFee">30,000đ</span>
                         </div>
 
                         <div class="summary-row total-row">
                             <span>Tổng cộng:</span>
                             <span class="total-amount" id="totalAmount">0đ</span>
-                        </div>
-
-                        <!-- Voucher -->
-                        <div class="voucher-section">
-                            <h4>Mã Giảm Giá</h4>
-                            <div class="voucher-input">
-                                <input class="voucher-code" id="voucherCodeInput" placeholder="Nhập mã giảm giá..." type="text">
-                                <button class="voucher-apply-btn" onclick="applyVoucher()">Áp Dụng</button>
-                            </div>
-                            <div class="available-vouchers">
-                                <div class="voucher-item">
-                                    <div class="voucher-info">
-                                        <div class="voucher-code-text">NEWYEAR2025</div>
-                                        <div class="voucher-desc">Giảm 10% đơn hàng từ 1 triệu</div>
-                                    </div>
-                                    <button class="voucher-select" onclick="selectVoucher('NEWYEAR2025')">Chọn</button>
-                                </div>
-                                <div class="voucher-item">
-                                    <div class="voucher-info">
-                                        <div class="voucher-code-text">FREESHIP</div>
-                                        <div class="voucher-desc">Miễn phí vận chuyển &lt;5km</div>
-                                    </div>
-                                    <button class="voucher-select" onclick="selectVoucher('FREESHIP')">Chọn</button>
-                                </div>
-                            </div>
                         </div>
 
                         <!-- Checkout Button -->
@@ -226,7 +194,6 @@
 <!-- Scripts -->
 <script th:inline="javascript">
     let editMode = false;
-    let appliedVoucher = null;
 
     // Cập nhật số lượng sản phẩm
     function updateQuantity(sanPhamId, change) {
@@ -374,60 +341,17 @@
         document.getElementById('selectedCount').textContent = count;
         document.getElementById('subtotalAmount').textContent = count > 0 ? formatPrice(subtotal) : '0đ';
 
-        // Calculate discount
-        let discount = 0;
-        if (appliedVoucher && count > 0 && subtotal > 0) {
-            if (appliedVoucher === 'NEWYEAR2025' && subtotal >= 1000000) {
-                discount = subtotal * 0.1;
-            }
-        }
-        document.getElementById('discountAmount').textContent = discount > 0 ? '-' + formatPrice(discount) : '0đ';
+        // Shipping fee - always 30,000đ when items are selected
+        let shippingFee = count > 0 ? 30000 : 0;
+        document.getElementById('shippingFee').textContent = count === 0 ? '30,000đ' : formatPrice(shippingFee);
 
-        // Shipping fee - always 30,000đ when items are selected, unless FREESHIP voucher applied
-        let shippingFee = 0;
-        if (count > 0) {
-            // Check if FREESHIP voucher is applied
-            if (appliedVoucher === 'FREESHIP') {
-                shippingFee = 0;
-            } else {
-                shippingFee = 30000;
-            }
-        }
-
-        document.getElementById('shippingFee').textContent = count === 0 ? 'MIỄN PHÍ' : (shippingFee === 0 ? 'MIỄN PHÍ' : formatPrice(shippingFee));
-
-        // Calculate total (subtotal - discount + shipping)
-        const total = subtotal - discount + shippingFee;
+        // Calculate total (subtotal + shipping)
+        const total = subtotal + shippingFee;
         document.getElementById('totalAmount').textContent = count > 0 ? formatPrice(total) : '0đ';
 
         // Enable/disable checkout button
         const checkoutBtn = document.getElementById('checkoutBtn');
         checkoutBtn.disabled = count === 0;
-    }
-
-    // Áp dụng voucher
-    function selectVoucher(code) {
-        document.getElementById('voucherCodeInput').value = code;
-        applyVoucher();
-    }
-
-    function applyVoucher() {
-        const code = document.getElementById('voucherCodeInput').value.trim();
-        const selectedCount = document.querySelectorAll('.item-select:checked').length;
-
-        if (selectedCount === 0) {
-            alert('Vui lòng chọn sản phẩm trước khi áp dụng voucher!');
-            return;
-        }
-
-        if (!code) {
-            alert('Vui lòng nhập mã giảm giá!');
-            return;
-        }
-
-        appliedVoucher = code;
-        updateSummary();
-        alert(`Áp dụng mã giảm giá "${code}" thành công!`);
     }
 
     // Thanh toán
