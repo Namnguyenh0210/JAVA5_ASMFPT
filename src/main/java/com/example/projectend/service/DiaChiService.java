@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * DIA CHI SERVICE - Quản lý địa chỉ giao hàng
+ * Service quản lý địa chỉ giao hàng
  */
 @Service
 public class DiaChiService {
@@ -18,22 +18,30 @@ public class DiaChiService {
     @Autowired
     private DiaChiRepository diaChiRepository;
 
-    // Lấy danh sách địa chỉ của user
+    /**
+     * Lấy danh sách địa chỉ của người dùng
+     */
     public List<DiaChi> getDiaChiByTaiKhoan(TaiKhoan tk) {
         return diaChiRepository.findByTaiKhoanOrderByMacDinhDesc(tk);
     }
 
-    // Lấy địa chỉ mặc định
+    /**
+     * Lấy địa chỉ mặc định của người dùng
+     */
     public Optional<DiaChi> getDiaChiMacDinh(TaiKhoan tk) {
         return diaChiRepository.findByTaiKhoanAndMacDinhTrue(tk);
     }
 
-    // Lưu địa chỉ
+    /**
+     * Lưu hoặc cập nhật địa chỉ
+     */
     public DiaChi save(DiaChi dc) {
         return diaChiRepository.save(dc);
     }
 
-    // Đặt địa chỉ làm mặc định
+    /**
+     * Đặt địa chỉ làm mặc định
+     */
     public void setMacDinh(Integer id, TaiKhoan tk) {
         List<DiaChi> allAddresses = getDiaChiByTaiKhoan(tk);
         for (DiaChi dc : allAddresses) {
@@ -42,11 +50,16 @@ public class DiaChiService {
         }
     }
 
+    /**
+     * Tìm địa chỉ theo ID
+     */
     public Optional<DiaChi> findById(Integer id) {
         return diaChiRepository.findById(id);
     }
 
-    // Xóa địa chỉ
+    /**
+     * Xóa địa chỉ (không cho xóa địa chỉ mặc định)
+     */
     public void delete(Integer id, TaiKhoan tk) {
         Optional<DiaChi> diaChi = findById(id);
         if (diaChi.isPresent() && !diaChi.get().getMacDinh()) {

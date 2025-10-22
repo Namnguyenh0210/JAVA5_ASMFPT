@@ -1,9 +1,9 @@
 // Bổ sung vào file DonHangChiTietRepository.java
 package com.example.projectend.repository;
 
-import com.example.projectend.entity.DonHang;        // Import DonHang Entity
+import com.example.projectend.entity.DonHang;
 import com.example.projectend.entity.DonHangChiTiet;
-import com.example.projectend.entity.SanPham;       // Import SanPham Entity (phục vụ thống kê)
+import com.example.projectend.entity.SanPham;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -27,9 +27,9 @@ public interface DonHangChiTietRepository extends JpaRepository<DonHangChiTiet, 
 
     // 🥇 Top sản phẩm bán chạy — nhóm theo sản phẩm, sắp giảm dần theo tổng số lượng bán
     @Query("SELECT c.sanPham AS sp, SUM(c.soLuong) AS total " +
-           "FROM DonHangChiTiet c " +
-           "GROUP BY c.sanPham " +
-           "ORDER BY total DESC")
+            "FROM DonHangChiTiet c " +
+            "GROUP BY c.sanPham " +
+            "ORDER BY total DESC")
     List<Object[]> getTopSellingProducts();
 
     // 🧮 Tổng số lượng dòng chi tiết (hoặc có thể dùng SUM soLuong bằng query riêng)

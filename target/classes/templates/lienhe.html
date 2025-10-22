@@ -89,10 +89,10 @@
                                 <i class="fas fa-user"></i>
                                 Họ và Tên *
                             </label>
-                            <input type="text" id="hoTen" name="hoTen" th:field="*{hoTen}"
-                                   placeholder="Nguyễn Văn A" required>
-                            <span class="error-message" th:if="${#fields.hasErrors('hoTen')}"
-                                  th:errors="*{hoTen}"></span>
+                            <input id="hoTen" name="hoTen" placeholder="Nguyễn Văn A" required
+                                   th:field="*{hoTen}" type="text">
+                            <span class="error-message" th:errors="*{hoTen}"
+                                  th:if="${#fields.hasErrors('hoTen')}"></span>
                         </div>
 
                         <div class="form-group">
@@ -100,10 +100,10 @@
                                 <i class="fas fa-phone"></i>
                                 Số Điện Thoại *
                             </label>
-                            <input type="tel" id="soDienThoai" name="soDienThoai" th:field="*{soDienThoai}"
-                                   placeholder="0909 123 456" required>
-                            <span class="error-message" th:if="${#fields.hasErrors('soDienThoai')}"
-                                  th:errors="*{soDienThoai}"></span>
+                            <input id="soDienThoai" name="soDienThoai" placeholder="0909 123 456" required
+                                   th:field="*{soDienThoai}" type="tel">
+                            <span class="error-message" th:errors="*{soDienThoai}"
+                                  th:if="${#fields.hasErrors('soDienThoai')}"></span>
                         </div>
                     </div>
 
@@ -112,10 +112,10 @@
                             <i class="fas fa-envelope"></i>
                             Email *
                         </label>
-                        <input type="email" id="email" name="email" th:field="*{email}"
-                               placeholder="example@email.com" required>
-                        <span class="error-message" th:if="${#fields.hasErrors('email')}"
-                              th:errors="*{email}"></span>
+                        <input id="email" name="email" placeholder="example@email.com" required
+                               th:field="*{email}" type="email">
+                        <span class="error-message" th:errors="*{email}"
+                              th:if="${#fields.hasErrors('email')}"></span>
                     </div>
 
                     <div class="form-group">
@@ -123,10 +123,10 @@
                             <i class="fas fa-tag"></i>
                             Tiêu Đề *
                         </label>
-                        <input type="text" id="tieuDe" name="tieuDe" th:field="*{tieuDe}"
-                               placeholder="Tiêu đề liên hệ của bạn" required>
-                        <span class="error-message" th:if="${#fields.hasErrors('tieuDe')}"
-                              th:errors="*{tieuDe}"></span>
+                        <input id="tieuDe" name="tieuDe" placeholder="Tiêu đề liên hệ của bạn" required
+                               th:field="*{tieuDe}" type="text">
+                        <span class="error-message" th:errors="*{tieuDe}"
+                              th:if="${#fields.hasErrors('tieuDe')}"></span>
                     </div>
 
                     <div class="form-group">
@@ -134,13 +134,13 @@
                             <i class="fas fa-comment-dots"></i>
                             Nội Dung *
                         </label>
-                        <textarea id="noiDung" name="noiDung" th:field="*{noiDung}" rows="6"
-                                  placeholder="Vui lòng mô tả chi tiết yêu cầu của bạn..." required></textarea>
-                        <span class="error-message" th:if="${#fields.hasErrors('noiDung')}"
-                              th:errors="*{noiDung}"></span>
+                        <textarea id="noiDung" name="noiDung" placeholder="Vui lòng mô tả chi tiết yêu cầu của bạn..." required
+                                  rows="6" th:field="*{noiDung}"></textarea>
+                        <span class="error-message" th:errors="*{noiDung}"
+                              th:if="${#fields.hasErrors('noiDung')}"></span>
                     </div>
 
-                    <button type="submit" class="submit-btn">
+                    <button class="submit-btn" type="submit">
                         <i class="fas fa-paper-plane"></i>
                         <span>Gửi Tin Nhắn</span>
                     </button>
@@ -182,19 +182,19 @@
                         Kết Nối Với Chúng Tôi
                     </h3>
                     <div class="social-links">
-                        <a href="#" class="social-link facebook" aria-label="Facebook">
+                        <a aria-label="Facebook" class="social-link facebook" href="#">
                             <i class="fab fa-facebook-f"></i>
                             <span>Facebook</span>
                         </a>
-                        <a href="#" class="social-link instagram" aria-label="Instagram">
+                        <a aria-label="Instagram" class="social-link instagram" href="#">
                             <i class="fab fa-instagram"></i>
                             <span>Instagram</span>
                         </a>
-                        <a href="#" class="social-link youtube" aria-label="YouTube">
+                        <a aria-label="YouTube" class="social-link youtube" href="#">
                             <i class="fab fa-youtube"></i>
                             <span>YouTube</span>
                         </a>
-                        <a href="#" class="social-link zalo" aria-label="Zalo">
+                        <a aria-label="Zalo" class="social-link zalo" href="#">
                             <i class="fas fa-comment"></i>
                             <span>Zalo</span>
                         </a>
@@ -208,7 +208,7 @@
                         Liên Hệ Nhanh
                     </h3>
                     <p>Cần tư vấn ngay?</p>
-                    <a href="tel:0909123456" class="quick-call-btn">
+                    <a class="quick-call-btn" href="tel:0909123456">
                         <i class="fas fa-phone-alt"></i>
                         Gọi Ngay: 0909.123.456
                     </a>
@@ -230,8 +230,8 @@
         </div>
         <div class="map-container">
             <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.4609289721735!2d106.66829841531493!3d10.776889992319736!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752ed2392c44df%3A0xd2ecb62e0d050fe9!2sFPT%20University%20HCMC!5e0!3m2!1sen!2s!4v1609459200000!5m2!1sen!2s"
-                width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                    allowfullscreen=""
+                    height="450" loading="lazy" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.4609289721735!2d106.66829841531493!3d10.776889992319736!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752ed2392c44df%3A0xd2ecb62e0d050fe9!2sFPT%20University%20HCMC!5e0!3m2!1sen!2s!4v1609459200000!5m2!1sen!2s" style="border:0;" width="100%"></iframe>
         </div>
     </div>
 </section>
@@ -253,7 +253,8 @@
                     <i class="fas fa-shipping-fast"></i>
                     <h3>Có giao hàng tận nơi không?</h3>
                 </div>
-                <p class="faq-answer">Có, chúng tôi giao hàng tận nơi toàn quốc. Nội thành TP.HCM miễn phí với đơn hàng từ 500k.</p>
+                <p class="faq-answer">Có, chúng tôi giao hàng tận nơi toàn quốc. Nội thành TP.HCM miễn phí với đơn hàng
+                    từ 500k.</p>
             </div>
 
             <div class="faq-item">

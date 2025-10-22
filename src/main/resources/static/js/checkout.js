@@ -11,29 +11,34 @@ function showToast(msg, type = 'success') {
         setTimeout(() => toast.remove(), 400);
     }, 2200);
 }
+
 function showAddAddressForm() {
     document.getElementById('address-form-modal').style.display = 'flex';
     setTimeout(() => {
         let inp = document.querySelector('#addressForm input[name="name"]');
-        if(inp) inp.focus();
+        if (inp) inp.focus();
     }, 100);
 }
+
 function hideAddAddressForm() {
     document.getElementById('address-form-modal').style.display = 'none';
 }
+
 function setDefaultAddress(id) {
     showToast('Đặt địa chỉ ' + id + ' làm mặc định!', 'success');
     // Hiệu ứng highlight
     let addr = document.querySelector('.address-item[data-id="' + id + '"]');
-    if(addr) {
+    if (addr) {
         addr.classList.add('highlight');
         setTimeout(() => addr.classList.remove('highlight'), 1200);
     }
 }
+
 function editAddress(id) {
     // Lấy dữ liệu địa chỉ, show form sửa
     alert('Sửa địa chỉ ' + id);
 }
+
 function deleteAddress(id) {
     let modal = document.createElement('div');
     modal.className = 'checkout-modal';
@@ -45,25 +50,26 @@ function deleteAddress(id) {
         </div>
     </div>`;
     document.body.appendChild(modal);
-    document.getElementById('confirmDel').onclick = function() {
+    document.getElementById('confirmDel').onclick = function () {
         showToast('Đã xóa địa chỉ ' + id, 'success');
         modal.remove();
     };
-    document.getElementById('cancelDel').onclick = function() {
+    document.getElementById('cancelDel').onclick = function () {
         modal.remove();
     };
 }
 
 // Đóng modal khi lưu địa chỉ thành công
-if(document.getElementById('addressForm')) {
-    document.getElementById('addressForm').onsubmit = function(e) {
+if (document.getElementById('addressForm')) {
+    document.getElementById('addressForm').onsubmit = function (e) {
         e.preventDefault();
         showToast('Lưu địa chỉ thành công!', 'success');
         hideAddAddressForm();
     };
 }
+
 // Scroll đến phần lỗi nếu có
 function scrollToError() {
     let err = document.querySelector('.input-error');
-    if(err) err.scrollIntoView({behavior:'smooth', block:'center'});
+    if (err) err.scrollIntoView({behavior: 'smooth', block: 'center'});
 }

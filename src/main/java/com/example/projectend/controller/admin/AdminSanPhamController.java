@@ -11,7 +11,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,13 +22,11 @@ import java.util.List;
 @RequestMapping("/admin/sanpham")
 public class AdminSanPhamController {
 
+    private final String UPLOAD_DIR = "src/main/resources/static/images/";
     @Autowired
     private SanPhamService sanPhamService;
-
     @Autowired
     private LoaiSanPhamService loaiSanPhamService;
-
-    private final String UPLOAD_DIR = "src/main/resources/static/images/";
 
     // 1. Danh sách sản phẩm
     @GetMapping("")
@@ -91,7 +92,7 @@ public class AdminSanPhamController {
 
             sanPhamService.save(product);
             redirectAttributes.addFlashAttribute("success",
-                product.getMaSP() == null ? "Thêm sản phẩm thành công!" : "Cập nhật sản phẩm thành công!");
+                    product.getMaSP() == null ? "Thêm sản phẩm thành công!" : "Cập nhật sản phẩm thành công!");
         } catch (Exception e) {
             e.printStackTrace();
             redirectAttributes.addFlashAttribute("error", "Lỗi khi lưu sản phẩm: " + e.getMessage());

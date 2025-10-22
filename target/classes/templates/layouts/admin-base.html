@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title layout:title-pattern="$CONTENT_TITLE - $LAYOUT_TITLE">Admin Panel</title>
 
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <!-- Admin CSS -->
@@ -357,59 +357,59 @@
 <!-- Sidebar -->
 <aside class="admin-sidebar" id="adminSidebar">
     <div class="sidebar-header">
-        <a href="/admin" class="sidebar-logo">
+        <a class="sidebar-logo" href="/admin">
             <i class="fas fa-store"></i> Tết Admin
         </a>
     </div>
 
     <nav class="sidebar-menu">
-        <a href="/admin" class="menu-item" th:classappend="${currentPage == 'dashboard' ? 'active' : ''}">
+        <a class="menu-item" href="/admin" th:classappend="${currentPage == 'dashboard' ? 'active' : ''}">
             <i class="fas fa-tachometer-alt"></i>
             <span>Dashboard</span>
         </a>
 
         <div class="menu-section">Quản lý</div>
 
-        <a href="/admin/donhang" class="menu-item" th:classappend="${currentPage == 'donhang' ? 'active' : ''}">
+        <a class="menu-item" href="/admin/donhang" th:classappend="${currentPage == 'donhang' ? 'active' : ''}">
             <i class="fas fa-shopping-bag"></i>
             <span>Đơn hàng</span>
         </a>
 
-        <a href="/admin/sanpham" class="menu-item" th:classappend="${currentPage == 'sanpham' ? 'active' : ''}">
+        <a class="menu-item" href="/admin/sanpham" th:classappend="${currentPage == 'sanpham' ? 'active' : ''}">
             <i class="fas fa-box"></i>
             <span>Sản phẩm</span>
         </a>
 
-        <a href="/admin/taikhoan" class="menu-item" th:classappend="${currentPage == 'taikhoan' ? 'active' : ''}">
+        <a class="menu-item" href="/admin/taikhoan" th:classappend="${currentPage == 'taikhoan' ? 'active' : ''}">
             <i class="fas fa-users"></i>
             <span>Tài khoản</span>
         </a>
 
-        <a href="/admin/baiviet" class="menu-item" th:classappend="${currentPage == 'baiviet' ? 'active' : ''}">
+        <a class="menu-item" href="/admin/baiviet" th:classappend="${currentPage == 'baiviet' ? 'active' : ''}">
             <i class="fas fa-newspaper"></i>
             <span>Bài viết</span>
         </a>
 
         <div class="menu-section">Báo cáo</div>
 
-        <a href="/admin/thongke" class="menu-item" th:classappend="${currentPage == 'thongke' ? 'active' : ''}">
+        <a class="menu-item" href="/admin/thongke" th:classappend="${currentPage == 'thongke' ? 'active' : ''}">
             <i class="fas fa-chart-line"></i>
             <span>Thống kê</span>
         </a>
 
         <div class="menu-section">Hệ thống</div>
 
-        <a href="/admin/caidat" class="menu-item">
+        <a class="menu-item" href="/admin/caidat">
             <i class="fas fa-cog"></i>
             <span>Cài đặt</span>
         </a>
 
-        <a href="/" class="menu-item" target="_blank">
+        <a class="menu-item" href="/" target="_blank">
             <i class="fas fa-globe"></i>
             <span>Xem trang web</span>
         </a>
 
-        <a href="/logout" class="menu-item">
+        <a class="menu-item" href="/logout">
             <i class="fas fa-sign-out-alt"></i>
             <span>Đăng xuất</span>
         </a>
@@ -427,7 +427,7 @@
 
             <div class="header-search">
                 <i class="fas fa-search"></i>
-                <input type="text" placeholder="Tìm kiếm...">
+                <input placeholder="Tìm kiếm..." type="text">
             </div>
         </div>
 

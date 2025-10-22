@@ -71,8 +71,11 @@ public interface DonHangRepository extends JpaRepository<DonHang, Integer>, JpaS
 
     // 4️⃣ Các phương thức hỗ trợ Staff claim đơn
     List<DonHang> findByNhanVienIsNullAndTrangThaiDonHang_MaTTDH(Integer maTTDH);
+
     List<DonHang> findByNhanVien_MaTKAndTrangThaiDonHang_MaTTDHOrderByNgayDatAsc(Integer maNV, Integer maTTDH);
+
     List<DonHang> findByNhanVien_MaTKOrderByNgayDatDesc(Integer maNV);
+
     List<DonHang> findByNgayDatBetween(LocalDateTime start, LocalDateTime end);
 
     // 5️⃣ Reports: đếm số đơn trong khoảng
@@ -83,7 +86,7 @@ public interface DonHangRepository extends JpaRepository<DonHang, Integer>, JpaS
 
     // 7️⃣ Tổng sản phẩm bán ra trong khoảng (MaTTDH = 3: Hoàn tất)
     @Query("SELECT SUM(ct.soLuong) " +
-           "FROM DonHang d JOIN d.chiTietList ct " +
-           "WHERE d.trangThaiDonHang.maTTDH = 3 AND d.ngayDat BETWEEN :start AND :end")
+            "FROM DonHang d JOIN d.chiTietList ct " +
+            "WHERE d.trangThaiDonHang.maTTDH = 3 AND d.ngayDat BETWEEN :start AND :end")
     Long sumTotalProductsSoldByDateRange(LocalDateTime start, LocalDateTime end);
 }

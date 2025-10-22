@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Quản lý Bài viết - Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -111,38 +111,39 @@
                 <h2>📰 Quản lý Bài viết</h2>
                 <p class="text-muted">Quản lý kiến thức Tết và tin tức</p>
             </div>
-            <button class="btn btn-tet" data-bs-toggle="modal" data-bs-target="#addPostModal">
+            <button class="btn btn-tet" data-bs-target="#addPostModal" data-bs-toggle="modal">
                 <i class="fas fa-plus"></i> Thêm bài viết mới
             </button>
         </div>
 
         <!-- Alert Messages -->
-        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${success}">
             <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <button class="btn-close" data-bs-dismiss="alert" type="button"></button>
         </div>
 
-        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${error}">
             <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <button class="btn-close" data-bs-dismiss="alert" type="button"></button>
         </div>
 
         <!-- Search and Filter -->
         <div class="card mb-4">
             <div class="card-body">
-                <form method="get" action="/admin/baiviet" class="row g-3">
+                <form action="/admin/baiviet" class="row g-3" method="get">
                     <div class="col-md-6">
-                        <input type="text" name="search" class="form-control" placeholder="Tìm kiếm theo tiêu đề..." th:value="${search}">
+                        <input class="form-control" name="search" placeholder="Tìm kiếm theo tiêu đề..." th:value="${search}"
+                               type="text">
                     </div>
                     <div class="col-md-3">
-                        <select name="trangThai" class="form-select">
+                        <select class="form-select" name="trangThai">
                             <option value="">Tất cả trạng thái</option>
-                            <option value="Hiển thị" th:selected="${trangThai == 'Hiển thị'}">Hiển thị</option>
-                            <option value="Ẩn" th:selected="${trangThai == 'Ẩn'}">Ẩn</option>
+                            <option th:selected="${trangThai == 'Hiển thị'}" value="Hiển thị">Hiển thị</option>
+                            <option th:selected="${trangThai == 'Ẩn'}" value="Ẩn">Ẩn</option>
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <button type="submit" class="btn btn-tet w-100">
+                        <button class="btn btn-tet w-100" type="submit">
                             <i class="fas fa-search"></i> Tìm kiếm
                         </button>
                     </div>
@@ -167,7 +168,7 @@
                         </thead>
                         <tbody>
                         <tr th:if="${baiVietPage == null or baiVietPage.content.isEmpty()}">
-                            <td colspan="6" class="text-center py-4">
+                            <td class="text-center py-4" colspan="6">
                                 <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
                                 <p class="text-muted">Chưa có bài viết nào</p>
                             </td>
@@ -177,7 +178,8 @@
                             <td>
                                 <strong th:text="${post.tieuDe}">Tiêu đề bài viết</strong>
                                 <br>
-                                <small class="text-muted" th:if="${post.noiDung != null and #strings.length(post.noiDung) > 80}">
+                                <small class="text-muted"
+                                       th:if="${post.noiDung != null and #strings.length(post.noiDung) > 80}">
                                     <span th:text="${#strings.substring(post.noiDung, 0, 80)} + '...'"></span>
                                 </small>
                             </td>
@@ -199,16 +201,16 @@
                                                 data-trangthai=${post.trangThai}">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <form th:action="@{/admin/baiviet/{id}/toggle(id=${post.maBV})}"
-                                      method="post" class="d-inline">
-                                    <button type="submit" class="btn btn-sm btn-warning">
+                                <form class="d-inline"
+                                      method="post" th:action="@{/admin/baiviet/{id}/toggle(id=${post.maBV})}">
+                                    <button class="btn btn-sm btn-warning" type="submit">
                                         <i th:class="${post.trangThai == 'Hiển thị' ? 'fas fa-eye-slash' : 'fas fa-eye'}"></i>
                                     </button>
                                 </form>
-                                <form th:action="@{/admin/baiviet/{id}/delete(id=${post.maBV})}"
-                                      method="post" class="d-inline"
-                                      onsubmit="return confirm('Bạn có chắc muốn xóa bài viết này?')">
-                                    <button type="submit" class="btn btn-sm btn-danger">
+                                <form class="d-inline"
+                                      method="post" onsubmit="return confirm('Bạn có chắc muốn xóa bài viết này?')"
+                                      th:action="@{/admin/baiviet/{id}/delete(id=${post.maBV})}">
+                                    <button class="btn btn-sm btn-danger" type="submit">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
@@ -222,17 +224,20 @@
                 <nav th:if="${baiVietPage != null and baiVietPage.totalPages > 1}">
                     <ul class="pagination justify-content-center">
                         <li class="page-item" th:classappend="${baiVietPage.first} ? 'disabled'">
-                            <a class="page-link" th:href="@{/admin/baiviet(page=${baiVietPage.number - 1}, search=${search}, trangThai=${trangThai})}">
+                            <a class="page-link"
+                               th:href="@{/admin/baiviet(page=${baiVietPage.number - 1}, search=${search}, trangThai=${trangThai})}">
                                 Trước
                             </a>
                         </li>
-                        <li class="page-item" th:each="i : ${#numbers.sequence(0, baiVietPage.totalPages - 1)}"
-                            th:classappend="${i == baiVietPage.number} ? 'active'">
-                            <a class="page-link" th:href="@{/admin/baiviet(page=${i}, search=${search}, trangThai=${trangThai})}"
+                        <li class="page-item" th:classappend="${i == baiVietPage.number} ? 'active'"
+                            th:each="i : ${#numbers.sequence(0, baiVietPage.totalPages - 1)}">
+                            <a class="page-link"
+                               th:href="@{/admin/baiviet(page=${i}, search=${search}, trangThai=${trangThai})}"
                                th:text="${i + 1}">1</a>
                         </li>
                         <li class="page-item" th:classappend="${baiVietPage.last} ? 'disabled'">
-                            <a class="page-link" th:href="@{/admin/baiviet(page=${baiVietPage.number + 1}, search=${search}, trangThai=${trangThai})}">
+                            <a class="page-link"
+                               th:href="@{/admin/baiviet(page=${baiVietPage.number + 1}, search=${search}, trangThai=${trangThai})}">
                                 Sau
                             </a>
                         </li>
@@ -251,26 +256,26 @@
                 <h5 class="modal-title" id="modalTitle">
                     <i class="fas fa-plus-circle"></i> Thêm bài viết mới
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <button class="btn-close btn-close-white" data-bs-dismiss="modal" type="button"></button>
             </div>
-            <form id="postForm" method="post" action="/admin/baiviet/save">
+            <form action="/admin/baiviet/save" id="postForm" method="post">
                 <div class="modal-body">
-                    <input type="hidden" id="postId" name="maBV">
+                    <input id="postId" name="maBV" type="hidden">
 
                     <div class="mb-3">
                         <label class="form-label">Tiêu đề <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="tieuDe" name="tieuDe" required>
+                        <input class="form-control" id="tieuDe" name="tieuDe" required type="text">
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Nội dung <span class="text-danger">*</span></label>
-                        <textarea class="form-control" id="noiDung" name="noiDung" rows="8" required></textarea>
+                        <textarea class="form-control" id="noiDung" name="noiDung" required rows="8"></textarea>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Hình ảnh (URL)</label>
-                        <input type="text" class="form-control" id="hinhAnh" name="hinhAnh"
-                               placeholder="https://example.com/image.jpg">
+                        <input class="form-control" id="hinhAnh" name="hinhAnh" placeholder="https://example.com/image.jpg"
+                               type="text">
                     </div>
 
                     <div class="mb-3">
@@ -282,8 +287,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="submit" class="btn btn-tet">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Hủy</button>
+                    <button class="btn btn-tet" type="submit">
                         <i class="fas fa-save"></i> Lưu bài viết
                     </button>
                 </div>

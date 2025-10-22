@@ -390,7 +390,8 @@
 
             <div class="info-row">
                 <span class="info-label">Trạng thái:</span>
-                <span class="status-badge status-pending" th:text="${donHang.trangThaiDonHang.tenTTDH}">Chờ xác nhận</span>
+                <span class="status-badge status-pending"
+                      th:text="${donHang.trangThaiDonHang.tenTTDH}">Chờ xác nhận</span>
             </div>
 
             <div class="info-row">
@@ -410,12 +411,14 @@
 
             <div class="info-row">
                 <span class="info-label">Địa chỉ giao hàng:</span>
-                <span class="info-value" th:text="${donHang.diaChiGiaoHang.diaChiChiTiet}">123 Đường ABC, Quận 1, TP.HCM</span>
+                <span class="info-value"
+                      th:text="${donHang.diaChiGiaoHang.diaChiChiTiet}">123 Đường ABC, Quận 1, TP.HCM</span>
             </div>
 
             <div class="info-row">
                 <span class="info-label">Phương thức thanh toán:</span>
-                <span class="info-value" th:text="${donHang.phuongThucThanhToan.tenPTTT}">Thanh toán khi nhận hàng</span>
+                <span class="info-value"
+                      th:text="${donHang.phuongThucThanhToan.tenPTTT}">Thanh toán khi nhận hàng</span>
             </div>
         </div>
 
@@ -424,7 +427,7 @@
                 <i class="fas fa-gift"></i> Sản phẩm đã đặt
             </h3>
 
-            <div th:each="item : ${chiTiet}" class="order-item">
+            <div class="order-item" th:each="item : ${chiTiet}">
                 <div>
                     <div class="order-item-name" th:text="${item.sanPham.tenSP}">Tên sản phẩm</div>
                     <div style="color: #666; font-size: 0.875rem;">
@@ -432,7 +435,8 @@
                         <span th:text="${#numbers.formatDecimal(item.donGia, 0, 'COMMA', 0, 'POINT')} + 'đ'">30,000đ</span>
                     </div>
                 </div>
-                <div class="order-item-price" th:text="${#numbers.formatDecimal(item.donGia * item.soLuong, 0, 'COMMA', 0, 'POINT')} + 'đ'">
+                <div class="order-item-price"
+                     th:text="${#numbers.formatDecimal(item.donGia * item.soLuong, 0, 'COMMA', 0, 'POINT')} + 'đ'">
                     30,000đ
                 </div>
             </div>
@@ -441,7 +445,8 @@
         <div class="total-row">
             <div class="info-row">
                 <span class="info-label">Tạm tính:</span>
-                <span class="info-value" th:text="${#numbers.formatDecimal(donHang.tongTien - 30000, 0, 'COMMA', 0, 'POINT')} + 'đ'">30,000đ</span>
+                <span class="info-value"
+                      th:text="${#numbers.formatDecimal(donHang.tongTien - 30000, 0, 'COMMA', 0, 'POINT')} + 'đ'">30,000đ</span>
             </div>
             <div class="info-row">
                 <span class="info-label">Phí vận chuyển:</span>
@@ -449,15 +454,16 @@
             </div>
             <div class="info-row">
                 <span class="info-label" style="font-size: 1.25rem;">Tổng cộng:</span>
-                <span class="total-amount" th:text="${#numbers.formatDecimal(donHang.tongTien, 0, 'COMMA', 0, 'POINT')} + 'đ'">30,000đ</span>
+                <span class="total-amount"
+                      th:text="${#numbers.formatDecimal(donHang.tongTien, 0, 'COMMA', 0, 'POINT')} + 'đ'">30,000đ</span>
             </div>
         </div>
 
         <div class="action-buttons">
-            <a th:href="@{/profile}" class="btn btn-primary">
+            <a class="btn btn-primary" th:href="@{/profile}">
                 <i class="fas fa-box"></i> Xem đơn hàng của tôi
             </a>
-            <a th:href="@{/sanpham}" class="btn btn-secondary">
+            <a class="btn btn-secondary" th:href="@{/sanpham}">
                 <i class="fas fa-shopping-bag"></i> Tiếp tục mua sắm
             </a>
         </div>

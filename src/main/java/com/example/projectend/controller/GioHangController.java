@@ -17,36 +17,7 @@ import java.security.Principal;
 import java.util.*;
 
 /**
- * GIO HANG CONTROLLER - Quản lý giỏ hàng
- * <p>
- * =============================
- * PHÂN CÔNG: TV2 - FRONTEND KHÁCH HÀNG
- * =============================
- * TODO TV2 - CẦN LÀM (5 ENDPOINTS):
- * <p>
- * 1. GET /giohang - Hiển thị giỏ hàng
- * → Load giỏ hàng của user: gioHangService.getGioHangByTaiKhoan(tk)
- * → Tính tổng tiền: gioHangService.tinhTongTien(items)
- * <p>
- * 2. POST /api/giohang/add - Thêm sản phẩm (AJAX)
- * → gioHangService.themSanPham(tk, sp, soLuong)
- * → Return JSON: {success: true, count: X, total: Y}
- * <p>
- * 3. PUT /api/giohang/update - Cập nhật số lượng (AJAX)
- * → gioHangService.capNhatSoLuong(tk, maSP, soLuong)
- * → Return JSON: {success: true, newTotal: Y}
- * <p>
- * 4. DELETE /api/giohang/remove/{id} - Xóa sản phẩm (AJAX)
- * → gioHangService.xoaSanPham(tk, id)
- * → Return JSON: {success: true, count: X}
- * <p>
- * 5. GET /api/giohang/count - Đếm số items (AJAX badge)
- * → gioHangService.countItems(tk)
- * → Return JSON: {count: X}
- * <p>
- * THỜI GIAN: 2 ngày
- * LƯU Ý: 4 AJAX endpoints cần @ResponseBody
- * =============================
+ * Controller quản lý giỏ hàng người dùng
  */
 @Controller
 public class GioHangController {
@@ -60,8 +31,9 @@ public class GioHangController {
     @Autowired
     private TaiKhoanService taiKhoanService;
 
-    // =============================
-    // TODO TV2: Endpoint 1 - Hiển thị giỏ hàng
+    /**
+     * Hiển thị giỏ hàng của người dùng
+     */
     @GetMapping("/giohang")
     public String gioHang(Model model, Principal principal) {
         model.addAttribute("currentPage", "giohang");
@@ -81,6 +53,7 @@ public class GioHangController {
         model.addAttribute("tongTien", tongTien);
         model.addAttribute("itemCount", itemCount);
 
+        // Breadcrumb
         Map<String, String> breadcrumbItem = new HashMap<>();
         breadcrumbItem.put("name", "Giỏ hàng");
         breadcrumbItem.put("url", null);
@@ -90,8 +63,9 @@ public class GioHangController {
         return "giohang";
     }
 
-    // =============================
-    // TODO TV2: Endpoint 2 - Thêm sản phẩm vào giỏ (AJAX)
+    /**
+     * API thêm sản phẩm vào giỏ hàng (AJAX)
+     */
     @PostMapping("/api/giohang/add")
     @ResponseBody
     public ResponseEntity<?> themVaoGioHang(
@@ -124,18 +98,19 @@ public class GioHangController {
             BigDecimal total = gioHangService.tinhTongTienByTaiKhoan(tk);
 
             return ResponseEntity.ok(Map.of(
-                "success", true,
-                "message", "Đã thêm vào giỏ hàng",
-                "count", count,
-                "total", total
+                    "success", true,
+                    "message", "Đã thêm vào giỏ hàng",
+                    "count", count,
+                    "total", total
             ));
         } catch (Exception e) {
             return ResponseEntity.ok(Map.of("success", false, "message", e.getMessage()));
         }
     }
 
-    // =============================
-    // TODO TV2: Endpoint 3 - Cập nhật số lượng (AJAX)
+    /**
+     * API cập nhật số lượng sản phẩm trong giỏ (AJAX)
+     */
     @PostMapping("/api/giohang/update")
     @ResponseBody
     public ResponseEntity<?> capNhatSoLuong(
@@ -155,17 +130,18 @@ public class GioHangController {
             int count = gioHangService.countItems(tk);
 
             return ResponseEntity.ok(Map.of(
-                "success", true,
-                "newTotal", newTotal,
-                "count", count
+                    "success", true,
+                    "newTotal", newTotal,
+                    "count", count
             ));
         } catch (Exception e) {
             return ResponseEntity.ok(Map.of("success", false, "message", e.getMessage()));
         }
     }
 
-    // =============================
-    // TODO TV2: Endpoint 4 - Xóa sản phẩm (AJAX)
+    /**
+     * API xóa sản phẩm khỏi giỏ hàng (AJAX)
+     */
     @DeleteMapping("/api/giohang/remove/{id}")
     @ResponseBody
     public ResponseEntity<?> xoaSanPham(@PathVariable Integer id, Principal principal) {
@@ -181,17 +157,18 @@ public class GioHangController {
             BigDecimal newTotal = gioHangService.tinhTongTienByTaiKhoan(tk);
 
             return ResponseEntity.ok(Map.of(
-                "success", true,
-                "count", count,
-                "newTotal", newTotal
+                    "success", true,
+                    "count", count,
+                    "newTotal", newTotal
             ));
         } catch (Exception e) {
             return ResponseEntity.ok(Map.of("success", false, "message", e.getMessage()));
         }
     }
 
-    // =============================
-    // TODO TV2: Endpoint 5 - Đếm số items (AJAX badge)
+    /**
+     * API đếm số lượng sản phẩm trong giỏ (AJAX badge)
+     */
     @GetMapping("/api/giohang/count")
     @ResponseBody
     public ResponseEntity<?> demSoLuong(Principal principal) {
@@ -208,7 +185,9 @@ public class GioHangController {
         }
     }
 
-    // Xóa tất cả sản phẩm trong giỏ hàng (AJAX)
+    /**
+     * API xóa tất cả sản phẩm trong giỏ hàng (AJAX)
+     */
     @DeleteMapping("/api/giohang/clear")
     @ResponseBody
     public ResponseEntity<?> xoaTatCa(Principal principal) {

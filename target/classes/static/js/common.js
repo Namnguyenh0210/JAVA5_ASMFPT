@@ -15,7 +15,7 @@ function toggleMobileMenu() {
 function toggleUserDropdown() {
     const dropdown = document.getElementById('userDropdown');
     const userAvatar = document.querySelector('.user-avatar');
-    
+
     if (dropdown && userAvatar) {
         dropdown.classList.toggle('show');
         userAvatar.classList.toggle('active');
@@ -23,7 +23,7 @@ function toggleUserDropdown() {
 }
 
 // Close dropdown when clicking outside
-document.addEventListener('click', function(event) {
+document.addEventListener('click', function (event) {
     const userMenu = document.querySelector('.user-menu');
     const dropdown = document.getElementById('userDropdown');
     const userAvatar = document.querySelector('.user-avatar');
@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function () {
         rootMargin: '0px 0px -50px 0px'
     };
 
-    const observer = new IntersectionObserver(function(entries) {
+    const observer = new IntersectionObserver(function (entries) {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('animate-in');
@@ -119,7 +119,7 @@ function updateCartCount() {
         const cartItems = JSON.parse(localStorage.getItem('cart') || '[]');
         const totalCount = cartItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
         cartCountElement.textContent = totalCount;
-        
+
         // Show/hide badge based on count
         if (totalCount > 0) {
             cartCountElement.style.display = 'inline-flex';
@@ -133,12 +133,12 @@ function updateCartCount() {
 function showNotification(message, type = 'info') {
     const notification = document.createElement('div');
     notification.className = `notification ${type}`;
-    
+
     let icon = 'fa-info-circle';
     if (type === 'success') icon = 'fa-check-circle';
     if (type === 'error') icon = 'fa-exclamation-circle';
     if (type === 'warning') icon = 'fa-exclamation-triangle';
-    
+
     notification.innerHTML = `
         <div class="notification-content">
             <i class="fas ${icon}"></i>
@@ -148,9 +148,9 @@ function showNotification(message, type = 'info') {
             </button>
         </div>
     `;
-    
+
     document.body.appendChild(notification);
-    
+
     setTimeout(() => {
         notification.style.animation = 'fadeOut 0.3s ease-out';
         setTimeout(() => notification.remove(), 300);

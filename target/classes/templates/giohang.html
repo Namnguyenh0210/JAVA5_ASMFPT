@@ -42,11 +42,11 @@
             <div class="cart-items">
                 <div class="cart-table">
                     <!-- Hiển thị khi giỏ hàng rỗng -->
-                    <div th:if="${gioHangItems.isEmpty()}" class="empty-cart-notice">
+                    <div class="empty-cart-notice" th:if="${gioHangItems.isEmpty()}">
                         <div class="empty-icon">🛒</div>
                         <h3>Bạn chưa thêm sản phẩm nào vào giỏ hàng!</h3>
                         <p>Hãy khám phá các sản phẩm tuyệt vời của chúng tôi</p>
-                        <a th:href="@{/sanpham}" class="btn btn-primary">
+                        <a class="btn btn-primary" th:href="@{/sanpham}">
                             <i class="fas fa-shopping-bag"></i>
                             Tiếp Tục Mua Sắm
                         </a>
@@ -63,17 +63,17 @@
                         </div>
 
                         <!-- Danh sách sản phẩm -->
-                        <div th:each="item : ${gioHangItems}" class="cart-item" th:id="'item-' + ${item.sanPham.maSP}">
+                        <div class="cart-item" th:each="item : ${gioHangItems}" th:id="'item-' + ${item.sanPham.maSP}">
                             <div class="item-checkbox">
-                                <input type="checkbox" class="item-select" th:data-id="${item.sanPham.maSP}"
+                                <input class="item-select" onchange="updateSummary()" th:data-id="${item.sanPham.maSP}"
                                        th:data-price="${item.sanPham.gia}"
                                        th:data-quantity="${item.soLuong}"
-                                       onchange="updateSummary()">
+                                       type="checkbox">
                             </div>
                             <div class="item-product">
                                 <div class="product-image">
-                                    <img th:src="${item.sanPham.hinhAnh != null && !item.sanPham.hinhAnh.isEmpty() ? item.sanPham.hinhAnh : 'https://picsum.photos/200/200?random=' + item.sanPham.maSP}"
-                                         th:alt="${item.sanPham.tenSP}">
+                                    <img th:alt="${item.sanPham.tenSP}"
+                                         th:src="${item.sanPham.hinhAnh != null && !item.sanPham.hinhAnh.isEmpty() ? item.sanPham.hinhAnh : 'https://picsum.photos/200/200?random=' + item.sanPham.maSP}">
                                 </div>
                                 <div class="product-info">
                                     <h3 th:text="${item.sanPham.tenSP}">Tên sản phẩm</h3>
@@ -86,30 +86,37 @@
                                             <i class="fas fa-box"></i> Còn lại: <span th:text="${item.sanPham.soLuong}">0</span>
                                         </span>
                                         <span class="attribute" th:if="${item.sanPham.maSP != null}">
-                                            <i class="fas fa-barcode"></i> Mã: <span th:text="${item.sanPham.maSP}">0</span>
+                                            <i class="fas fa-barcode"></i> Mã: <span
+                                                th:text="${item.sanPham.maSP}">0</span>
                                         </span>
                                     </div>
                                 </div>
                             </div>
                             <div class="item-price">
-                                <span class="current-price" th:text="${#numbers.formatDecimal(item.sanPham.gia, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</span>
+                                <span class="current-price"
+                                      th:text="${#numbers.formatDecimal(item.sanPham.gia, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</span>
                             </div>
                             <div class="item-quantity">
                                 <div class="quantity-controls">
-                                    <button class="quantity-btn" th:onclick="'updateQuantity(' + ${item.sanPham.maSP} + ', -1)'">
+                                    <button class="quantity-btn"
+                                            th:onclick="'updateQuantity(' + ${item.sanPham.maSP} + ', -1)'">
                                         <i class="fas fa-minus"></i>
                                     </button>
-                                    <input type="number" class="quantity-input" th:value="${item.soLuong}" min="1" max="99" readonly>
-                                    <button class="quantity-btn" th:onclick="'updateQuantity(' + ${item.sanPham.maSP} + ', 1)'">
+                                    <input class="quantity-input" max="99" min="1" readonly
+                                           th:value="${item.soLuong}" type="number">
+                                    <button class="quantity-btn"
+                                            th:onclick="'updateQuantity(' + ${item.sanPham.maSP} + ', 1)'">
                                         <i class="fas fa-plus"></i>
                                     </button>
                                 </div>
                             </div>
                             <div class="item-total">
-                                <span class="total-price" th:text="${#numbers.formatDecimal(item.sanPham.gia * item.soLuong, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</span>
+                                <span class="total-price"
+                                      th:text="${#numbers.formatDecimal(item.sanPham.gia * item.soLuong, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</span>
                             </div>
                             <div class="item-action" style="display: none;">
-                                <button class="action-btn remove-item" th:onclick="'removeItem(' + ${item.sanPham.maSP} + ')'" title="Xóa sản phẩm">
+                                <button class="action-btn remove-item"
+                                        th:onclick="'removeItem(' + ${item.sanPham.maSP} + ')'" title="Xóa sản phẩm">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
@@ -161,7 +168,7 @@
                         </div>
 
                         <!-- Checkout Button -->
-                        <button class="checkout-btn" onclick="checkout()" id="checkoutBtn" disabled>
+                        <button class="checkout-btn" disabled id="checkoutBtn" onclick="checkout()">
                             <i class="fas fa-credit-card"></i>
                             Tiến Hành Thanh Toán
                         </button>
@@ -210,32 +217,32 @@
             },
             body: `sanPhamId=${sanPhamId}&soLuong=${newQuantity}`
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                quantityInput.value = newQuantity;
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    quantityInput.value = newQuantity;
 
-                // Update checkbox data
-                const checkbox = item.querySelector('.item-select');
-                checkbox.dataset.quantity = newQuantity;
+                    // Update checkbox data
+                    const checkbox = item.querySelector('.item-select');
+                    checkbox.dataset.quantity = newQuantity;
 
-                // Cập nhật tổng tiền của item
-                const price = parseFloat(item.querySelector('.current-price').textContent.replace(/[^\d]/g, ''));
-                const total = price * newQuantity;
-                item.querySelector('.total-price').textContent = formatPrice(total);
+                    // Cập nhật tổng tiền của item
+                    const price = parseFloat(item.querySelector('.current-price').textContent.replace(/[^\d]/g, ''));
+                    const total = price * newQuantity;
+                    item.querySelector('.total-price').textContent = formatPrice(total);
 
-                // Update summary if item is selected
-                if (checkbox.checked) {
-                    updateSummary();
+                    // Update summary if item is selected
+                    if (checkbox.checked) {
+                        updateSummary();
+                    }
+                } else {
+                    alert(data.message || 'Có lỗi xảy ra!');
                 }
-            } else {
-                alert(data.message || 'Có lỗi xảy ra!');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Có lỗi xảy ra khi cập nhật!');
-        });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra khi cập nhật!');
+            });
     }
 
     // Xóa sản phẩm
@@ -244,18 +251,18 @@
             fetch(`/api/giohang/remove/${sanPhamId}`, {
                 method: 'DELETE'
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    location.reload();
-                } else {
-                    alert(data.message || 'Có lỗi xảy ra!');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Có lỗi xảy ra khi xóa!');
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert(data.message || 'Có lỗi xảy ra!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Có lỗi xảy ra khi xóa!');
+                });
         }
     }
 
@@ -312,7 +319,7 @@
         if (confirm(`Bạn có chắc chắn muốn xóa ${selected.length} sản phẩm đã chọn?`)) {
             const deletePromises = Array.from(selected).map(checkbox => {
                 const sanPhamId = checkbox.dataset.id;
-                return fetch(`/api/giohang/remove/${sanPhamId}`, { method: 'DELETE' });
+                return fetch(`/api/giohang/remove/${sanPhamId}`, {method: 'DELETE'});
             });
 
             Promise.all(deletePromises)

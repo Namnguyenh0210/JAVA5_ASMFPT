@@ -1,4 +1,6 @@
-    color: #dc2626;
+color: #dc2626
+
+;
 }
 
 .notification.info {
@@ -16,6 +18,7 @@
         opacity: 1;
     }
 }
+
 /* ===================================================
    CART PAGE STYLES - TRANG GIỎ HÀNG
    Tối ưu và đẹp hơn

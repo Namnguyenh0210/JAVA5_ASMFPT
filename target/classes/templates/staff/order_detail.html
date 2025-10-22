@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Chi tiết Đơn hàng - Nhân viên</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -97,20 +97,20 @@
                 <h2>📦 Chi tiết Đơn hàng #<span th:text="${donHang.maDH}">1</span></h2>
                 <p class="text-muted">Thông tin chi tiết và quản lý trạng thái đơn hàng</p>
             </div>
-            <a href="/staff/orders" class="btn btn-secondary">
+            <a class="btn btn-secondary" href="/staff/orders">
                 <i class="fas fa-arrow-left"></i> Quay lại
             </a>
         </div>
 
         <!-- Alert Messages -->
-        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${success}">
             <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <button class="btn-close" data-bs-dismiss="alert" type="button"></button>
         </div>
 
-        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${error}">
             <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <button class="btn-close" data-bs-dismiss="alert" type="button"></button>
         </div>
 
         <div class="row">
@@ -124,18 +124,25 @@
                         </h5>
                         <div class="row">
                             <div class="col-md-6">
-                                <p><strong>Khách hàng:</strong> <span th:text="${donHang.khachHang.hoTen}">Nguyễn Văn A</span></p>
-                                <p><strong>Email:</strong> <span th:text="${donHang.khachHang.email}">email@example.com</span></p>
-                                <p><strong>Số điện thoại:</strong> <span th:text="${donHang.khachHang.soDienThoai}">0909000000</span></p>
+                                <p><strong>Khách hàng:</strong> <span
+                                        th:text="${donHang.khachHang.hoTen}">Nguyễn Văn A</span></p>
+                                <p><strong>Email:</strong> <span
+                                        th:text="${donHang.khachHang.email}">email@example.com</span></p>
+                                <p><strong>Số điện thoại:</strong> <span th:text="${donHang.khachHang.soDienThoai}">0909000000</span>
+                                </p>
                             </div>
                             <div class="col-md-6">
-                                <p><strong>Ngày đặt:</strong> <span th:text="${#temporals.format(donHang.ngayDat, 'dd/MM/yyyy HH:mm')}">22/10/2025</span></p>
-                                <p><strong>Phương thức TT:</strong> <span th:text="${donHang.phuongThucThanhToan.tenPTTT}">COD</span></p>
+                                <p><strong>Ngày đặt:</strong> <span
+                                        th:text="${#temporals.format(donHang.ngayDat, 'dd/MM/yyyy HH:mm')}">22/10/2025</span>
+                                </p>
+                                <p><strong>Phương thức TT:</strong> <span
+                                        th:text="${donHang.phuongThucThanhToan.tenPTTT}">COD</span></p>
                                 <p><strong>Nhân viên xử lý:</strong>
-                                    <span th:if="${donHang.nhanVien != null}" class="badge bg-success">
-                                        <i class="fas fa-user-check"></i> <span th:text="${donHang.nhanVien.hoTen}"></span>
+                                    <span class="badge bg-success" th:if="${donHang.nhanVien != null}">
+                                        <i class="fas fa-user-check"></i> <span
+                                            th:text="${donHang.nhanVien.hoTen}"></span>
                                     </span>
-                                    <span th:if="${donHang.nhanVien == null}" class="badge bg-secondary">
+                                    <span class="badge bg-secondary" th:if="${donHang.nhanVien == null}">
                                         <i class="fas fa-user-times"></i> Chưa có
                                     </span>
                                 </p>
@@ -143,7 +150,8 @@
                         </div>
                         <hr>
                         <p><strong><i class="fas fa-map-marker-alt text-primary"></i> Địa chỉ giao hàng:</strong></p>
-                        <p class="ms-4" th:text="${donHang.diaChiGiaoHang.diaChiChiTiet}">123 Đường ABC, Quận 1, TP.HCM</p>
+                        <p class="ms-4" th:text="${donHang.diaChiGiaoHang.diaChiChiTiet}">123 Đường ABC, Quận 1,
+                            TP.HCM</p>
                     </div>
                 </div>
 
@@ -154,23 +162,26 @@
                             <i class="fas fa-box-open text-primary"></i> Sản phẩm đã đặt
                         </h5>
                         <div class="list-group list-group-flush">
-                            <div th:each="item : ${chiTiet}" class="list-group-item product-item mb-2 rounded">
+                            <div class="list-group-item product-item mb-2 rounded" th:each="item : ${chiTiet}">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="d-flex align-items-center flex-grow-1">
-                                        <img th:src="${item.sanPham.hinhAnh}"
-                                             th:alt="${item.sanPham.tenSP}"
+                                        <img onerror="this.src='https://via.placeholder.com/60'"
                                              style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; margin-right: 15px;"
-                                             onerror="this.src='https://via.placeholder.com/60'">
+                                             th:alt="${item.sanPham.tenSP}"
+                                             th:src="${item.sanPham.hinhAnh}">
                                         <div>
                                             <h6 class="mb-1" th:text="${item.sanPham.tenSP}">Tên sản phẩm</h6>
                                             <small class="text-muted">
-                                                Đơn giá: <span th:text="${#numbers.formatDecimal(item.donGia, 0, 'COMMA', 0, 'POINT')} + 'đ'">30,000đ</span>
+                                                Đơn giá: <span
+                                                    th:text="${#numbers.formatDecimal(item.donGia, 0, 'COMMA', 0, 'POINT')} + 'đ'">30,000đ</span>
                                                 × <span th:text="${item.soLuong}">1</span>
                                             </small>
                                         </div>
                                     </div>
                                     <div class="text-end">
-                                        <h6 class="mb-0 text-primary" th:text="${#numbers.formatDecimal(item.donGia * item.soLuong, 0, 'COMMA', 0, 'POINT')} + 'đ'">30,000đ</h6>
+                                        <h6 class="mb-0 text-primary"
+                                            th:text="${#numbers.formatDecimal(item.donGia * item.soLuong, 0, 'COMMA', 0, 'POINT')} + 'đ'">
+                                            30,000đ</h6>
                                     </div>
                                 </div>
                             </div>
@@ -190,7 +201,9 @@
                         <hr>
                         <div class="d-flex justify-content-between">
                             <strong>Tổng cộng:</strong>
-                            <h5 class="text-primary mb-0" th:text="${#numbers.formatDecimal(donHang.tongTien, 0, 'COMMA', 0, 'POINT')} + 'đ'">100,000đ</h5>
+                            <h5 class="text-primary mb-0"
+                                th:text="${#numbers.formatDecimal(donHang.tongTien, 0, 'COMMA', 0, 'POINT')} + 'đ'">
+                                100,000đ</h5>
                         </div>
                     </div>
                 </div>
@@ -218,68 +231,68 @@
                             </div>
                         </div>
 
-                        <form th:action="@{/staff/orders/update-status/{id}(id=${donHang.maDH})}" method="post">
+                        <form method="post" th:action="@{/staff/orders/update-status/{id}(id=${donHang.maDH})}">
                             <div class="mb-3">
                                 <label class="form-label"><strong>Chuyển sang:</strong></label>
-                                <select name="trangThaiMoi" class="form-select" required id="statusSelect">
+                                <select class="form-select" id="statusSelect" name="trangThaiMoi" required>
                                     <option value="">-- Chọn trạng thái --</option>
 
                                     <!-- Chờ xác nhận: Chỉ hiện nếu đơn hàng đang ở trạng thái này -->
-                                    <option value="Chờ xác nhận"
+                                    <option th:classappend="${donHang.trangThaiDonHang.tenTTDH == 'Chờ xác nhận' ? 'text-muted' : ''}"
                                             th:disabled="true"
-                                            th:classappend="${donHang.trangThaiDonHang.tenTTDH == 'Chờ xác nhận' ? 'text-muted' : ''}"
-                                            th:if="${donHang.trangThaiDonHang.tenTTDH == 'Chờ xác nhận'}">
+                                            th:if="${donHang.trangThaiDonHang.tenTTDH == 'Chờ xác nhận'}"
+                                            value="Chờ xác nhận">
                                         Chờ xác nhận (đang ở đây)
                                     </option>
 
                                     <!-- Đang giao: Chỉ hiện nếu đang ở Chờ xác nhận -->
-                                    <option value="Đang giao"
-                                            th:if="${donHang.trangThaiDonHang.tenTTDH == 'Chờ xác nhận'}">
+                                    <option th:if="${donHang.trangThaiDonHang.tenTTDH == 'Chờ xác nhận'}"
+                                            value="Đang giao">
                                         Đang giao
                                     </option>
 
                                     <!-- Đang giao: Nếu đang ở trạng thái này, disable -->
-                                    <option value="Đang giao"
+                                    <option th:classappend="text-muted"
                                             th:disabled="true"
-                                            th:classappend="text-muted"
-                                            th:if="${donHang.trangThaiDonHang.tenTTDH == 'Đang giao'}">
+                                            th:if="${donHang.trangThaiDonHang.tenTTDH == 'Đang giao'}"
+                                            value="Đang giao">
                                         Đang giao (đang ở đây)
                                     </option>
 
                                     <!-- Hoàn tất: Chỉ hiện nếu đang ở Đang giao -->
-                                    <option value="Hoàn tất"
-                                            th:if="${donHang.trangThaiDonHang.tenTTDH == 'Đang giao'}">
+                                    <option th:if="${donHang.trangThaiDonHang.tenTTDH == 'Đang giao'}"
+                                            value="Hoàn tất">
                                         Hoàn tất
                                     </option>
 
                                     <!-- Hoàn tất: Nếu đã hoàn tất, disable -->
-                                    <option value="Hoàn tất"
+                                    <option th:classappend="text-muted"
                                             th:disabled="true"
-                                            th:classappend="text-muted"
-                                            th:if="${donHang.trangThaiDonHang.tenTTDH == 'Hoàn tất'}">
+                                            th:if="${donHang.trangThaiDonHang.tenTTDH == 'Hoàn tất'}"
+                                            value="Hoàn tất">
                                         Hoàn tất (đã xong)
                                     </option>
 
                                     <!-- Đã hủy: Chỉ hiện nếu đang ở Đang giao -->
-                                    <option value="Đã hủy"
+                                    <option class="text-danger"
                                             th:if="${donHang.trangThaiDonHang.tenTTDH == 'Đang giao'}"
-                                            class="text-danger">
+                                            value="Đã hủy">
                                         Đã hủy
                                     </option>
 
                                     <!-- Đã hủy: Nếu đã hủy, disable -->
-                                    <option value="Đã hủy"
+                                    <option th:classappend="text-muted"
                                             th:disabled="true"
-                                            th:classappend="text-muted"
-                                            th:if="${donHang.trangThaiDonHang.tenTTDH == 'Đã hủy'}">
+                                            th:if="${donHang.trangThaiDonHang.tenTTDH == 'Đã hủy'}"
+                                            value="Đã hủy">
                                         Đã hủy (đã hủy)
                                     </option>
                                 </select>
                             </div>
 
                             <!-- Nút cập nhật: Ẩn nếu đơn hàng đã hoàn tất hoặc đã hủy -->
-                            <button type="submit" class="btn btn-staff w-100"
-                                    th:disabled="${donHang.trangThaiDonHang.tenTTDH == 'Hoàn tất' || donHang.trangThaiDonHang.tenTTDH == 'Đã hủy'}">
+                            <button class="btn btn-staff w-100" th:disabled="${donHang.trangThaiDonHang.tenTTDH == 'Hoàn tất' || donHang.trangThaiDonHang.tenTTDH == 'Đã hủy'}"
+                                    type="submit">
                                 <i class="fas fa-check"></i> Cập nhật trạng thái
                             </button>
                         </form>

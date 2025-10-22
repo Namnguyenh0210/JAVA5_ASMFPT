@@ -8,9 +8,6 @@ import com.example.projectend.repository.DonHangRepository;
 import com.example.projectend.repository.TaiKhoanRepository;
 import com.example.projectend.service.DonHangService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * PROFILE CONTROLLER - Quản lý thông tin cá nhân & đơn hàng
+ * Controller quản lý thông tin cá nhân và đơn hàng người dùng
  */
 @Controller
 public class ProfileController {
@@ -41,6 +38,9 @@ public class ProfileController {
     @Autowired
     private DonHangService donHangService;
 
+    /**
+     * Hiển thị trang thông tin cá nhân và đơn hàng
+     */
     @GetMapping("/profile")
     public String profile(Model model, Principal principal) {
         if (principal == null) {
@@ -49,10 +49,7 @@ public class ProfileController {
 
         model.addAttribute("currentPage", "profile");
 
-        // Lấy email của người dùng hiện tại
         String email = principal.getName();
-
-        // Tìm thông tin tài khoản theo email
         TaiKhoan taiKhoan = taiKhoanRepository.findByEmail(email).orElse(null);
         if (taiKhoan == null) {
             model.addAttribute("error", "Không tìm thấy tài khoản của bạn.");
@@ -61,14 +58,15 @@ public class ProfileController {
 
         model.addAttribute("taiKhoan", taiKhoan);
 
-        // Tìm danh sách địa chỉ của tài khoản
+        // Lấy danh sách địa chỉ
         List<DiaChi> diaChiList = diaChiRepository.findAllByMaTK(taiKhoan.getMaTK());
         model.addAttribute("diaChiList", diaChiList);
 
-        // Lấy danh sách đơn hàng thật từ database (mới nhất trước)
+        // Lấy danh sách đơn hàng
         List<DonHang> donHangList = donHangRepository.findByKhachHangOrderByNgayDatDesc(taiKhoan);
         model.addAttribute("donHangList", donHangList);
 
+        // Breadcrumb
         Map<String, String> breadcrumbItem = new HashMap<>();
         breadcrumbItem.put("name", "Thông tin cá nhân");
         breadcrumbItem.put("url", null);
@@ -78,6 +76,9 @@ public class ProfileController {
         return "profile";
     }
 
+    /**
+     * Cập nhật thông tin cá nhân
+     */
     @PostMapping("/profile/update")
     public String updateProfile(
             @RequestParam String hoTen,
@@ -98,7 +99,6 @@ public class ProfileController {
                 return "redirect:/profile";
             }
 
-            // Cập nhật thông tin
             taiKhoan.setHoTen(hoTen);
             taiKhoan.setSoDienThoai(soDienThoai);
             taiKhoanRepository.save(taiKhoan);
@@ -111,6 +111,9 @@ public class ProfileController {
         return "redirect:/profile";
     }
 
+    /**
+     * Đổi mật khẩu
+     */
     @PostMapping("/profile/change-password")
     public String changePassword(
             @RequestParam String currentPassword,
@@ -144,7 +147,6 @@ public class ProfileController {
                 return "redirect:/profile#password";
             }
 
-            // Cập nhật mật khẩu mới
             taiKhoan.setMatKhau(newPassword);
             taiKhoanRepository.save(taiKhoan);
 
@@ -154,38 +156,5 @@ public class ProfileController {
         }
 
         return "redirect:/profile#password";
-    }
-
-    @PostMapping("/profile/cancel-order")
-    public String cancelOrder(
-            @RequestParam Integer orderId,
-            Principal principal,
-            RedirectAttributes redirectAttributes) {
-
-        if (principal == null) {
-            return "redirect:/login";
-        }
-
-        try {
-            String email = principal.getName();
-            TaiKhoan taiKhoan = taiKhoanRepository.findByEmail(email).orElse(null);
-
-            if (taiKhoan == null) {
-                redirectAttributes.addFlashAttribute("error", "Không tìm thấy tài khoản!");
-                return "redirect:/profile#orders";
-            }
-
-            boolean success = donHangService.cancelOrder(orderId, taiKhoan);
-
-            if (success) {
-                redirectAttributes.addFlashAttribute("successOrder", "Hủy đơn hàng thành công!");
-            } else {
-                redirectAttributes.addFlashAttribute("errorOrder", "Không thể hủy đơn hàng này!");
-            }
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorOrder", "Có lỗi xảy ra: " + e.getMessage());
-        }
-
-        return "redirect:/profile#orders";
     }
 }

@@ -14,34 +14,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 /**
- * HOME CONTROLLER - Trang chủ website bán đồ Tết
- * <p>
- * =============================
- * PHÂN CÔNG: TV2 - FRONTEND KHÁCH HÀNG
- * =============================
- * TODO TV2 - CẦN LÀM:
- * <p>
- * 1. @Autowired các service:
- * - SanPhamService sanPhamService;
- * - BaiVietService baiVietService;
- * <p>
- * 2. Trong method home():
- * a) Lấy 8 sản phẩm nổi bật:
- * List<SanPham> featured = sanPhamService.getFeaturedProducts(8);
- * model.addAttribute("sanPhamNoiBat", featured);
- * <p>
- * b) Lấy 3 bài viết mới:
- * List<BaiViet> posts = baiVietService.getFeaturedPosts(3);
- * model.addAttribute("tinTuc", posts);
- * <p>
- * c) Lấy danh mục (cho menu):
- * List<LoaiSanPham> categories = sanPhamService.getAllCategories();
- * model.addAttribute("danhMuc", categories);
- * <p>
- * 3. Cập nhật template home.html để hiển thị dữ liệu
- * <p>
- * THỜI GIAN: 1 giờ (rất đơn giản)
- * =============================
+ * Controller xử lý trang chủ website
  */
 @Controller
 public class HomeController {
@@ -52,6 +25,9 @@ public class HomeController {
     @Autowired
     private BaiVietService baiVietService;
 
+    /**
+     * Hiển thị trang chủ với sản phẩm nổi bật và tin tức
+     */
     @GetMapping("/")
     public String home(Model model) {
         model.addAttribute("currentPage", "home");
@@ -64,11 +40,11 @@ public class HomeController {
         List<BaiViet> tinTuc = baiVietService.getFeaturedPosts(3);
         model.addAttribute("tinTuc", tinTuc);
 
-        // Lấy danh mục (cho menu)
+        // Lấy danh mục cho menu
         List<LoaiSanPham> danhMuc = sanPhamService.getAllCategories();
         model.addAttribute("danhMuc", danhMuc);
 
-        // Thêm năm hiện tại và năm Tết
+        // Thông tin năm
         int currentYear = LocalDate.now().getYear();
         model.addAttribute("currentYear", currentYear);
         model.addAttribute("tetYear", currentYear + 1);
@@ -77,6 +53,9 @@ public class HomeController {
         return "home";
     }
 
+    /**
+     * Redirect từ /home về trang chủ
+     */
     @GetMapping("/home")
     public String homePage(Model model) {
         return home(model);

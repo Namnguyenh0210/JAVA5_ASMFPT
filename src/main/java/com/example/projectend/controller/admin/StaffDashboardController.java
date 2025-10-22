@@ -2,10 +2,10 @@ package com.example.projectend.controller.admin;
 
 import com.example.projectend.entity.DonHang;
 import com.example.projectend.entity.TaiKhoan;
-import com.example.projectend.service.BaiVietService;
-import com.example.projectend.service.DonHangService;
 import com.example.projectend.repository.TaiKhoanRepository;
 import com.example.projectend.repository.TrangThaiDonHangRepository;
+import com.example.projectend.service.BaiVietService;
+import com.example.projectend.service.DonHangService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -61,10 +61,10 @@ public class StaffDashboardController {
         long myPostCount = 0;
         if (nhanVien != null) {
             myPostCount = baiVietService.getAllBaiVietAdmin(
-                org.springframework.data.domain.PageRequest.of(0, 1000)
-            ).stream()
-            .filter(bv -> bv.getTaiKhoan() != null && bv.getTaiKhoan().getMaTK().equals(nhanVien.getMaTK()))
-            .count();
+                            org.springframework.data.domain.PageRequest.of(0, 1000)
+                    ).stream()
+                    .filter(bv -> bv.getTaiKhoan() != null && bv.getTaiKhoan().getMaTK().equals(nhanVien.getMaTK()))
+                    .count();
         }
 
         model.addAttribute("orderCount", orderCount);

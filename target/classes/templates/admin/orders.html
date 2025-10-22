@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Quản lý Đơn hàng - Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -103,37 +103,37 @@
         </div>
 
         <!-- Alert Messages -->
-        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${success}">
             <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <button class="btn-close" data-bs-dismiss="alert" type="button"></button>
         </div>
 
-        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${error}">
             <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <button class="btn-close" data-bs-dismiss="alert" type="button"></button>
         </div>
 
         <!-- Search and Filter -->
         <div class="card mb-4">
             <div class="card-body">
-                <form method="get" action="/admin/orders" class="row g-3">
+                <form action="/admin/orders" class="row g-3" method="get">
                     <div class="col-md-5">
-                        <input type="text" name="keyword" class="form-control"
-                               placeholder="Tìm theo mã đơn, tên khách hàng, SĐT..."
-                               th:value="${keyword}">
+                        <input class="form-control" name="keyword" placeholder="Tìm theo mã đơn, tên khách hàng, SĐT..."
+                               th:value="${keyword}"
+                               type="text">
                     </div>
                     <div class="col-md-4">
-                        <select name="trangThai" class="form-select">
+                        <select class="form-select" name="trangThai">
                             <option value="">Tất cả trạng thái</option>
                             <option th:each="tt : ${trangThaiList}"
-                                    th:value="${tt.tenTTDH}"
+                                    th:selected="${trangThaiFilter == tt.tenTTDH}"
                                     th:text="${tt.tenTTDH}"
-                                    th:selected="${trangThaiFilter == tt.tenTTDH}">
+                                    th:value="${tt.tenTTDH}">
                             </option>
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <button type="submit" class="btn btn-tet w-100">
+                        <button class="btn btn-tet w-100" type="submit">
                             <i class="fas fa-search"></i> Tìm kiếm
                         </button>
                     </div>
@@ -158,7 +158,7 @@
                         </thead>
                         <tbody>
                         <tr th:if="${donHangPage == null or donHangPage.content.isEmpty()}">
-                            <td colspan="6" class="text-center py-4">
+                            <td class="text-center py-4" colspan="6">
                                 <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
                                 <p class="text-muted">Chưa có đơn hàng nào</p>
                             </td>
@@ -173,7 +173,8 @@
                             </td>
                             <td th:text="${#temporals.format(order.ngayDat, 'dd/MM/yyyy HH:mm')}">22/10/2025</td>
                             <td>
-                                <strong class="text-danger" th:text="${#numbers.formatDecimal(order.tongTien, 0, 'COMMA', 0, 'POINT')} + 'đ'">100,000đ</strong>
+                                <strong class="text-danger"
+                                        th:text="${#numbers.formatDecimal(order.tongTien, 0, 'COMMA', 0, 'POINT')} + 'đ'">100,000đ</strong>
                             </td>
                             <td>
                                 <span class="badge badge-status"
@@ -186,8 +187,8 @@
                                 </span>
                             </td>
                             <td>
-                                <a th:href="@{/admin/orders/detail/{id}(id=${order.maDH})}"
-                                   class="btn btn-sm btn-primary">
+                                <a class="btn btn-sm btn-primary"
+                                   th:href="@{/admin/orders/detail/{id}(id=${order.maDH})}">
                                     <i class="fas fa-eye"></i> Chi tiết
                                 </a>
                             </td>
@@ -200,17 +201,20 @@
                 <nav th:if="${donHangPage != null and donHangPage.totalPages > 1}">
                     <ul class="pagination justify-content-center">
                         <li class="page-item" th:classappend="${donHangPage.first} ? 'disabled'">
-                            <a class="page-link" th:href="@{/admin/orders(page=${donHangPage.number - 1}, keyword=${keyword}, trangThai=${trangThaiFilter})}">
+                            <a class="page-link"
+                               th:href="@{/admin/orders(page=${donHangPage.number - 1}, keyword=${keyword}, trangThai=${trangThaiFilter})}">
                                 Trước
                             </a>
                         </li>
-                        <li class="page-item" th:each="i : ${#numbers.sequence(0, donHangPage.totalPages - 1)}"
-                            th:classappend="${i == donHangPage.number} ? 'active'">
-                            <a class="page-link" th:href="@{/admin/orders(page=${i}, keyword=${keyword}, trangThai=${trangThaiFilter})}"
+                        <li class="page-item" th:classappend="${i == donHangPage.number} ? 'active'"
+                            th:each="i : ${#numbers.sequence(0, donHangPage.totalPages - 1)}">
+                            <a class="page-link"
+                               th:href="@{/admin/orders(page=${i}, keyword=${keyword}, trangThai=${trangThaiFilter})}"
                                th:text="${i + 1}">1</a>
                         </li>
                         <li class="page-item" th:classappend="${donHangPage.last} ? 'disabled'">
-                            <a class="page-link" th:href="@{/admin/orders(page=${donHangPage.number + 1}, keyword=${keyword}, trangThai=${trangThaiFilter})}">
+                            <a class="page-link"
+                               th:href="@{/admin/orders(page=${donHangPage.number + 1}, keyword=${keyword}, trangThai=${trangThaiFilter})}">
                                 Sau
                             </a>
                         </li>

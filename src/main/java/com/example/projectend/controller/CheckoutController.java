@@ -1,10 +1,6 @@
 package com.example.projectend.controller;
 
-import com.example.projectend.entity.DiaChi;
-import com.example.projectend.entity.DonHang;
-import com.example.projectend.entity.DonHangChiTiet;
-import com.example.projectend.entity.GioHang;
-import com.example.projectend.entity.TaiKhoan;
+import com.example.projectend.entity.*;
 import com.example.projectend.service.DiaChiService;
 import com.example.projectend.service.DonHangService;
 import com.example.projectend.service.GioHangService;
@@ -26,7 +22,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * CHECKOUT CONTROLLER - Đặt hàng & thanh toán
+ * Controller xử lý thanh toán và đặt hàng
  */
 @Controller
 @RequestMapping("/checkout")
@@ -44,8 +40,9 @@ public class CheckoutController {
     @Autowired
     private DonHangService donHangService;
 
-    // =============================
-    // Endpoint 1 - Trang checkout
+    /**
+     * Hiển thị trang thanh toán
+     */
     @GetMapping("")
     public String checkout(Model model, Principal principal) {
 
@@ -54,26 +51,24 @@ public class CheckoutController {
             return "redirect:/login?returnUrl=/checkout";
         }
 
-        // Load dữ liệu cho form
         TaiKhoan tk = taiKhoanService.findByEmail(principal.getName());
-
         if (tk == null) {
             return "redirect:/login";
         }
 
-        // Giỏ hàng
+        // Lấy giỏ hàng
         List<GioHang> items = gioHangService.getGioHangByTaiKhoan(tk);
         if (items.isEmpty()) {
             return "redirect:/giohang?error=empty";
         }
         model.addAttribute("cartItems", items);
 
-        // Tổng tiền tạm
+        // Tính tổng tiền
         BigDecimal tongTien = gioHangService.tinhTongTien(items);
         model.addAttribute("orderSubtotal", tongTien);
         model.addAttribute("orderTotal", tongTien);
 
-        // Địa chỉ giao hàng
+        // Lấy danh sách địa chỉ
         List<DiaChi> diaChiList = diaChiService.getDiaChiByTaiKhoan(tk);
         model.addAttribute("diaChiList", diaChiList);
 
@@ -83,9 +78,9 @@ public class CheckoutController {
             model.addAttribute("defaultAddress", defaultAddress.get());
         }
 
-        // User info
         model.addAttribute("user", tk);
 
+        // Breadcrumb
         Map<String, String> breadcrumb1 = new HashMap<>();
         breadcrumb1.put("name", "Giỏ hàng");
         breadcrumb1.put("url", "/giohang");
@@ -99,8 +94,9 @@ public class CheckoutController {
         return "checkout";
     }
 
-    // =============================
-    // Endpoint 2 - Xử lý đặt hàng
+    /**
+     * Xử lý đặt hàng
+     */
     @PostMapping("/place-order")
     public String processCheckout(
             @RequestParam Integer diaChiId,
@@ -134,7 +130,7 @@ public class CheckoutController {
                 return "redirect:/checkout";
             }
 
-            // Xóa giỏ hàng sau khi đặt hàng thành công
+            // Xóa giỏ hàng sau khi đặt thành công
             gioHangService.clearGioHang(tk);
 
             redirectAttributes.addFlashAttribute("success", "Đặt hàng thành công!");
@@ -146,8 +142,9 @@ public class CheckoutController {
         }
     }
 
-    // =============================
-    // Endpoint 3 - Trang cảm ơn (sau khi đặt hàng)
+    /**
+     * Trang cảm ơn sau khi đặt hàng thành công
+     */
     @GetMapping("/success")
     public String checkoutSuccess(@RequestParam Integer orderId, Model model, Principal principal) {
 
@@ -160,7 +157,7 @@ public class CheckoutController {
             return "redirect:/login";
         }
 
-        // Load đơn hàng
+        // Lấy thông tin đơn hàng
         Optional<DonHang> donHangOpt = donHangService.findByIdAndKhachHang(orderId, tk);
         if (!donHangOpt.isPresent()) {
             return "redirect:/profile";
@@ -169,7 +166,7 @@ public class CheckoutController {
         DonHang donHang = donHangOpt.get();
         model.addAttribute("donHang", donHang);
 
-        // Load chi tiết đơn
+        // Lấy chi tiết đơn hàng
         List<DonHangChiTiet> chiTiet = donHangService.getChiTietDonHang(donHang);
         model.addAttribute("chiTiet", chiTiet);
 

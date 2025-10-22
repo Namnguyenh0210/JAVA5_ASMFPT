@@ -11,7 +11,7 @@ import org.springframework.security.web.SecurityFilterChain;
 /**
  * SECURITY CONFIG - ASM WEB BÁN HÀNG
  * ĐĂNG NHẬP BẰNG EMAIL + MẬT KHẨU PLAIN TEXT
- *
+ * <p>
  * PHÂN QUYỀN (theo SQL):
  * - ROLE_Khách hàng: Khách hàng
  * - ROLE_Nhân viên: Nhân viên

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+>
 <head>
     <meta charset="UTF-8">
     <title>Quản lý tài khoản</title>
@@ -14,32 +14,32 @@
         <h2>👤 Quản lý tài khoản</h2>
 
         <!-- FORM TẠO / SỬA TÀI KHOẢN -->
-        <form th:action="@{/admin/accounts/save}" method="post" class="row g-3 mb-4">
-            <input type="hidden" name="maTK" th:value="${account.maTK}">
-            
+        <form class="row g-3 mb-4" method="post" th:action="@{/admin/accounts/save}">
+            <input name="maTK" th:value="${account.maTK}" type="hidden">
+
             <div class="col-md-4">
                 <label class="form-label">Họ tên</label>
-                <input type="text" name="hoTen" class="form-control" th:value="${account.hoTen}" required>
+                <input class="form-control" name="hoTen" required th:value="${account.hoTen}" type="text">
             </div>
-            
+
             <div class="col-md-4">
                 <label class="form-label">Email</label>
-                <input type="email" name="email" class="form-control" th:value="${account.email}" required>
+                <input class="form-control" name="email" required th:value="${account.email}" type="email">
             </div>
-            
+
             <div class="col-md-4">
                 <label class="form-label">Mật khẩu</label>
-                <input type="text" name="matKhau" class="form-control" th:value="${account.matKhau}">
+                <input class="form-control" name="matKhau" th:value="${account.matKhau}" type="text">
                 <small class="text-muted">Để trống để tạo mật khẩu mặc định 123456</small>
             </div>
-            
+
             <div class="col-md-4">
                 <label class="form-label">Vai trò</label>
-                <select name="vaiTro.maVT" class="form-select">
-                    <option th:each="r : ${vaiTros}" th:value="${r.maVT}" th:text="${r.tenVT}"></option>
+                <select class="form-select" name="vaiTro.maVT">
+                    <option th:each="r : ${vaiTros}" th:text="${r.tenVT}" th:value="${r.maVT}"></option>
                 </select>
             </div>
-            
+
             <div class="col-12">
                 <button class="btn btn-success">Lưu</button>
             </div>
@@ -65,15 +65,16 @@
                 <td th:text="${a.vaiTro.tenVT}"></td>
                 <td><span th:text="${a.trangThai ? 'Hoạt động' : 'Khóa'}"></span></td>
                 <td>
-                    <a th:href="@{'/admin/accounts/edit/' + ${a.maTK}}" class="btn btn-primary btn-sm">Sửa</a>
-                    
-                    <form th:action="@{'/admin/accounts/' + ${a.maTK} + '/toggle-status'}" method="post" style="display:inline">
-                        <button type="submit" class="btn btn-warning btn-sm"
-                                th:text="${a.trangThai ? 'Khóa' : 'Mở'}"></button>
+                    <a class="btn btn-primary btn-sm" th:href="@{'/admin/accounts/edit/' + ${a.maTK}}">Sửa</a>
+
+                    <form method="post" style="display:inline"
+                          th:action="@{'/admin/accounts/' + ${a.maTK} + '/toggle-status'}">
+                        <button class="btn btn-warning btn-sm" th:text="${a.trangThai ? 'Khóa' : 'Mở'}"
+                                type="submit"></button>
                     </form>
-                    
-                    <form th:action="@{'/admin/accounts/delete/' + ${a.maTK}}" method="post" style="display:inline">
-                        <button type="submit" class="btn btn-danger btn-sm">Xóa</button>
+
+                    <form method="post" style="display:inline" th:action="@{'/admin/accounts/delete/' + ${a.maTK}}">
+                        <button class="btn btn-danger btn-sm" type="submit">Xóa</button>
                     </form>
                 </td>
             </tr>
@@ -86,8 +87,8 @@
                 <li class="page-item" th:classappend="${currentPage == 0}? 'disabled'">
                     <a class="page-link" th:href="@{/admin/accounts(page=${currentPage - 1}, size=${10})}">Trước</a>
                 </li>
-                <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
-                    th:classappend="${i == currentPage}? 'active'">
+                <li class="page-item" th:classappend="${i == currentPage}? 'active'"
+                    th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
                     <a class="page-link" th:href="@{/admin/accounts(page=${i}, size=${10})}" th:text="${i + 1}"></a>
                 </li>
                 <li class="page-item" th:classappend="${currentPage + 1 >= totalPages}? 'disabled'">

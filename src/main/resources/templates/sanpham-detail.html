@@ -1,10 +1,265 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
+<html layout:decorate="~{layouts/base}"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/base}">
+      xmlns:th="http://www.thymeleaf.org">
 <head>
     <title th:text="${pageTitle}">Chi tiết sản phẩm - Cửa hàng đồ Tết</title>
-    <link rel="stylesheet" th:href="@{/css/sanpham-detail.css?v=1}">
+    <link rel="stylesheet" th:href="@{/css/sanpham-detail.css?v=20251022}">
+    <style>
+        /* Theme Tết cho trang chi tiết */
+        body {
+            background: linear-gradient(180deg, #fff 0%, #fef3c7 100%);
+        }
+
+        .product-detail-container {
+            padding: 60px 0;
+            position: relative;
+        }
+
+        .product-detail-container::before,
+        .product-detail-container::after {
+            content: '🏮';
+            position: fixed;
+            font-size: 60px;
+            opacity: 0.1;
+            animation: swing 3s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        .product-detail-container::before {
+            top: 100px;
+            left: 20px;
+        }
+
+        .product-detail-container::after {
+            top: 100px;
+            right: 20px;
+            animation-delay: 1s;
+        }
+
+        @keyframes swing {
+            0%, 100% {
+                transform: rotate(-5deg);
+            }
+            50% {
+                transform: rotate(5deg);
+            }
+        }
+
+        .breadcrumb {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .product-gallery {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(220, 38, 38, 0.1);
+            border: 2px solid #fee;
+            position: relative;
+        }
+
+        .main-image {
+            border: 3px solid #fbbf24;
+            box-shadow: 0 10px 30px rgba(220, 38, 38, 0.2);
+        }
+
+        .product-info {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(220, 38, 38, 0.1);
+            border: 2px solid #fee;
+        }
+
+        .product-name {
+            color: #991b1b;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .product-name::before {
+            content: '🧧';
+            position: absolute;
+            left: -50px;
+            font-size: 2rem;
+        }
+
+        .product-price {
+            background: linear-gradient(135deg, #dc2626, #991b1b);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            display: inline-block;
+            font-size: 2.8rem;
+            font-weight: 800;
+            box-shadow: 0 5px 15px rgba(220, 38, 38, 0.3);
+            animation: priceGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes priceGlow {
+            0%, 100% {
+                box-shadow: 0 5px 15px rgba(220, 38, 38, 0.3);
+            }
+            50% {
+                box-shadow: 0 5px 25px rgba(220, 38, 38, 0.5);
+            }
+        }
+
+        .quantity-selector {
+            background: #fef3c7;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #fbbf24;
+        }
+
+        .quantity-input {
+            border: 2px solid #dc2626;
+        }
+
+        .quantity-btn {
+            background: linear-gradient(135deg, #dc2626, #991b1b);
+            color: white;
+            width: 45px;
+            height: 45px;
+            font-size: 1.3rem;
+        }
+
+        .quantity-btn:hover {
+            background: linear-gradient(135deg, #991b1b, #7f1d1d);
+            transform: scale(1.1);
+        }
+
+        .quantity-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #991b1b;
+            border: none;
+            background: white;
+            width: 80px;
+        }
+
+        .btn-add-cart, .btn-buy-now {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            border-radius: 10px;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .btn-add-cart {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #991b1b;
+            box-shadow: 0 5px 15px rgba(251, 191, 36, 0.3);
+        }
+
+        .btn-add-cart:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(251, 191, 36, 0.5);
+        }
+
+        .btn-buy-now {
+            background: linear-gradient(135deg, #dc2626, #991b1b);
+            color: white;
+            box-shadow: 0 5px 15px rgba(220, 38, 38, 0.3);
+        }
+
+        .btn-buy-now:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.5);
+        }
+
+        .product-tabs .nav-link {
+            color: #666;
+            font-weight: 600;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .product-tabs .nav-link.active {
+            background: linear-gradient(135deg, #dc2626, #991b1b);
+            color: white;
+            border-color: #dc2626;
+        }
+
+        .related-product-card {
+            transition: all 0.3s;
+            border: 2px solid #fee;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .related-product-card:hover {
+            transform: translateY(-5px);
+            border-color: #fbbf24;
+            box-shadow: 0 10px 25px rgba(220, 38, 38, 0.2);
+        }
+
+        .stock-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .stock-badge.available {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .stock-badge.low {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+        }
+
+        .stock-badge.out {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .feature-highlight {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #fbbf24;
+            margin: 20px 0;
+        }
+
+        .feature-highlight h5 {
+            color: #991b1b;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .feature-highlight ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-highlight ul li {
+            padding: 8px 0;
+            color: #666;
+        }
+
+        .feature-highlight ul li::before {
+            content: '✓';
+            color: #10b981;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+    </style>
 </head>
 <body>
 <div layout:fragment="content">
@@ -13,32 +268,45 @@
             <!-- Breadcrumb -->
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
-                    <li class="breadcrumb-item"><a href="/sanpham">Sản phẩm</a></li>
+                    <li class="breadcrumb-item"><a href="/" style="color: #dc2626; font-weight: 600;">🏠 Trang chủ</a>
+                    </li>
+                    <li class="breadcrumb-item"><a href="/sanpham" style="color: #dc2626; font-weight: 600;">🛍️ Sản
+                        phẩm</a></li>
                     <li class="breadcrumb-item" th:if="${sanPham != null and sanPham.loaiSanPham != null}">
-                        <a th:href="@{/sanpham(loai=${sanPham.loaiSanPham.maLoai})}"
+                        <a style="color: #dc2626; font-weight: 600;"
+                           th:href="@{/sanpham(loai=${sanPham.loaiSanPham.maLoai})}"
                            th:text="${sanPham.loaiSanPham.tenLoai}">Giỏ quà Tết</a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page"
+                    <li aria-current="page" class="breadcrumb-item active"
+                        style="color: #991b1b; font-weight: 700;"
                         th:text="${sanPham != null ? sanPham.tenSP : 'Chi tiết sản phẩm'}">Sản phẩm
                     </li>
                 </ol>
             </nav>
 
-            <!-- TODO THÀNH VIÊN 3: Load thông tin sản phẩm từ model -->
             <div class="row">
                 <!-- Gallery -->
-                <div class="col-lg-6">
+                <div class="col-lg-6 mb-4">
                     <div class="product-gallery">
-                        <img th:src="${sanPham != null ? sanPham.hinhAnh : 'https://via.placeholder.com/500'}"
-                             th:alt="${sanPham != null ? sanPham.tenSP : 'Sản phẩm'}"
-                             class="main-image" id="mainImage"
-                             onerror="this.src='https://via.placeholder.com/500'">
+                        <img class="main-image"
+                             id="mainImage"
+                             onerror="this.src='https://via.placeholder.com/500?text=Sản+phẩm+Tết'" th:alt="${sanPham != null ? sanPham.tenSP : 'Sản phẩm'}"
+                             th:src="@{${sanPham != null && sanPham.hinhAnh != null ? '/images/' + sanPham.hinhAnh : '/img/default-product.jpg'}}">
 
-                        <!-- TODO: Có thể thêm nhiều ảnh nếu có bảng HinhAnhSanPham -->
-                        <div class="thumbnail-list">
-                            <img th:src="${sanPham != null ? sanPham.hinhAnh : 'https://via.placeholder.com/80'}"
-                                 class="thumbnail active" onclick="changeMainImage(this)">
+                        <div class="thumbnail-list mt-3">
+                            <img class="thumbnail active"
+                                 onclick="changeMainImage(this)" th:src="@{${sanPham != null && sanPham.hinhAnh != null ? '/images/' + sanPham.hinhAnh : '/img/default-product.jpg'}}">
+                        </div>
+
+                        <!-- Delivery info -->
+                        <div class="feature-highlight mt-3">
+                            <h5>🚚 Thông tin vận chuyển</h5>
+                            <ul>
+                                <li>Giao hàng toàn quốc</li>
+                                <li>Miễn phí vận chuyển đơn từ 500.000đ</li>
+                                <li>Giao hàng trong 24-48h</li>
+                                <li>Đảm bảo hàng nguyên vẹn</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -51,47 +319,51 @@
                         </h1>
 
                         <!-- Rating -->
-                        <div class="product-rating">
-                            <div class="stars">
+                        <div class="product-rating mb-3">
+                            <div class="stars" style="color: #fbbf24;">
                                 <i class="fas fa-star"></i>
                                 <i class="fas fa-star"></i>
                                 <i class="fas fa-star"></i>
                                 <i class="fas fa-star"></i>
                                 <i class="fas fa-star-half-alt"></i>
                             </div>
-                            <span class="rating-count">(4.5 - 128 đánh giá)</span>
+                            <span class="rating-count"
+                                  style="color: #666; margin-left: 10px;">(4.5 ⭐ - 128 đánh giá)</span>
                         </div>
 
                         <!-- Price -->
-                        <div class="product-price"
-                             th:text="${sanPham != null ? #numbers.formatDecimal(sanPham.gia, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}">
-                            500.000 đ
+                        <div class="mb-4">
+                            <div class="product-price"
+                                 th:text="${sanPham != null ? #numbers.formatDecimal(sanPham.gia, 0, 'COMMA', 0, 'POINT') + ' đ' : '0 đ'}">
+                                500.000 đ
+                            </div>
                         </div>
 
                         <!-- Stock Status -->
-                        <div th:if="${sanPham != null}">
-                            <span class="stock-status"
-                                  th:classappend="${sanPham.soLuong > 10 ? 'stock-available' : (sanPham.soLuong > 0 ? 'stock-low' : 'stock-out')}">
+                        <div class="mb-4" th:if="${sanPham != null}">
+                            <span class="stock-badge"
+                                  th:classappend="${sanPham.soLuong > 10 ? 'available' : (sanPham.soLuong > 0 ? 'low' : 'out')}">
                                 <i class="fas"
                                    th:classappend="${sanPham.soLuong > 0 ? 'fa-check-circle' : 'fa-times-circle'}"></i>
-                                <span th:text="${sanPham.soLuong > 0 ? 'Còn hàng (' + sanPham.soLuong + ' sản phẩm)' : 'Hết hàng'}">Còn hàng</span>
+                                <span th:text="${sanPham.soLuong > 10 ? '✅ Còn hàng (' + sanPham.soLuong + ' sản phẩm)' : (sanPham.soLuong > 0 ? '⚠️ Sắp hết (' + sanPham.soLuong + ' sản phẩm)' : '❌ Hết hàng')}">Còn hàng</span>
                             </span>
                         </div>
 
                         <!-- Description Short -->
-                        <div class="mt-3" th:if="${sanPham != null and sanPham.moTa != null}">
-                            <p th:utext="${#strings.abbreviate(sanPham.moTa, 200)}">Mô tả ngắn về sản phẩm...</p>
+                        <div class="mb-4" th:if="${sanPham != null and sanPham.moTa != null}">
+                            <p style="font-size: 1.1rem; color: #666; line-height: 1.8;"
+                               th:utext="${#strings.abbreviate(sanPham.moTa, 300)}">Mô tả ngắn về sản phẩm...</p>
                         </div>
 
                         <!-- Quantity Selector -->
                         <div class="quantity-selector">
-                            <label class="fw-bold">Số lượng:</label>
+                            <label class="fw-bold" style="font-size: 1.2rem; color: #991b1b;">📦 Số lượng:</label>
                             <div class="quantity-input">
                                 <button class="quantity-btn" onclick="decreaseQuantity()">
                                     <i class="fas fa-minus"></i>
                                 </button>
-                                <input type="number" id="quantity" class="quantity-value" value="1" min="1"
-                                       th:max="${sanPham != null ? sanPham.soLuong : 999}">
+                                <input class="quantity-value text-center" id="quantity" min="1" th:max="${sanPham != null ? sanPham.soLuong : 999}" type="number"
+                                       value="1">
                                 <button class="quantity-btn" onclick="increaseQuantity()">
                                     <i class="fas fa-plus"></i>
                                 </button>
@@ -99,47 +371,36 @@
                         </div>
 
                         <!-- Action Buttons -->
-                        <button class="btn-add-cart" onclick="addToCart()"
-                                th:disabled="${sanPham == null or sanPham.soLuong <= 0}">
-                            <i class="fas fa-shopping-cart"></i> Thêm vào giỏ hàng
-                        </button>
-                        <button class="btn-buy-now" onclick="buyNow()"
-                                th:disabled="${sanPham == null or sanPham.soLuong <= 0}">
-                            <i class="fas fa-bolt"></i> Mua ngay
-                        </button>
+                        <div class="action-buttons mt-4 d-flex gap-3 flex-wrap">
+                            <button class="btn btn-add-cart" onclick="addToCartDetail(this)"
+                                    th:data-product-id="${sanPham.maSP}"
+                                    th:data-product-image="${sanPham.hinhAnh}"
+                                    th:data-product-name="${sanPham.tenSP}"
+                                    th:data-product-price="${sanPham.gia}"
+                                    th:if="${sanPham != null and sanPham.soLuong > 0}">
+                                <i class="fas fa-cart-plus"></i> Thêm vào giỏ hàng
+                            </button>
 
-                        <!-- Product Meta -->
-                        <div class="product-meta">
-                            <div class="meta-item">
-                                <i class="fas fa-tag"></i>
-                                <span>Danh mục:
-                                    <a th:if="${sanPham != null and sanPham.loaiSanPham != null}"
-                                       th:href="@{/sanpham(loai=${sanPham.loaiSanPham.maLoai})}"
-                                       th:text="${sanPham.loaiSanPham.tenLoai}">Giỏ quà Tết</a>
-                                </span>
-                            </div>
-                            <div class="meta-item">
-                                <i class="fas fa-barcode"></i>
-                                <span>Mã SP: <span
-                                        th:text="${sanPham != null ? sanPham.maSP : 'N/A'}">SP001</span></span>
-                            </div>
-                            <div class="meta-item">
-                                <i class="fas fa-truck"></i>
-                                <span>Miễn phí vận chuyển cho đơn hàng từ 300.000đ</span>
-                            </div>
-                            <div class="meta-item">
-                                <i class="fas fa-shield-alt"></i>
-                                <span>Đảm bảo chất lượng 100%</span>
-                            </div>
+                            <button class="btn btn-buy-now" onclick="buyNow()"
+                                    th:if="${sanPham != null and sanPham.soLuong > 0}">
+                                <i class="fas fa-shopping-bag"></i> Mua ngay
+                            </button>
+
+                            <button class="btn btn-secondary" disabled
+                                    th:if="${sanPham == null or sanPham.soLuong == 0}">
+                                <i class="fas fa-times-circle"></i> Hết hàng
+                            </button>
                         </div>
 
-                        <!-- Share Buttons -->
-                        <div class="share-buttons">
-                            <span class="fw-bold">Chia sẻ:</span>
-                            <a href="#" class="share-btn"><i class="fab fa-facebook-f"></i></a>
-                            <a href="#" class="share-btn"><i class="fab fa-twitter"></i></a>
-                            <a href="#" class="share-btn"><i class="fab fa-pinterest-p"></i></a>
-                            <a href="#" class="share-btn"><i class="fas fa-envelope"></i></a>
+                        <!-- Special Features -->
+                        <div class="feature-highlight mt-4">
+                            <h5>🎁 Đặc điểm nổi bật</h5>
+                            <ul>
+                                <li>Sản phẩm chất lượng cao, nguồn gốc rõ ràng</li>
+                                <li>Đóng gói đẹp mắt, sang trọng theo phong cách Tết</li>
+                                <li>Phù hợp làm quà biếu dịp Tết Nguyên Đán</li>
+                                <li>Cam kết hoàn tiền 100% nếu không hài lòng</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -149,19 +410,19 @@
             <div class="tabs-section">
                 <ul class="nav nav-tabs" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#description"
+                        <button class="nav-link active" data-bs-target="#description" data-bs-toggle="tab"
                                 type="button">
                             <i class="fas fa-align-left"></i> Mô tả chi tiết
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#reviews" type="button">
+                        <button class="nav-link" data-bs-target="#reviews" data-bs-toggle="tab" type="button">
                             <i class="fas fa-star"></i> Đánh giá (<span
                                 th:text="${reviewCount != null ? reviewCount : 0}">0</span>)
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#shipping" type="button">
+                        <button class="nav-link" data-bs-target="#shipping" data-bs-toggle="tab" type="button">
                             <i class="fas fa-shipping-fast"></i> Chính sách vận chuyển
                         </button>
                     </li>
@@ -183,14 +444,14 @@
                     <div class="tab-pane fade" id="reviews">
                         <!-- TODO THÀNH VIÊN 3: Load danh sách đánh giá từ bảng DanhGia -->
                         <div th:if="${danhGiaList != null and !danhGiaList.isEmpty()}">
-                            <div th:each="dg : ${danhGiaList}" class="review-item">
+                            <div class="review-item" th:each="dg : ${danhGiaList}">
                                 <div class="review-header">
                                     <span class="reviewer-name" th:text="${dg.khachHang.hoTen}">Nguyễn Văn A</span>
                                     <span class="review-date" th:text="${#temporals.format(dg.ngayDG, 'dd/MM/yyyy')}">01/01/2025</span>
                                 </div>
                                 <div class="review-rating">
-                                    <i th:each="i : ${#numbers.sequence(1, dg.soSao)}" class="fas fa-star"></i>
-                                    <i th:each="i : ${#numbers.sequence(dg.soSao + 1, 5)}" class="far fa-star"></i>
+                                    <i class="fas fa-star" th:each="i : ${#numbers.sequence(1, dg.soSao)}"></i>
+                                    <i class="far fa-star" th:each="i : ${#numbers.sequence(dg.soSao + 1, 5)}"></i>
                                 </div>
                                 <p th:text="${dg.binhLuan}">Sản phẩm rất tốt, chất lượng đúng như mô tả!</p>
                             </div>
@@ -227,12 +488,12 @@
                 </h2>
 
                 <div class="row">
-                    <div th:if="${relatedProducts != null and !relatedProducts.isEmpty()}"
-                         th:each="sp : ${relatedProducts}" class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                        <a th:href="@{/sanpham/{id}(id=${sp.maSP})}" class="text-decoration-none">
+                    <div class="col-lg-3 col-md-4 col-sm-6 mb-4"
+                         th:each="sp : ${relatedProducts}" th:if="${relatedProducts != null and !relatedProducts.isEmpty()}">
+                        <a class="text-decoration-none" th:href="@{/sanpham/{id}(id=${sp.maSP})}">
                             <div class="product-card">
-                                <img th:src="${sp.hinhAnh}" th:alt="${sp.tenSP}" class="product-card-img"
-                                     onerror="this.src='https://via.placeholder.com/250'">
+                                <img class="product-card-img" onerror="this.src='https://via.placeholder.com/250'" th:alt="${sp.tenSP}"
+                                     th:src="${sp.hinhAnh}">
                                 <div class="product-card-body">
                                     <h5 class="product-card-title" th:text="${sp.tenSP}">Tên sản phẩm</h5>
                                     <div class="product-card-price"
@@ -245,10 +506,10 @@
                     </div>
 
                     <!-- Placeholder -->
-                    <div th:if="${relatedProducts == null or relatedProducts.isEmpty()}"
-                         th:each="i : ${#numbers.sequence(1, 4)}" class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                    <div class="col-lg-3 col-md-4 col-sm-6 mb-4"
+                         th:each="i : ${#numbers.sequence(1, 4)}" th:if="${relatedProducts == null or relatedProducts.isEmpty()}">
                         <div class="product-card">
-                            <img src="https://via.placeholder.com/250" class="product-card-img">
+                            <img class="product-card-img" src="https://via.placeholder.com/250">
                             <div class="product-card-body">
                                 <h5 class="product-card-title">Giỏ quà Tết mẫu</h5>
                                 <div class="product-card-price">500.000 đ</div>
@@ -261,94 +522,58 @@
     </div>
 </div>
 
-<th:block layout:fragment="scripts">
-    <script>
-        const maxQuantity = /*[[${sanPham?.soLuong}]]*/ 999;
-        const productId = /*[[${sanPham?.maSP}]]*/ 0;
+<script>
+    function changeMainImage(thumbnail) {
+        document.getElementById('mainImage').src = thumbnail.src;
+        document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
+        thumbnail.classList.add('active');
+    }
 
-        function changeMainImage(thumbnail) {
-            document.getElementById('mainImage').src = thumbnail.src;
-            document.querySelectorAll('.thumbnail').forEach(t => t.classList.remove('active'));
-            thumbnail.classList.add('active');
+    function decreaseQuantity() {
+        const input = document.getElementById('quantity');
+        if (input.value > 1) {
+            input.value = parseInt(input.value) - 1;
         }
+    }
 
-        function decreaseQuantity() {
-            const input = document.getElementById('quantity');
-            if (input.value > 1) {
-                input.value = parseInt(input.value) - 1;
+    function increaseQuantity() {
+        const input = document.getElementById('quantity');
+        const max = parseInt(input.max);
+        if (parseInt(input.value) < max) {
+            input.value = parseInt(input.value) + 1;
+        }
+    }
+
+    function addToCartDetail(button) {
+        const quantity = parseInt(document.getElementById('quantity').value);
+        const productId = button.getAttribute('data-product-id');
+        const productName = button.getAttribute('data-product-name');
+        const productPrice = button.getAttribute('data-product-price');
+        const productImage = button.getAttribute('data-product-image');
+
+        // Call existing addToCart function
+        if (typeof addToCart === 'function') {
+            for (let i = 0; i < quantity; i++) {
+                addToCart(button);
             }
         }
 
-        function increaseQuantity() {
-            const input = document.getElementById('quantity');
-            if (input.value < maxQuantity) {
-                input.value = parseInt(input.value) + 1;
-            }
+        // Show notification
+        alert(`✅ Đã thêm ${quantity} sản phẩm "${productName}" vào giỏ hàng!`);
+    }
+
+    function buyNow() {
+        const quantity = document.getElementById('quantity').value;
+        // Add to cart first
+        const addButton = document.querySelector('.btn-add-cart');
+        if (addButton) {
+            addToCartDetail(addButton);
         }
-
-        // TODO THÀNH VIÊN 3: Thêm vào giỏ hàng
-        function addToCart() {
-            const quantity = document.getElementById('quantity').value;
-
-            fetch('/giohang/api/add', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: `maSP=${productId}&soLuong=${quantity}`
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Đã thêm sản phẩm vào giỏ hàng!');
-                        // Cập nhật badge giỏ hàng
-                        updateCartBadge();
-                    } else {
-                        alert('Lỗi: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Có lỗi xảy ra, vui lòng thử lại!');
-                });
-        }
-
-        // Mua ngay = Thêm giỏ + Chuyển đến checkout
-        function buyNow() {
-            const quantity = document.getElementById('quantity').value;
-
-            fetch('/giohang/api/add', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: `maSP=${productId}&soLuong=${quantity}`
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        window.location.href = '/checkout';
-                    } else {
-                        alert('Lỗi: ' + data.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Có lỗi xảy ra, vui lòng thử lại!');
-                });
-        }
-
-        function updateCartBadge() {
-            fetch('/giohang/api/count')
-                .then(response => response.json())
-                .then(data => {
-                    const badge = document.querySelector('.cart-badge');
-                    if (badge && data.count) {
-                        badge.textContent = data.count;
-                    }
-                });
-        }
-    </script>
-</th:block>
+        // Redirect to checkout
+        setTimeout(() => {
+            window.location.href = '/checkout';
+        }, 500);
+    }
+</script>
 </body>
 </html>

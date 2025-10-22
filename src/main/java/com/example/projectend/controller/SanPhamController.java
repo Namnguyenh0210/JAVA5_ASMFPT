@@ -1,60 +1,39 @@
 package com.example.projectend.controller;
 
+import com.example.projectend.entity.LoaiSanPham;
+import com.example.projectend.entity.SanPham;
+import com.example.projectend.service.LoaiSanPhamService;
+import com.example.projectend.service.SanPhamService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.example.projectend.entity.SanPham;
-import com.example.projectend.entity.LoaiSanPham;
-import com.example.projectend.service.SanPhamService;
-import com.example.projectend.service.LoaiSanPhamService;
-
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 
 /**
- * SAN PHAM CONTROLLER - Hiển thị sản phẩm phía khách hàng
- * <p>
- * =============================
- * PHÂN CÔNG: TV2 - FRONTEND KHÁCH HÀNG
- * =============================
- * TODO TV2 - CẦN LÀM (3 ENDPOINTS):
- * <p>
- * 1. GET /sanpham - Danh sách sản phẩm (filter, search, sort)
- * → Inject SanPhamService, LoaiSanPhamService
- * → Gọi sanPhamService.findWithFilters(search, loai, minPrice, maxPrice, sort, pageable)
- * → Lấy danh mục: loaiSanPhamService.findAll()
- * → Truyền vào model để render
- * <p>
- * 2. GET /sanpham/{id} - Chi tiết sản phẩm
- * → Load sản phẩm theo ID
- * → Lấy sản phẩm liên quan: sanPhamService.findRelatedProducts()
- * → Tăng lượt xem: sanPhamService.incrementLuotXem(id)
- * → (Optional) Lấy đánh giá: danhGiaService.getDanhGiaBySanPham()
- * <p>
- * 3. GET /api/sanpham/search - AJAX tìm kiếm nhanh (autocomplete)
- * → @ResponseBody return List<SanPham>
- * → Gọi sanPhamService.searchByKeyword(keyword, 10)
- * <p>
- * THỜI GIAN: 1 ngày
- * =============================
+ * Controller xử lý hiển thị sản phẩm phía khách hàng
  */
 @Controller
 public class SanPhamController {
 
-    @Autowired private SanPhamService sanPhamService;
-    @Autowired private LoaiSanPhamService loaiSanPhamService;
+    @Autowired
+    private SanPhamService sanPhamService;
 
-    // =============================
-    // TODO TV2: Endpoint 1 - Danh sách sản phẩm
+    @Autowired
+    private LoaiSanPhamService loaiSanPhamService;
+
+    /**
+     * Hiển thị danh sách sản phẩm với bộ lọc và phân trang
+     */
     @GetMapping("/sanpham")
     public String sanPham(
             @RequestParam(defaultValue = "0") int page,
@@ -66,25 +45,26 @@ public class SanPhamController {
             @RequestParam(defaultValue = "moi") String sort,
             Model model) {
 
-        // Không cần nhân x1000 nữa - người dùng nhập giá VNĐ trực tiếp
-        
         model.addAttribute("currentPage", "sanpham");
+
+        // Lấy danh sách sản phẩm với bộ lọc
         PageRequest pageable = PageRequest.of(page, size);
         Page<SanPham> sanPhamPage = sanPhamService.findWithFilters(search, loai, minPrice, maxPrice, sort, pageable);
         model.addAttribute("sanPhamPage", sanPhamPage);
+
+        // Lấy danh mục
         List<LoaiSanPham> categories = loaiSanPhamService.findAll();
         model.addAttribute("categories", categories);
-        
-        // Keep filter values for display
+
+        // Giữ lại giá trị filter
         model.addAttribute("search", search);
         model.addAttribute("loai", loai);
         model.addAttribute("minPrice", minPrice);
         model.addAttribute("maxPrice", maxPrice);
         model.addAttribute("sort", sort);
-
-        // Thêm năm Tết
         model.addAttribute("tetYear", java.time.LocalDate.now().getYear() + 1);
 
+        // Breadcrumb
         Map<String, String> breadcrumbItem = new HashMap<>();
         breadcrumbItem.put("name", "Sản phẩm");
         breadcrumbItem.put("url", null);
@@ -94,8 +74,9 @@ public class SanPhamController {
         return "sanpham";
     }
 
-    // =============================
-    // TODO TV2: Endpoint 2 - Chi tiết sản phẩm
+    /**
+     * Hiển thị chi tiết sản phẩm
+     */
     @GetMapping("/sanpham/{id}")
     public String chiTietSanPham(@PathVariable Integer id, Model model) {
 
@@ -111,14 +92,15 @@ public class SanPhamController {
         // Tăng lượt xem
         sanPhamService.incrementLuotXem(id);
 
-        // Sản phẩm liên quan (cùng danh mục)
+        // Lấy sản phẩm liên quan cùng danh mục
         List<SanPham> relatedProducts = sanPhamService.findRelatedProducts(
-            sanPham.getLoaiSanPham().getMaLoai(),
-            sanPham.getMaSP(),
-            6
+                sanPham.getLoaiSanPham().getMaLoai(),
+                sanPham.getMaSP(),
+                6
         );
         model.addAttribute("relatedProducts", relatedProducts);
 
+        // Breadcrumb
         Map<String, String> breadcrumb1 = new HashMap<>();
         breadcrumb1.put("name", "Sản phẩm");
         breadcrumb1.put("url", "/sanpham");
@@ -132,8 +114,9 @@ public class SanPhamController {
         return "sanpham-detail";
     }
 
-    // =============================
-    // TODO TV2: Endpoint 3 - AJAX tìm kiếm nhanh (autocomplete)
+    /**
+     * API tìm kiếm nhanh sản phẩm (AJAX autocomplete)
+     */
     @GetMapping("/api/sanpham/search")
     @org.springframework.web.bind.annotation.ResponseBody
     public List<SanPham> quickSearch(@RequestParam String q) {

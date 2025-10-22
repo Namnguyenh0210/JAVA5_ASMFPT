@@ -13,8 +13,8 @@ import java.util.Optional;
 /**
  * DIA CHI REPOSITORY
  * PHÂN CÔNG:
- *  - THÀNH VIÊN 1: Mapping (ĐÃ HOÀN THÀNH)
- *  - THÀNH VIÊN 3: CRUD địa chỉ người dùng + lấy địa chỉ mặc định (Checkout/Profile)
+ * - THÀNH VIÊN 1: Mapping (ĐÃ HOÀN THÀNH)
+ * - THÀNH VIÊN 3: CRUD địa chỉ người dùng + lấy địa chỉ mặc định (Checkout/Profile)
  */
 @Repository
 public interface DiaChiRepository extends JpaRepository<DiaChi, Integer> {

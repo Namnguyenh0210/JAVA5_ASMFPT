@@ -209,8 +209,12 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
         }
 
         @keyframes slideUp {
@@ -280,7 +284,7 @@
 <!-- Checkout Content - Layout giống giỏ hàng -->
 <section class="cart-section">
     <div class="container">
-        <form id="checkoutForm" method="post" action="/checkout/place-order">
+        <form action="/checkout/place-order" id="checkoutForm" method="post">
             <div class="cart-content">
                 <!-- Left: Billing Details & Product List -->
                 <div class="cart-items">
@@ -292,47 +296,48 @@
                     <div class="billing-form">
                         <div class="form-group">
                             <label>Họ tên <span class="required">*</span></label>
-                            <input type="text" name="hoTen" class="form-input"
-                                   th:value="${user != null ? user.hoTen : ''}"
-                                   placeholder="Nhập họ tên của bạn" required>
+                            <input class="form-input" name="hoTen" placeholder="Nhập họ tên của bạn"
+                                   required
+                                   th:value="${user != null ? user.hoTen : ''}" type="text">
                         </div>
 
                         <div class="form-group">
                             <label>Email <span class="required">*</span></label>
-                            <input type="email" name="email" class="form-input"
-                                   th:value="${user != null ? user.email : ''}"
-                                   placeholder="Nhập email của bạn" required>
+                            <input class="form-input" name="email" placeholder="Nhập email của bạn"
+                                   required
+                                   th:value="${user != null ? user.email : ''}" type="email">
                         </div>
 
                         <div class="form-group">
                             <label>Số điện thoại <span class="required">*</span></label>
-                            <input type="tel" name="soDienThoai" class="form-input"
-                                   th:value="${user != null ? user.soDienThoai : ''}"
-                                   placeholder="Nhập số điện thoại" required>
+                            <input class="form-input" name="soDienThoai" placeholder="Nhập số điện thoại"
+                                   required
+                                   th:value="${user != null ? user.soDienThoai : ''}" type="tel">
                         </div>
 
                         <div class="form-group">
                             <label>Địa chỉ giao hàng <span class="required">*</span></label>
                             <div class="address-input-group">
-                                <input type="text" id="selectedAddress" name="diaChi" class="form-input"
-                                       th:value="${defaultAddress != null ? defaultAddress.diaChiChiTiet : ''}"
-                                       placeholder="Chọn địa chỉ giao hàng" required readonly>
-                                <input type="hidden" id="selectedAddressId" name="diaChiId"
-                                       th:value="${defaultAddress != null ? defaultAddress.maDC : ''}">
-                                <button type="button" class="btn-change-address" onclick="openAddressModal()">
+                                <input class="form-input" id="selectedAddress" name="diaChi" placeholder="Chọn địa chỉ giao hàng"
+                                       readonly
+                                       required th:value="${defaultAddress != null ? defaultAddress.diaChiChiTiet : ''}" type="text">
+                                <input id="selectedAddressId" name="diaChiId" th:value="${defaultAddress != null ? defaultAddress.maDC : ''}"
+                                       type="hidden">
+                                <button class="btn-change-address" onclick="openAddressModal()" type="button">
                                     <i class="fas fa-map-marker-alt"></i> Chọn địa chỉ
                                 </button>
                             </div>
                             <small class="form-hint" th:if="${diaChiList == null or #lists.isEmpty(diaChiList)}">
                                 <i class="fas fa-info-circle"></i>
-                                Bạn chưa có địa chỉ nào. Vui lòng thêm địa chỉ trong <a th:href="@{/profile#addresses}">trang cá nhân</a>.
+                                Bạn chưa có địa chỉ nào. Vui lòng thêm địa chỉ trong <a th:href="@{/profile#addresses}">trang
+                                cá nhân</a>.
                             </small>
                         </div>
 
                         <div class="form-group">
                             <label>Ghi chú đơn hàng (tùy chọn)</label>
-                            <textarea name="ghiChu" class="form-textarea" rows="4"
-                                      placeholder="Ghi chú về đơn hàng, ví dụ: thời gian hay chỉ dẫn địa điểm giao hàng chi tiết hơn."></textarea>
+                            <textarea class="form-textarea" name="ghiChu" placeholder="Ghi chú về đơn hàng, ví dụ: thời gian hay chỉ dẫn địa điểm giao hàng chi tiết hơn."
+                                      rows="4"></textarea>
                         </div>
                     </div>
 
@@ -345,11 +350,11 @@
                     </div>
 
                     <!-- Empty Cart Notice -->
-                    <div th:if="${cartItems == null or #lists.isEmpty(cartItems)}" class="empty-cart-notice">
+                    <div class="empty-cart-notice" th:if="${cartItems == null or #lists.isEmpty(cartItems)}">
                         <div class="empty-icon">🛒</div>
                         <h3>Giỏ hàng trống</h3>
                         <p>Hãy thêm sản phẩm để thanh toán</p>
-                        <a href="/sanpham" class="btn btn-primary">
+                        <a class="btn btn-primary" href="/sanpham">
                             <i class="fas fa-shopping-bag"></i>
                             Mua Sắm Ngay
                         </a>
@@ -357,11 +362,11 @@
 
                     <!-- Product List -->
                     <div th:unless="${cartItems == null or #lists.isEmpty(cartItems)}">
-                        <div th:each="item : ${cartItems}" class="cart-item">
+                        <div class="cart-item" th:each="item : ${cartItems}">
                             <div class="item-product">
                                 <div class="product-image">
-                                    <img th:src="${item.sanPham.hinhAnh != null && !item.sanPham.hinhAnh.isEmpty() ? item.sanPham.hinhAnh : 'https://picsum.photos/200/200?random=' + item.sanPham.maSP}"
-                                         th:alt="${item.sanPham.tenSP}">
+                                    <img th:alt="${item.sanPham.tenSP}"
+                                         th:src="${item.sanPham.hinhAnh != null && !item.sanPham.hinhAnh.isEmpty() ? item.sanPham.hinhAnh : 'https://picsum.photos/200/200?random=' + item.sanPham.maSP}">
                                 </div>
                                 <div class="product-info">
                                     <h3 th:text="${item.sanPham.tenSP}">Tên sản phẩm</h3>
@@ -372,13 +377,15 @@
                                 </div>
                             </div>
                             <div class="item-price">
-                                <span class="current-price" th:text="${#numbers.formatDecimal(item.sanPham.gia, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</span>
+                                <span class="current-price"
+                                      th:text="${#numbers.formatDecimal(item.sanPham.gia, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</span>
                             </div>
                             <div class="item-quantity">
                                 <span th:text="${item.soLuong}">1</span>
                             </div>
                             <div class="item-total">
-                                <span class="total-price" th:text="${#numbers.formatDecimal(item.sanPham.gia * item.soLuong, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</span>
+                                <span class="total-price"
+                                      th:text="${#numbers.formatDecimal(item.sanPham.gia * item.soLuong, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</span>
                             </div>
                         </div>
 
@@ -404,7 +411,8 @@
                         <div class="summary-content">
                             <div class="summary-row">
                                 <span>Tạm tính (<span th:text="${cartItems != null ? cartItems.size() : 0}">0</span> sản phẩm):</span>
-                                <span id="subtotalAmount" th:text="${#numbers.formatDecimal(orderSubtotal != null ? orderSubtotal : 0,0,'COMMA',0,'POINT')} + 'đ'">0đ</span>
+                                <span id="subtotalAmount"
+                                      th:text="${#numbers.formatDecimal(orderSubtotal != null ? orderSubtotal : 0,0,'COMMA',0,'POINT')} + 'đ'">0đ</span>
                             </div>
 
                             <div class="summary-row">
@@ -414,14 +422,16 @@
 
                             <div class="summary-row total-row">
                                 <span>Tổng cộng:</span>
-                                <span class="total-amount" th:text="${#numbers.formatDecimal((orderTotal != null ? orderTotal : 0) + 30000,0,'COMMA',0,'POINT')} + 'đ'">30,000đ</span>
+                                <span class="total-amount"
+                                      th:text="${#numbers.formatDecimal((orderTotal != null ? orderTotal : 0) + 30000,0,'COMMA',0,'POINT')} + 'đ'">30,000đ</span>
                             </div>
 
                             <!-- Payment Methods -->
                             <div class="payment-methods">
-                                <h4 style="margin-bottom: 0.75rem; font-size: 0.938rem; font-weight: 700;">Phương thức thanh toán</h4>
+                                <h4 style="margin-bottom: 0.75rem; font-size: 0.938rem; font-weight: 700;">Phương thức
+                                    thanh toán</h4>
                                 <label class="payment-method">
-                                    <input type="radio" name="paymentMethod" value="2" checked>
+                                    <input checked name="paymentMethod" type="radio" value="2">
                                     <div class="method-content">
                                         <i class="fas fa-money-bill-wave"></i>
                                         <span>Chuyển khoản ngân hàng</span>
@@ -429,7 +439,7 @@
                                 </label>
 
                                 <label class="payment-method">
-                                    <input type="radio" name="paymentMethod" value="1">
+                                    <input name="paymentMethod" type="radio" value="1">
                                     <div class="method-content">
                                         <i class="fas fa-hand-holding-usd"></i>
                                         <span>Trả tiền mặt khi nhận hàng (COD)</span>
@@ -438,7 +448,7 @@
                             </div>
 
                             <!-- Checkout Button -->
-                            <button type="submit" class="checkout-btn">
+                            <button class="checkout-btn" type="submit">
                                 <i class="fas fa-credit-card"></i>
                                 Tiến Hành Thanh Toán
                             </button>
@@ -467,22 +477,23 @@
 </section>
 
 <!-- Address Selection Modal -->
-<div id="addressModal" class="address-modal">
+<div class="address-modal" id="addressModal">
     <div class="address-modal-content">
         <div class="address-modal-header">
             <h3><i class="fas fa-map-marked-alt"></i> Chọn Địa Chỉ Giao Hàng</h3>
             <button class="address-modal-close" onclick="closeAddressModal()">&times;</button>
         </div>
         <div class="address-modal-body">
-            <div th:if="${diaChiList != null and !#lists.isEmpty(diaChiList)}" class="address-list">
-                <div th:each="address : ${diaChiList}"
-                     class="address-item"
-                     th:classappend="${address.macDinh ? 'selected' : ''}"
+            <div class="address-list" th:if="${diaChiList != null and !#lists.isEmpty(diaChiList)}">
+                <div class="address-item"
+                     onclick="selectAddress(this)"
                      th:attr="data-id=${address.maDC}, data-address=${address.diaChiChiTiet}"
-                     onclick="selectAddress(this)">
+                     th:classappend="${address.macDinh ? 'selected' : ''}"
+                     th:each="address : ${diaChiList}">
                     <div class="address-item-header">
-                        <span class="address-item-name" th:text="${user != null ? user.hoTen : 'Người nhận'}">Người nhận</span>
-                        <span th:if="${address.macDinh}" class="address-default-badge">
+                        <span class="address-item-name"
+                              th:text="${user != null ? user.hoTen : 'Người nhận'}">Người nhận</span>
+                        <span class="address-default-badge" th:if="${address.macDinh}">
                             <i class="fas fa-star"></i> Mặc định
                         </span>
                     </div>
@@ -496,12 +507,12 @@
                 </div>
             </div>
 
-            <div th:if="${diaChiList == null or #lists.isEmpty(diaChiList)}" class="no-address-message">
+            <div class="no-address-message" th:if="${diaChiList == null or #lists.isEmpty(diaChiList)}">
                 <i class="fas fa-map-marker-alt"></i>
                 <p>Bạn chưa có địa chỉ nào</p>
             </div>
 
-            <a th:href="@{/profile#addresses}" class="btn-add-address">
+            <a class="btn-add-address" th:href="@{/profile#addresses}">
                 <i class="fas fa-plus-circle"></i> Thêm Địa Chỉ Mới
             </a>
         </div>
@@ -550,14 +561,14 @@
     }
 
     // Close modal when clicking outside
-    document.getElementById('addressModal').addEventListener('click', function(e) {
+    document.getElementById('addressModal').addEventListener('click', function (e) {
         if (e.target === this) {
             closeAddressModal();
         }
     });
 
     // Prevent form submission if no address selected
-    document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+    document.getElementById('checkoutForm').addEventListener('submit', function (e) {
         const addressId = document.getElementById('selectedAddressId').value;
         if (!addressId) {
             e.preventDefault();
