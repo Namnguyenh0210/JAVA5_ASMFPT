@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -111,5 +112,37 @@ public class GioHangService {
     @Transactional
     public void clearGioHang(TaiKhoan tk) {
         gioHangRepository.deleteByTaiKhoan(tk);
+    }
+
+    /**
+     * Lấy các sản phẩm trong giỏ hàng của người dùng theo danh sách sản phẩm được chọn
+     */
+    public List<GioHang> getGioHangByTaiKhoanAndSanPhamIds(TaiKhoan tk, List<Map<String, Object>> selectedItems) {
+        List<GioHang> allItems = getGioHangByTaiKhoan(tk);
+        if (selectedItems == null || selectedItems.isEmpty()) {
+            return allItems;
+        }
+        // Extract product IDs from selectedItems
+        java.util.Set<Integer> selectedIds = new java.util.HashSet<>();
+        for (Map<String, Object> item : selectedItems) {
+            Object idObj = item.get("maSP");
+            if (idObj instanceof Integer) {
+                selectedIds.add((Integer) idObj);
+            } else if (idObj instanceof Number) {
+                selectedIds.add(((Number) idObj).intValue());
+            } else if (idObj != null) {
+                try {
+                    selectedIds.add(Integer.parseInt(idObj.toString()));
+                } catch (NumberFormatException ignored) {}
+            }
+        }
+        // Filter cart items by selected product IDs
+        List<GioHang> filtered = new java.util.ArrayList<>();
+        for (GioHang gh : allItems) {
+            if (gh.getSanPham() != null && selectedIds.contains(gh.getSanPham().getMaSP())) {
+                filtered.add(gh);
+            }
+        }
+        return filtered;
     }
 }

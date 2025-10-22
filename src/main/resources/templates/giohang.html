@@ -55,7 +55,6 @@
                     <!-- Hiển thị khi có sản phẩm -->
                     <div th:unless="${gioHangItems.isEmpty()}">
                         <div class="table-header">
-                            <div class="header-checkbox"></div>
                             <div class="header-item header-product">Sản Phẩm</div>
                             <div class="header-item header-center">Đơn Giá</div>
                             <div class="header-item header-center">Số Lượng</div>
@@ -65,10 +64,9 @@
                         <!-- Danh sách sản phẩm -->
                         <div class="cart-item" th:each="item : ${gioHangItems}" th:id="'item-' + ${item.sanPham.maSP}">
                             <div class="item-checkbox">
-                                <input class="item-select" onchange="updateSummary()" th:data-id="${item.sanPham.maSP}"
-                                       th:data-price="${item.sanPham.gia}"
-                                       th:data-quantity="${item.soLuong}"
-                                       type="checkbox">
+                                <input type="checkbox" class="item-select" th:checked="true"
+                                       th:attr="data-id=${item.sanPham.maSP},data-price=${item.sanPham.gia},data-quantity=${item.soLuong}"
+                                       onchange="updateSummary()">
                             </div>
                             <div class="item-product">
                                 <div class="product-image">
@@ -92,25 +90,21 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="item-price">
+                            <div class="item-price" style="text-align: center;">
                                 <span class="current-price"
                                       th:text="${#numbers.formatDecimal(item.sanPham.gia, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</span>
                             </div>
-                            <div class="item-quantity">
+                            <div class="item-quantity" style="text-align: center;">
                                 <div class="quantity-controls">
                                     <button class="quantity-btn"
-                                            th:onclick="'updateQuantity(' + ${item.sanPham.maSP} + ', -1)'">
-                                        <i class="fas fa-minus"></i>
-                                    </button>
+                                            th:onclick="'updateQuantity(' + ${item.sanPham.maSP} + ', -1)'"><i class="fas fa-minus"></i></button>
                                     <input class="quantity-input" max="99" min="1" readonly
                                            th:value="${item.soLuong}" type="number">
                                     <button class="quantity-btn"
-                                            th:onclick="'updateQuantity(' + ${item.sanPham.maSP} + ', 1)'">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
+                                            th:onclick="'updateQuantity(' + ${item.sanPham.maSP} + ', 1)'"><i class="fas fa-plus"></i></button>
                                 </div>
                             </div>
-                            <div class="item-total">
+                            <div class="item-total" style="text-align: center;">
                                 <span class="total-price"
                                       th:text="${#numbers.formatDecimal(item.sanPham.gia * item.soLuong, 0, 'COMMA', 0, 'POINT')} + 'đ'">0đ</span>
                             </div>
@@ -361,14 +355,40 @@
         checkoutBtn.disabled = count === 0;
     }
 
-    // Thanh toán
+    // Hàm tiến hành thanh toán
     function checkout() {
-        const selected = document.querySelectorAll('.item-select:checked');
-        if (selected.length === 0) {
-            alert('Vui lòng chọn sản phẩm để thanh toán!');
+        // Lấy các sản phẩm đã tick chọn
+        const checkedItems = Array.from(document.querySelectorAll('.item-select:checked'));
+        if (checkedItems.length === 0) {
+            alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán!');
             return;
         }
-        window.location.href = '/checkout';
+        // Tạo mảng sản phẩm đã chọn
+        const selectedItems = checkedItems.map(cb => {
+            return {
+                maSP: parseInt(cb.dataset.id),
+                soLuong: parseInt(cb.dataset.quantity)
+            };
+        });
+        // Gửi POST tới đúng endpoint
+        fetch('/checkout/api/checkout-selected', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ items: selectedItems })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.thanhCong) {
+                window.location.href = data.duongDanChuyenHuong;
+            } else {
+                alert(data.thongBao || 'Có lỗi xảy ra!');
+            }
+        })
+        .catch(() => {
+            alert('Có lỗi xảy ra khi gửi yêu cầu thanh toán!');
+        });
     }
 
     // Format giá tiền
