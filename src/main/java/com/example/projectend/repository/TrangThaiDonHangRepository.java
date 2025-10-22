@@ -1,8 +1,11 @@
+// Bổ sung vào file TrangThaiDonHangRepository.java
 package com.example.projectend.repository;
 
 import com.example.projectend.entity.TrangThaiDonHang;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
 
 /**
  * TRANG THAI DON HANG REPOSITORY
@@ -11,10 +14,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TrangThaiDonHangRepository extends JpaRepository<TrangThaiDonHang, Integer> {
 
-    // ========================================
-    // TODO: NGƯỜI 4 - Admin: Quản lý trạng thái đơn hàng
-    // ========================================
-    // TODO: NGƯỜI 4 - Kiểm tra tên trạng thái đã tồn tại (tránh trùng khi thêm)
-    // boolean existsByTenTTDH(String tenTTDH);
+    // 🔸 Lấy trạng thái đơn hàng theo tên (vd: "Chờ xác nhận", "Đã hủy", "Đã giao")
+    Optional<TrangThaiDonHang> findByTenTTDH(String tenTTDH);
 }
-

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
+<html layout:decorate="~{layouts/base}"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/base}">
+      xmlns:th="http://www.thymeleaf.org">
 <head>
     <title th:text="${pageTitle}">Chi tiết đơn hàng - Cửa hàng đồ Tết</title>
     <link rel="stylesheet" th:href="@{/css/order-detail.css?v=1}">
@@ -15,8 +15,8 @@
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="/">Trang chủ</a></li>
                     <li class="breadcrumb-item" th:each="item : ${breadcrumbItems}">
-                        <a th:if="${item.url}" th:href="${item.url}" th:text="${item.name}">Link</a>
-                        <span th:unless="${item.url}" th:text="${item.name}">Current</span>
+                        <a th:href="${item.url}" th:if="${item.url}" th:text="${item.name}">Link</a>
+                        <span th:text="${item.name}" th:unless="${item.url}">Current</span>
                     </li>
                 </ol>
             </nav>
@@ -87,8 +87,8 @@
                 </div>
 
                 <!-- Ghi chú (nếu có) -->
-                <div th:if="${donHang != null and donHang.ghiChu != null and !donHang.ghiChu.isEmpty()}"
-                     class="note-section">
+                <div class="note-section"
+                     th:if="${donHang != null and donHang.ghiChu != null and !donHang.ghiChu.isEmpty()}">
                     <strong><i class="fas fa-sticky-note"></i> Ghi chú:</strong>
                     <p class="mb-0 mt-2" th:text="${donHang.ghiChu}">Ghi chú của khách hàng</p>
                 </div>
@@ -112,12 +112,12 @@
                     </thead>
                     <tbody>
                     <!-- TODO THÀNH VIÊN 4: Load chi tiết đơn hàng -->
-                    <tr th:if="${chiTietDonHang != null and !chiTietDonHang.isEmpty()}"
-                        th:each="item : ${chiTietDonHang}">
+                    <tr th:each="item : ${chiTietDonHang}"
+                        th:if="${chiTietDonHang != null and !chiTietDonHang.isEmpty()}">
                         <td>
                             <div class="d-flex align-items-center">
-                                <img th:src="${item.sanPham.hinhAnh}" th:alt="${item.sanPham.tenSP}"
-                                     class="product-img-table me-3" onerror="this.src='https://via.placeholder.com/80'">
+                                <img class="product-img-table me-3" onerror="this.src='https://via.placeholder.com/80'"
+                                     th:alt="${item.sanPham.tenSP}" th:src="${item.sanPham.hinhAnh}">
                                 <div>
                                     <div class="fw-bold" th:text="${item.sanPham.tenSP}">Giỏ quà Tết An Khang</div>
                                     <small class="text-muted">Mã SP: <span
@@ -139,7 +139,7 @@
                     <tr th:if="${chiTietDonHang == null or chiTietDonHang.isEmpty()}">
                         <td>
                             <div class="d-flex align-items-center">
-                                <img src="https://via.placeholder.com/80" class="product-img-table me-3">
+                                <img class="product-img-table me-3" src="https://via.placeholder.com/80">
                                 <div>
                                     <div class="fw-bold">Giỏ quà Tết An Khang</div>
                                     <small class="text-muted">Mã SP: SP001</small>
@@ -220,20 +220,20 @@
             <div class="detail-card">
                 <div class="action-buttons">
                     <!-- TODO THÀNH VIÊN 4: Chỉ hiển thị nút hủy khi trạng thái cho phép -->
-                    <button type="button" class="btn-cancel" onclick="confirmCancelOrder()"
-                            th:if="${donHang != null and donHang.trangThaiDonHang.tenTTDH.contains('Chờ')}">
+                    <button class="btn-cancel" onclick="confirmCancelOrder()" th:if="${donHang != null and donHang.trangThaiDonHang.tenTTDH.contains('Chờ')}"
+                            type="button">
                         <i class="fas fa-times-circle"></i> Hủy đơn hàng
                     </button>
 
-                    <button type="button" class="btn-reorder" onclick="reorder()">
+                    <button class="btn-reorder" onclick="reorder()" type="button">
                         <i class="fas fa-redo"></i> Đặt lại đơn hàng này
                     </button>
 
-                    <a href="/profile" class="btn btn-secondary">
+                    <a class="btn btn-secondary" href="/profile">
                         <i class="fas fa-arrow-left"></i> Quay lại đơn hàng
                     </a>
 
-                    <a href="/lienhe" class="btn btn-outline-primary">
+                    <a class="btn btn-outline-primary" href="/lienhe">
                         <i class="fas fa-headset"></i> Liên hệ hỗ trợ
                     </a>
                 </div>

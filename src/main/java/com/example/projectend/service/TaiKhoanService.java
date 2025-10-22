@@ -9,38 +9,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
- * TAI KHOAN SERVICE - Xử lý logic tài khoản
- * <p>
- * =============================
- * PHÂN CÔNG: TV3 - ADMIN BACKEND
- * =============================
- * TODO TV3 - CẦN LÀM (5 METHODS):
- * <p>
- * 1. updateProfile(TaiKhoan tk, String hoTen, String sdt) - Cập nhật thông tin
- * → tk.setHoTen(hoTen);
- * → tk.setSoDienThoai(sdt);
- * → return save(tk);
- * <p>
- * 2. changePassword(TaiKhoan tk, String newPassword) - Đổi mật khẩu
- * → tk.setMatKhau(newPassword); // Plain text cho ASM
- * → return save(tk);
- * <p>
- * 3. lockAccount(Integer id) - Khóa tài khoản (admin)
- * → Set TrangThai = "Vô hiệu hóa"
- * <p>
- * 4. unlockAccount(Integer id) - Mở khóa tài khoản (admin)
- * → Set TrangThai = "Hoạt động"
- * <p>
- * 5. changeRole(Integer id, Integer vaiTroId) - Đổi vai trò (admin)
- * → Tìm VaiTro mới
- * → Set vaiTro cho tài khoản
- * <p>
- * THỜI GIAN: 2 ngày
- * LƯU Ý: Methods cơ bản (findByEmail, save, findById) đã có sẵn
- * =============================
+ * Service xử lý logic nghiệp vụ cho tài khoản
  */
 @Service
 public class TaiKhoanService {
@@ -51,29 +24,51 @@ public class TaiKhoanService {
     @Autowired
     private VaiTroRepository vaiTroRepository;
 
-    // =============================
-    // METHODS CƠ BẢN (ĐÃ CÓ SẴN)
-
+    /**
+     * Tìm tài khoản theo email
+     */
     public TaiKhoan findByEmail(String email) {
         return taiKhoanRepository.findByEmail(email).orElse(null);
     }
 
+    /**
+     * Lưu hoặc cập nhật tài khoản
+     */
     public TaiKhoan save(TaiKhoan taiKhoan) {
         return taiKhoanRepository.save(taiKhoan);
     }
 
+    /**
+     * Tìm tài khoản theo ID
+     */
     public Optional<TaiKhoan> findById(Integer id) {
         return taiKhoanRepository.findById(id);
     }
 
+    /**
+     * Xóa tài khoản theo ID
+     */
     public void deleteById(Integer id) {
         taiKhoanRepository.deleteById(id);
     }
 
+    /**
+     * Lấy tất cả tài khoản
+     */
+    public List<TaiKhoan> findAll() {
+        return taiKhoanRepository.findAll();
+    }
+
+    /**
+     * Lấy tất cả tài khoản với phân trang
+     */
     public Page<TaiKhoan> getAllTaiKhoan(Pageable pageable) {
         return taiKhoanRepository.findAll(pageable);
     }
 
+    /**
+     * Đếm số tài khoản theo vai trò
+     */
     public Long countByVaiTro(String tenVaiTro) {
         VaiTro vaiTro = vaiTroRepository.findByTenVT(tenVaiTro);
         if (vaiTro != null) {
@@ -82,62 +77,71 @@ public class TaiKhoanService {
         return 0L;
     }
 
+    /**
+     * Kiểm tra email đã tồn tại chưa
+     */
     public boolean existsByEmail(String email) {
         return taiKhoanRepository.findByEmail(email).isPresent();
     }
 
-    // =============================
-    // TODO TV3: Method 1 - Cập nhật thông tin cá nhân
-    // HƯỚNG DẪN:
-    // tk.setHoTen(hoTen);
-    // tk.setSoDienThoai(soDienThoai);
-    // return save(tk);
+    /**
+     * Cập nhật thông tin cá nhân
+     */
     public TaiKhoan updateProfile(TaiKhoan tk, String hoTen, String soDienThoai) {
-        return null; // TODO TV3: Implement
+        tk.setHoTen(hoTen);
+        tk.setSoDienThoai(soDienThoai);
+        return save(tk);
     }
 
-    // =============================
-    // TODO TV3: Method 2 - Đổi mật khẩu
-    // HƯỚNG DẪN:
-    // tk.setMatKhau(newPassword); // Plain text cho ASM
-    // return save(tk);
+    /**
+     * Đổi mật khẩu
+     */
     public TaiKhoan changePassword(TaiKhoan tk, String newPassword) {
-        return null; // TODO TV3: Implement
+        tk.setMatKhau(newPassword);
+        return save(tk);
     }
 
-    // =============================
-    // TODO TV3: Method 3 - Khóa tài khoản (admin)
-    // HƯỚNG DẪN:
-    // Optional<TaiKhoan> tkOpt = findById(id);
-    // if (tkOpt.isPresent()) {
-    //     tkOpt.get().setTrangThai("Vô hiệu hóa");
-    //     save(tkOpt.get());
-    //     return true;
-    // }
-    // return false;
+    /**
+     * Khóa tài khoản (admin)
+     */
     public boolean lockAccount(Integer id) {
-        return false; // TODO TV3: Implement
+        Optional<TaiKhoan> tkOpt = findById(id);
+        if (tkOpt.isPresent()) {
+            TaiKhoan tk = tkOpt.get();
+            tk.setTrangThai(false);
+            save(tk);
+            return true;
+        }
+        return false;
     }
 
-    // =============================
-    // TODO TV3: Method 4 - Mở khóa tài khoản (admin)
-    // HƯỚNG DẪN: Tương tự lockAccount, set TrangThai = "Hoạt động"
+    /**
+     * Mở khóa tài khoản (admin)
+     */
     public boolean unlockAccount(Integer id) {
-        return false; // TODO TV3: Implement
+        Optional<TaiKhoan> tkOpt = findById(id);
+        if (tkOpt.isPresent()) {
+            TaiKhoan tk = tkOpt.get();
+            tk.setTrangThai(true);
+            save(tk);
+            return true;
+        }
+        return false;
     }
 
-    // =============================
-    // TODO TV3: Method 5 - Đổi vai trò (admin)
-    // HƯỚNG DẪN:
-    // Optional<TaiKhoan> tkOpt = findById(id);
-    // Optional<VaiTro> vtOpt = vaiTroRepository.findById(vaiTroId);
-    // if (tkOpt.isPresent() && vtOpt.isPresent()) {
-    //     tkOpt.get().setVaiTro(vtOpt.get());
-    //     save(tkOpt.get());
-    //     return true;
-    // }
-    // return false;
+    /**
+     * Đổi vai trò tài khoản (admin)
+     */
     public boolean changeRole(Integer id, Integer vaiTroId) {
-        return false; // TODO TV3: Implement
+        Optional<TaiKhoan> tkOpt = findById(id);
+        VaiTro vaiTro = vaiTroRepository.findById(vaiTroId).orElse(null);
+
+        if (tkOpt.isPresent() && vaiTro != null) {
+            TaiKhoan tk = tkOpt.get();
+            tk.setVaiTro(vaiTro);
+            save(tk);
+            return true;
+        }
+        return false;
     }
 }

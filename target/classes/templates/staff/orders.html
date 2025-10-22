@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Quản lý Đơn hàng - Nhân viên</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --staff-blue: #3b82f6;
+            --staff-dark-blue: #1d4ed8;
+            --staff-light-blue: #60a5fa;
+        }
+
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--staff-blue), var(--staff-dark-blue));
+            color: white;
+        }
+
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 12px 20px;
+            transition: all 0.3s;
+        }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .btn-staff {
+            background: linear-gradient(135deg, var(--staff-blue), var(--staff-dark-blue));
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn-staff:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+            color: white;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+
+        .badge-status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+        }
+
+        .order-detail-card {
+            border-left: 4px solid var(--staff-blue);
+        }
+    </style>
+</head>
+<body>
+<div class="d-flex">
+    <!-- Sidebar -->
+    <div class="sidebar" style="width: 250px;">
+        <div class="p-4">
+            <h4 class="text-center mb-4">👨‍💼 Nhân viên Panel</h4>
+            <nav class="nav flex-column">
+                <a class="nav-link" href="/staff/dashboard">
+                    <i class="fas fa-chart-line"></i> Dashboard
+                </a>
+                <a class="nav-link active" href="/staff/orders">
+                    <i class="fas fa-shopping-cart"></i> Đơn hàng
+                </a>
+                <a class="nav-link" href="/staff/baiviet">
+                    <i class="fas fa-newspaper"></i> Bài viết
+                </a>
+                <hr class="text-white-50">
+                <a class="nav-link" href="/">
+                    <i class="fas fa-home"></i> Về trang chủ
+                </a>
+                <a class="nav-link" href="/logout">
+                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-grow-1 p-4">
+        <!-- Header -->
+        <div class="mb-4">
+            <h2>📦 Quản lý Đơn hàng (Nhân viên)</h2>
+            <p class="text-muted">Theo dõi và xử lý đơn hàng từ khách hàng</p>
+        </div>
+
+        <!-- Alert Messages -->
+        <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${success}">
+            <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+            <button class="btn-close" data-bs-dismiss="alert" type="button"></button>
+        </div>
+
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${error}">
+            <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+            <button class="btn-close" data-bs-dismiss="alert" type="button"></button>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form action="/staff/orders" class="row g-3" method="get">
+                    <div class="col-md-5">
+                        <input class="form-control" name="keyword" placeholder="Tìm theo mã đơn, tên khách hàng, SĐT..."
+                               th:value="${keyword}"
+                               type="text">
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-select" name="trangThai">
+                            <option value="">Tất cả trạng thái</option>
+                            <option th:each="tt : ${trangThaiList}"
+                                    th:selected="${trangThaiFilter == tt.tenTTDH}"
+                                    th:text="${tt.tenTTDH}"
+                                    th:value="${tt.tenTTDH}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-staff w-100" type="submit">
+                            <i class="fas fa-search"></i> Tìm kiếm
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>Mã ĐH</th>
+                            <th>Khách hàng</th>
+                            <th>Ngày đặt</th>
+                            <th>Tổng tiền</th>
+                            <th>Trạng thái</th>
+                            <th>Nhân viên</th>
+                            <th>Hành động</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${orders == null or orders.isEmpty()}">
+                            <td class="text-center text-muted py-4" colspan="7">
+                                <i class="fas fa-inbox fa-3x mb-3"></i>
+                                <p>Không có đơn hàng nào</p>
+                            </td>
+                        </tr>
+                        <tr th:each="order : ${orders}">
+                            <td><strong>#<span th:text="${order.maDH}">1</span></strong></td>
+                            <td>
+                                <div th:text="${order.khachHang.hoTen}">Nguyễn Văn A</div>
+                                <small class="text-muted" th:text="${order.khachHang.soDienThoai}">0909000000</small>
+                            </td>
+                            <td th:text="${#temporals.format(order.ngayDat, 'dd/MM/yyyy HH:mm')}">22/10/2025 14:30</td>
+                            <td>
+                                <strong class="text-primary"
+                                        th:text="${#numbers.formatDecimal(order.tongTien, 0, 'COMMA', 0, 'POINT')} + 'đ'">100,000đ</strong>
+                            </td>
+                            <td>
+                                <span class="badge"
+                                      th:classappend="${order.trangThaiDonHang.tenTTDH == 'Chờ xác nhận' ? 'bg-warning text-dark' :
+                                                       order.trangThaiDonHang.tenTTDH == 'Đang giao' ? 'bg-primary' :
+                                                       order.trangThaiDonHang.tenTTDH == 'Hoàn tất' ? 'bg-success' : 'bg-danger'}"
+                                      th:text="${order.trangThaiDonHang.tenTTDH}">
+                                    Chờ xác nhận
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-info" th:if="${order.nhanVien != null}">
+                                    <i class="fas fa-user-check"></i> <span th:text="${order.nhanVien.hoTen}"></span>
+                                </span>
+                                <span class="badge bg-secondary" th:if="${order.nhanVien == null}">
+                                    <i class="fas fa-user-times"></i> Chưa có
+                                </span>
+                            </td>
+                            <td>
+                                <a class="btn btn-sm btn-primary"
+                                   th:href="@{/staff/orders/detail/{id}(id=${order.maDH})}">
+                                    <i class="fas fa-eye"></i> Xem
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <nav aria-label="Page navigation" th:if="${donHangPage != null && donHangPage.totalPages > 1}">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${donHangPage.first} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/staff/orders(page=${donHangPage.number - 1}, size=${donHangPage.size}, keyword=${keyword}, trangThai=${trangThaiFilter})}">
+                                Trước
+                            </a>
+                        </li>
+                        <li class="page-item" th:classappend="${i == donHangPage.number} ? 'active'"
+                            th:each="i : ${#numbers.sequence(0, donHangPage.totalPages - 1)}">
+                            <a class="page-link"
+                               th:href="@{/staff/orders(page=${i}, size=${donHangPage.size}, keyword=${keyword}, trangThai=${trangThaiFilter})}"
+                               th:text="${i + 1}">1</a>
+                        </li>
+                        <li class="page-item" th:classappend="${donHangPage.last} ? 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/staff/orders(page=${donHangPage.number + 1}, size=${donHangPage.size}, keyword=${keyword}, trangThai=${trangThaiFilter})}">
+                                Sau
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

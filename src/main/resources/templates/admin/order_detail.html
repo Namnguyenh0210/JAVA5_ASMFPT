@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Chi tiết Đơn hàng - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-red: #dc2626;
+            --primary-gold: #fbbf24;
+            --dark-red: #991b1b;
+        }
+
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--primary-red), var(--dark-red));
+            color: white;
+        }
+
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 12px 20px;
+            transition: all 0.3s;
+        }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .btn-tet {
+            background: linear-gradient(135deg, var(--primary-red), var(--dark-red));
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn-tet:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+            color: white;
+        }
+
+        .info-card {
+            border-left: 4px solid var(--primary-red);
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.05), rgba(220, 38, 38, 0.05));
+        }
+
+        .product-item {
+            border-left: 3px solid var(--primary-gold);
+            transition: all 0.3s;
+        }
+
+        .product-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.2);
+        }
+
+        .status-timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .status-timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--primary-gold);
+        }
+
+        .status-point {
+            position: absolute;
+            left: 5px;
+            width: 12px;
+            height: 12px;
+            background: var(--primary-gold);
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 0 2px var(--primary-gold);
+        }
+    </style>
+</head>
+<body>
+<div class="d-flex">
+    <!-- Sidebar -->
+    <div class="sidebar" style="width: 250px;">
+        <div class="p-4">
+            <h4 class="text-center mb-4">🧧 Admin Panel</h4>
+            <nav class="nav flex-column">
+                <a class="nav-link" href="/admin/dashboard">
+                    <i class="fas fa-chart-line"></i> Dashboard
+                </a>
+                <a class="nav-link" href="/admin/sanpham">
+                    <i class="fas fa-box"></i> Sản phẩm
+                </a>
+                <a class="nav-link active" href="/admin/orders">
+                    <i class="fas fa-shopping-cart"></i> Đơn hàng
+                </a>
+                <a class="nav-link" href="/admin/baiviet">
+                    <i class="fas fa-newspaper"></i> Bài viết
+                </a>
+                <a class="nav-link" href="/admin/taikhoan">
+                    <i class="fas fa-users"></i> Tài khoản
+                </a>
+                <hr class="text-white-50">
+                <a class="nav-link" href="/">
+                    <i class="fas fa-home"></i> Về trang chủ
+                </a>
+                <a class="nav-link" href="/logout">
+                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-grow-1 p-4">
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2>📦 Chi tiết Đơn hàng #<span th:text="${donHang.maDH}">1</span></h2>
+                <p class="text-muted">Thông tin chi tiết và quản lý trạng thái đơn hàng</p>
+            </div>
+            <a class="btn btn-secondary" href="/admin/orders">
+                <i class="fas fa-arrow-left"></i> Quay lại
+            </a>
+        </div>
+
+        <!-- Alert Messages -->
+        <div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${success}">
+            <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+            <button class="btn-close" data-bs-dismiss="alert" type="button"></button>
+        </div>
+
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${error}">
+            <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+            <button class="btn-close" data-bs-dismiss="alert" type="button"></button>
+        </div>
+
+        <div class="row">
+            <!-- Left Column -->
+            <div class="col-md-8">
+                <!-- Order Info -->
+                <div class="card info-card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">
+                            <i class="fas fa-info-circle text-danger"></i> Thông tin đơn hàng
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Khách hàng:</strong> <span
+                                        th:text="${donHang.khachHang.hoTen}">Nguyễn Văn A</span></p>
+                                <p><strong>Email:</strong> <span
+                                        th:text="${donHang.khachHang.email}">email@example.com</span></p>
+                                <p><strong>Số điện thoại:</strong> <span th:text="${donHang.khachHang.soDienThoai}">0909000000</span>
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Ngày đặt:</strong> <span
+                                        th:text="${#temporals.format(donHang.ngayDat, 'dd/MM/yyyy HH:mm')}">22/10/2025</span>
+                                </p>
+                                <p><strong>Phương thức TT:</strong> <span
+                                        th:text="${donHang.phuongThucThanhToan.tenPTTT}">COD</span></p>
+                                <p><strong>Nhân viên xử lý:</strong>
+                                    <span class="badge bg-success" th:if="${donHang.nhanVien != null}">
+                                        <i class="fas fa-user-check"></i> <span
+                                            th:text="${donHang.nhanVien.hoTen}"></span>
+                                    </span>
+                                    <span class="badge bg-secondary" th:if="${donHang.nhanVien == null}">
+                                        <i class="fas fa-user-times"></i> Chưa có
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                        <hr>
+                        <p><strong><i class="fas fa-map-marker-alt text-danger"></i> Địa chỉ giao hàng:</strong></p>
+                        <p class="ms-4" th:text="${donHang.diaChiGiaoHang.diaChiChiTiet}">123 Đường ABC, Quận 1,
+                            TP.HCM</p>
+                    </div>
+                </div>
+
+                <!-- Products List -->
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">
+                            <i class="fas fa-box-open text-danger"></i> Sản phẩm đã đặt
+                        </h5>
+                        <div class="list-group list-group-flush">
+                            <div class="list-group-item product-item mb-2 rounded" th:each="item : ${chiTiet}">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center flex-grow-1">
+                                        <img onerror="this.src='https://via.placeholder.com/60'"
+                                             style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; margin-right: 15px;"
+                                             th:alt="${item.sanPham.tenSP}"
+                                             th:src="${item.sanPham.hinhAnh}">
+                                        <div>
+                                            <h6 class="mb-1" th:text="${item.sanPham.tenSP}">Tên sản phẩm</h6>
+                                            <small class="text-muted">
+                                                Đơn giá: <span
+                                                    th:text="${#numbers.formatDecimal(item.donGia, 0, 'COMMA', 0, 'POINT')} + 'đ'">30,000đ</span>
+                                                × <span th:text="${item.soLuong}">1</span>
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <h6 class="mb-0 text-danger"
+                                            th:text="${#numbers.formatDecimal(item.donGia * item.soLuong, 0, 'COMMA', 0, 'POINT')} + 'đ'">
+                                            30,000đ</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <!-- Order Summary -->
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Tạm tính:</span>
+                            <span th:text="${#numbers.formatDecimal(donHang.tongTien - 30000, 0, 'COMMA', 0, 'POINT')} + 'đ'">70,000đ</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Phí vận chuyển:</span>
+                            <span>30,000đ</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between">
+                            <strong>Tổng cộng:</strong>
+                            <h5 class="text-danger mb-0"
+                                th:text="${#numbers.formatDecimal(donHang.tongTien, 0, 'COMMA', 0, 'POINT')} + 'đ'">
+                                100,000đ</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="col-md-4">
+                <!-- Update Status -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title mb-3">
+                            <i class="fas fa-tasks text-danger"></i> Cập nhật trạng thái
+                        </h5>
+
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Trạng thái hiện tại:</strong></label>
+                            <div>
+                                <span class="badge fs-6"
+                                      th:classappend="${donHang.trangThaiDonHang.tenTTDH == 'Chờ xác nhận' ? 'bg-warning text-dark' :
+                                                       donHang.trangThaiDonHang.tenTTDH == 'Đang giao' ? 'bg-primary' :
+                                                       donHang.trangThaiDonHang.tenTTDH == 'Hoàn tất' ? 'bg-success' : 'bg-danger'}"
+                                      th:text="${donHang.trangThaiDonHang.tenTTDH}">
+                                    Chờ xác nhận
+                                </span>
+                            </div>
+                        </div>
+
+                        <form method="post" th:action="@{/admin/orders/update-status/{id}(id=${donHang.maDH})}">
+                            <div class="mb-3">
+                                <label class="form-label"><strong>Chuyển sang:</strong></label>
+                                <select class="form-select" id="statusSelect" name="trangThaiMoi" required>
+                                    <option value="">-- Chọn trạng thái --</option>
+
+                                    <!-- Chờ xác nhận: Chỉ hiện nếu đơn hàng đang ở trạng thái này -->
+                                    <option th:classappend="${donHang.trangThaiDonHang.tenTTDH == 'Chờ xác nhận' ? 'text-muted' : ''}"
+                                            th:disabled="true"
+                                            th:if="${donHang.trangThaiDonHang.tenTTDH == 'Chờ xác nhận'}"
+                                            value="Chờ xác nhận">
+                                        Chờ xác nhận (đang ở đây)
+                                    </option>
+
+                                    <!-- Đang giao: Chỉ hiện nếu đang ở Chờ xác nhận -->
+                                    <option sec:authorize="hasAnyRole('Admin', 'Nhân viên')"
+                                            th:if="${donHang.trangThaiDonHang.tenTTDH == 'Chờ xác nhận'}"
+                                            value="Đang giao">
+                                        Đang giao
+                                    </option>
+
+                                    <!-- Đang giao: Nếu đang ở trạng thái này, disable -->
+                                    <option th:classappend="text-muted"
+                                            th:disabled="true"
+                                            th:if="${donHang.trangThaiDonHang.tenTTDH == 'Đang giao'}"
+                                            value="Đang giao">
+                                        Đang giao (đang ở đây)
+                                    </option>
+
+                                    <!-- Hoàn tất: Chỉ hiện nếu đang ở Đang giao -->
+                                    <option th:if="${donHang.trangThaiDonHang.tenTTDH == 'Đang giao'}"
+                                            value="Hoàn tất">
+                                        Hoàn tất
+                                    </option>
+
+                                    <!-- Hoàn tất: Nếu đã hoàn tất, disable -->
+                                    <option th:classappend="text-muted"
+                                            th:disabled="true"
+                                            th:if="${donHang.trangThaiDonHang.tenTTDH == 'Hoàn tất'}"
+                                            value="Hoàn tất">
+                                        Hoàn tất (đã xong)
+                                    </option>
+
+                                    <!-- Đã hủy: Chỉ hiện nếu đang ở Đang giao (Admin/Staff có thể hủy) -->
+                                    <option class="text-danger"
+                                            th:if="${donHang.trangThaiDonHang.tenTTDH == 'Đang giao'}"
+                                            value="Đã hủy">
+                                        Đã hủy
+                                    </option>
+
+                                    <!-- Đã hủy: Nếu đã hủy, disable -->
+                                    <option th:classappend="text-muted"
+                                            th:disabled="true"
+                                            th:if="${donHang.trangThaiDonHang.tenTTDH == 'Đã hủy'}"
+                                            value="Đã hủy">
+                                        Đã hủy (đã hủy)
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Nút cập nhật: Ẩn nếu đơn hàng đã hoàn tất hoặc đã hủy -->
+                            <button class="btn btn-tet w-100" th:disabled="${donHang.trangThaiDonHang.tenTTDH == 'Hoàn tất' || donHang.trangThaiDonHang.tenTTDH == 'Đã hủy'}"
+                                    type="submit">
+                                <i class="fas fa-check"></i> Cập nhật trạng thái
+                            </button>
+                        </form>
+
+                        <!-- Cảnh báo dành cho nhân viên -->
+                        <div class="alert alert-info mt-3 mb-0" role="alert" sec:authorize="hasRole('Nhân viên')">
+                            <small>
+                                <i class="fas fa-info-circle"></i>
+                                <strong>Lưu ý Nhân viên:</strong>
+                                <ul class="mb-0 mt-2">
+                                    <li>Khi chuyển từ "Chờ xác nhận" → "Đang giao", đơn hàng sẽ được gán cho bạn</li>
+                                    <li>Chỉ bạn mới có thể cập nhật đơn hàng này sau đó</li>
+                                    <li>Bắt buộc tuân thủ thứ tự: Chờ xác nhận → Đang giao → Hoàn tất</li>
+                                </ul>
+                            </small>
+                        </div>
+
+                        <!-- Cảnh báo chung -->
+                        <div class="alert alert-warning mt-3 mb-0" role="alert">
+                            <small>
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <strong>Lưu ý:</strong> Không thể quay lại trạng thái cũ sau khi cập nhật.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status Guide -->
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-title">
+                            <i class="fas fa-question-circle text-danger"></i> Hướng dẫn trạng thái
+                        </h6>
+                        <ul class="list-unstyled small">
+                            <li class="mb-2">
+                                <span class="badge bg-warning text-dark">Chờ xác nhận</span>
+                                <div class="text-muted">Đơn hàng mới, chờ xử lý</div>
+                            </li>
+                            <li class="mb-2">
+                                <span class="badge bg-primary">Đang giao</span>
+                                <div class="text-muted">Đang trên đường giao hàng</div>
+                            </li>
+                            <li class="mb-2">
+                                <span class="badge bg-success">Hoàn tất</span>
+                                <div class="text-muted">Giao hàng thành công</div>
+                            </li>
+                            <li class="mb-0">
+                                <span class="badge bg-danger">Đã hủy</span>
+                                <div class="text-muted">Đơn hàng bị hủy</div>
+                            </li>
+                        </ul>
+
+                        <hr>
+
+                        <div class="small">
+                            <strong>Quy trình xử lý:</strong>
+                            <div class="mt-2">
+                                <span class="badge bg-warning text-dark">1</span> Chờ xác nhận
+                                <i class="fas fa-arrow-right mx-2"></i>
+                                <span class="badge bg-primary">2</span> Đang giao
+                                <i class="fas fa-arrow-right mx-2"></i>
+                                <span class="badge bg-success">3</span> Hoàn tất
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

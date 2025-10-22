@@ -50,11 +50,21 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         // Map roles từ database
         List<GrantedAuthority> authorities = new ArrayList<>();
-        // Loại bỏ dấu cách trong tên vai trò để map role chính xác
-        String roleName = "ROLE_" + taiKhoan.getVaiTro().getTenVT().toUpperCase()
-                .replace(" ", "")
-                .replace("Á", "A")
-                .replace("Â", "A");
+        // Map role chính xác từ database
+        String tenVaiTro = taiKhoan.getVaiTro().getTenVT();
+        String roleName;
+
+        if ("Admin".equals(tenVaiTro)) {
+            roleName = "ROLE_Admin";
+        } else if ("Nhân viên".equals(tenVaiTro)) {
+            roleName = "ROLE_Nhân viên";
+        } else if ("Khách hàng".equals(tenVaiTro)) {
+            roleName = "ROLE_Khách hàng";
+        } else {
+            roleName = "ROLE_" + tenVaiTro;
+        }
+
+        System.out.println("=== DEBUG: Vai trò từ DB: " + tenVaiTro);
         System.out.println("=== DEBUG: Role name sau khi map: " + roleName);
         authorities.add(new SimpleGrantedAuthority(roleName));
 

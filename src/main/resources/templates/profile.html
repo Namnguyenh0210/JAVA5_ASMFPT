@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+>
 
 <head>
     <th:block th:replace="~{fragments/layout :: head('Thông tin cá nhân')}"></th:block>
@@ -19,8 +19,8 @@
             <aside class="profile-sidebar">
                 <div class="profile-user-card">
                     <div class="profile-user-avatar">
-                        <img th:src="'https://ui-avatars.com/api/?name=' + ${taiKhoan.hoTen} + '&background=dc2626&color=fff&size=80'"
-                             alt="Avatar" class="avatar-rounded">
+                        <img alt="Avatar"
+                             class="avatar-rounded" th:src="'https://ui-avatars.com/api/?name=' + ${taiKhoan.hoTen} + '&background=dc2626&color=fff&size=80'">
                         <button class="avatar-edit-btn" title="Thay đổi ảnh">
                             <i class="fas fa-camera"></i>
                         </button>
@@ -38,14 +38,14 @@
                     <h4 class="nav-title"><i class="fas fa-user-circle"></i> Tài khoản của tôi</h4>
                     <ul class="nav-menu">
                         <li>
-                            <a href="#" class="nav-link active" onclick="switchProfileTab('info'); return false;">
+                            <a class="nav-link active" href="#" onclick="switchProfileTab('info'); return false;">
                                 <i class="fas fa-user"></i>
                                 <span>Thông tin cá nhân</span>
                                 <i class="fas fa-chevron-right"></i>
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="nav-link" onclick="switchProfileTab('orders'); return false;">
+                            <a class="nav-link" href="#" onclick="switchProfileTab('orders'); return false;">
                                 <i class="fas fa-box"></i>
                                 <span>Đơn hàng của tôi</span>
                                 <span class="badge-count" th:if="${donHangList != null and !donHangList.isEmpty()}"
@@ -54,7 +54,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="nav-link" onclick="switchProfileTab('addresses'); return false;">
+                            <a class="nav-link" href="#" onclick="switchProfileTab('addresses'); return false;">
                                 <i class="fas fa-map-marker-alt"></i>
                                 <span>Sổ địa chỉ</span>
                                 <span class="badge-count" th:if="${diaChiList != null and !diaChiList.isEmpty()}"
@@ -63,21 +63,21 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="nav-link" onclick="switchProfileTab('password'); return false;">
+                            <a class="nav-link" href="#" onclick="switchProfileTab('password'); return false;">
                                 <i class="fas fa-key"></i>
                                 <span>Mật khẩu & Bảo mật</span>
                                 <i class="fas fa-chevron-right"></i>
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="nav-link" onclick="switchProfileTab('wishlist'); return false;">
+                            <a class="nav-link" href="#" onclick="switchProfileTab('wishlist'); return false;">
                                 <i class="fas fa-heart"></i>
                                 <span>Sản phẩm yêu thích</span>
                                 <i class="fas fa-chevron-right"></i>
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="nav-link" onclick="switchProfileTab('notifications'); return false;">
+                            <a class="nav-link" href="#" onclick="switchProfileTab('notifications'); return false;">
                                 <i class="fas fa-bell"></i>
                                 <span>Thông báo</span>
                                 <i class="fas fa-chevron-right"></i>
@@ -89,7 +89,7 @@
 
                     <ul class="nav-menu">
                         <li>
-                            <a href="/logout" class="nav-link text-danger">
+                            <a class="nav-link text-danger" href="/logout">
                                 <i class="fas fa-sign-out-alt"></i>
                                 <span>Đăng xuất</span>
                                 <i class="fas fa-chevron-right"></i>
@@ -102,18 +102,18 @@
             <!-- Main Content Right -->
             <main class="profile-content">
                 <!-- Alert Messages -->
-                <div th:if="${success}" class="alert alert-success-custom">
+                <div class="alert alert-success-custom" th:if="${success}">
                     <i class="fas fa-check-circle"></i>
                     <span th:text="${success}">Cập nhật thành công!</span>
                 </div>
 
-                <div th:if="${error}" class="alert alert-danger-custom">
+                <div class="alert alert-danger-custom" th:if="${error}">
                     <i class="fas fa-exclamation-circle"></i>
                     <span th:text="${error}">Có lỗi xảy ra!</span>
                 </div>
 
                 <!-- Tab 1: Personal Info -->
-                <div id="info" class="profile-tab-content active">
+                <div class="profile-tab-content active" id="info">
                     <div class="content-header">
                         <div>
                             <h2><i class="fas fa-user-edit"></i> Thông tin cá nhân</h2>
@@ -122,24 +122,24 @@
                     </div>
 
                     <div class="content-body">
-                        <form method="post" th:action="@{/profile/update}" class="profile-form">
+                        <form class="profile-form" method="post" th:action="@{/profile/update}">
                             <div class="form-row">
                                 <div class="form-group-profile">
                                     <label class="form-label-profile">
                                         <i class="fas fa-user text-danger"></i> Họ và tên *
                                     </label>
-                                    <input type="text" name="hoTen" class="form-input-profile"
-                                           th:value="${taiKhoan.hoTen}" required
-                                           placeholder="Nhập họ và tên đầy đủ">
+                                    <input class="form-input-profile" name="hoTen" placeholder="Nhập họ và tên đầy đủ"
+                                           required th:value="${taiKhoan.hoTen}"
+                                           type="text">
                                 </div>
 
                                 <div class="form-group-profile">
                                     <label class="form-label-profile">
                                         <i class="fas fa-envelope text-danger"></i> Email
                                     </label>
-                                    <input type="email" class="form-input-profile"
-                                           th:value="${taiKhoan.email}" disabled
-                                           title="Email không thể thay đổi">
+                                    <input class="form-input-profile" disabled
+                                           th:value="${taiKhoan.email}" title="Email không thể thay đổi"
+                                           type="email">
                                     <small class="form-text-muted">Email không thể thay đổi</small>
                                 </div>
                             </div>
@@ -149,27 +149,27 @@
                                     <label class="form-label-profile">
                                         <i class="fas fa-phone text-danger"></i> Số điện thoại
                                     </label>
-                                    <input type="tel" name="soDienThoai" class="form-input-profile"
-                                           th:value="${taiKhoan.soDienThoai}"
+                                    <input class="form-input-profile" name="soDienThoai" pattern="[0-9]{10,11}"
                                            placeholder="Nhập số điện thoại"
-                                           pattern="[0-9]{10,11}">
+                                           th:value="${taiKhoan.soDienThoai}"
+                                           type="tel">
                                 </div>
 
                                 <div class="form-group-profile">
                                     <label class="form-label-profile">
                                         <i class="fas fa-calendar text-danger"></i> Ngày tham gia
                                     </label>
-                                    <input type="text" class="form-input-profile"
+                                    <input class="form-input-profile" disabled
                                            th:value="${#temporals.format(taiKhoan.ngayTao, 'dd/MM/yyyy')}"
-                                           disabled>
+                                           type="text">
                                 </div>
                             </div>
 
                             <div class="form-actions-profile">
-                                <button type="submit" class="btn-save-profile">
+                                <button class="btn-save-profile" type="submit">
                                     <i class="fas fa-save"></i> Lưu thay đổi
                                 </button>
-                                <button type="reset" class="btn-cancel-profile">
+                                <button class="btn-cancel-profile" type="reset">
                                     <i class="fas fa-times"></i> Hủy
                                 </button>
                             </div>
@@ -178,7 +178,7 @@
                 </div>
 
                 <!-- Tab 2: My Orders -->
-                <div id="orders" class="profile-tab-content">
+                <div class="profile-tab-content" id="orders">
                     <div class="content-header">
                         <div>
                             <h2><i class="fas fa-box"></i> Đơn hàng của tôi</h2>
@@ -198,22 +198,23 @@
 
                     <div class="content-body">
                         <!-- Empty State -->
-                        <div th:if="${donHangList == null or donHangList.isEmpty()}" class="empty-orders">
+                        <div class="empty-orders" th:if="${donHangList == null or donHangList.isEmpty()}">
                             <i class="fas fa-box-open"></i>
                             <h3>Chưa có đơn hàng nào</h3>
                             <p>Hãy khám phá và mua sắm những sản phẩm Tết tuyệt vời!</p>
-                            <a href="/sanpham" class="btn-shopping">
+                            <a class="btn-shopping" href="/sanpham">
                                 <i class="fas fa-shopping-bag"></i> Mua sắm ngay
                             </a>
                         </div>
 
                         <!-- Orders List -->
-                        <div th:if="${donHangList != null and !donHangList.isEmpty()}" class="orders-container">
-                            <div th:each="donHang : ${donHangList}" class="order-card-item">
+                        <div class="orders-container" th:if="${donHangList != null and !donHangList.isEmpty()}">
+                            <div class="order-card-item" th:each="donHang : ${donHangList}">
                                 <div class="order-card-header">
                                     <div class="order-id-section">
                                         <span class="order-label">Mã đơn hàng:</span>
-                                        <strong class="order-id-value">#DH<span th:text="${donHang.maDH}">001</span></strong>
+                                        <strong class="order-id-value">#DH<span
+                                                th:text="${donHang.maDH}">001</span></strong>
                                     </div>
                                     <div class="order-status-badge"
                                          th:classappend="${donHang.trangThaiDonHang != null ? 'status-' + #strings.toLowerCase(#strings.replace(donHang.trangThaiDonHang.tenTTDH, ' ', '-')) : 'status-pending'}">
@@ -228,14 +229,16 @@
                                             <i class="fas fa-calendar-alt"></i>
                                             <div>
                                                 <span class="info-label">Ngày đặt</span>
-                                                <strong th:text="${#temporals.format(donHang.ngayDat, 'dd/MM/yyyy HH:mm')}">17/10/2025 14:30</strong>
+                                                <strong th:text="${#temporals.format(donHang.ngayDat, 'dd/MM/yyyy HH:mm')}">17/10/2025
+                                                    14:30</strong>
                                             </div>
                                         </div>
                                         <div class="info-item">
                                             <i class="fas fa-map-marker-alt"></i>
                                             <div>
                                                 <span class="info-label">Địa chỉ giao hàng</span>
-                                                <strong th:text="${donHang.diaChiGiaoHang != null ? donHang.diaChiGiaoHang.diaChiChiTiet : 'N/A'}">123 Lê Lợi, Q1, TP.HCM</strong>
+                                                <strong th:text="${donHang.diaChiGiaoHang != null ? donHang.diaChiGiaoHang.diaChiChiTiet : 'N/A'}">123
+                                                    Lê Lợi, Q1, TP.HCM</strong>
                                             </div>
                                         </div>
                                         <div class="info-item">
@@ -249,14 +252,16 @@
                                             <i class="fas fa-dollar-sign"></i>
                                             <div>
                                                 <span class="info-label">Tổng tiền</span>
-                                                <strong class="total-price" th:text="${#numbers.formatDecimal(donHang.tongTien, 0, 'COMMA', 0, 'POINT')} + ' đ'">1,500,000 đ</strong>
+                                                <strong class="total-price"
+                                                        th:text="${#numbers.formatDecimal(donHang.tongTien, 0, 'COMMA', 0, 'POINT')} + ' đ'">1,500,000
+                                                    đ</strong>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="order-card-footer">
-                                    <a th:href="@{/order-detail/{id}(id=${donHang.maDH})}" class="btn-view-detail">
+                                    <a class="btn-view-detail" th:href="@{/order-detail/{id}(id=${donHang.maDH})}">
                                         <i class="fas fa-eye"></i> Xem chi tiết
                                     </a>
                                     <button class="btn-reorder">
@@ -269,7 +274,7 @@
                 </div>
 
                 <!-- Tab 3: Address Book -->
-                <div id="addresses" class="profile-tab-content">
+                <div class="profile-tab-content" id="addresses">
                     <div class="content-header">
                         <div>
                             <h2><i class="fas fa-map-marker-alt"></i> Sổ địa chỉ</h2>
@@ -282,18 +287,18 @@
 
                     <div class="content-body">
                         <!-- Alert for Address -->
-                        <div th:if="${successAddress}" class="alert alert-success-custom">
+                        <div class="alert alert-success-custom" th:if="${successAddress}">
                             <i class="fas fa-check-circle"></i>
                             <span th:text="${successAddress}">Thành công!</span>
                         </div>
 
-                        <div th:if="${errorAddress}" class="alert alert-danger-custom">
+                        <div class="alert alert-danger-custom" th:if="${errorAddress}">
                             <i class="fas fa-exclamation-circle"></i>
                             <span th:text="${errorAddress}">Có lỗi xảy ra!</span>
                         </div>
 
                         <!-- Empty State -->
-                        <div th:if="${diaChiList == null or diaChiList.isEmpty()}" class="empty-addresses">
+                        <div class="empty-addresses" th:if="${diaChiList == null or diaChiList.isEmpty()}">
                             <i class="fas fa-map-marked-alt"></i>
                             <h3>Chưa có địa chỉ nào</h3>
                             <p>Thêm địa chỉ để thanh toán nhanh hơn</p>
@@ -303,11 +308,11 @@
                         </div>
 
                         <!-- Address Cards Grid -->
-                        <div th:if="${diaChiList != null and !diaChiList.isEmpty()}" class="address-grid">
-                            <div th:each="diaChi : ${diaChiList}"
-                                 class="address-card"
-                                 th:classappend="${diaChi.macDinh ? 'is-default' : ''}">
-                                <div th:if="${diaChi.macDinh}" class="default-badge">
+                        <div class="address-grid" th:if="${diaChiList != null and !diaChiList.isEmpty()}">
+                            <div class="address-card"
+                                 th:classappend="${diaChi.macDinh ? 'is-default' : ''}"
+                                 th:each="diaChi : ${diaChiList}">
+                                <div class="default-badge" th:if="${diaChi.macDinh}">
                                     <i class="fas fa-star"></i> Mặc định
                                 </div>
                                 <div class="address-card-body">
@@ -315,7 +320,8 @@
                                         <i class="fas fa-home"></i>
                                     </div>
                                     <div class="address-details">
-                                        <p class="address-text" th:text="${diaChi.diaChiChiTiet}">123 Lê Lợi, Quận 1, TP.HCM</p>
+                                        <p class="address-text" th:text="${diaChi.diaChiChiTiet}">123 Lê Lợi, Quận 1,
+                                            TP.HCM</p>
                                         <p class="address-customer">
                                             <strong th:text="${taiKhoan.hoTen}">Nguyễn Văn A</strong> |
                                             <span th:text="${taiKhoan.soDienThoai}">0909123456</span>
@@ -339,7 +345,7 @@
                 </div>
 
                 <!-- Tab 4: Password & Security -->
-                <div id="password" class="profile-tab-content">
+                <div class="profile-tab-content" id="password">
                     <div class="content-header">
                         <div>
                             <h2><i class="fas fa-shield-alt"></i> Mật khẩu & Bảo mật</h2>
@@ -349,26 +355,27 @@
 
                     <div class="content-body">
                         <!-- Alert for Password -->
-                        <div th:if="${successPassword}" class="alert alert-success-custom">
+                        <div class="alert alert-success-custom" th:if="${successPassword}">
                             <i class="fas fa-check-circle"></i>
                             <span th:text="${successPassword}">Đổi mật khẩu thành công!</span>
                         </div>
 
-                        <div th:if="${errorPassword}" class="alert alert-danger-custom">
+                        <div class="alert alert-danger-custom" th:if="${errorPassword}">
                             <i class="fas fa-exclamation-circle"></i>
                             <span th:text="${errorPassword}">Có lỗi xảy ra!</span>
                         </div>
 
-                        <form method="post" th:action="@{/profile/change-password}" class="password-form">
+                        <form class="password-form" method="post" th:action="@{/profile/change-password}">
                             <div class="form-group-profile">
                                 <label class="form-label-profile">
                                     <i class="fas fa-lock"></i> Mật khẩu hiện tại *
                                 </label>
                                 <div class="password-input-wrapper">
-                                    <input type="password" id="oldPassword" name="oldPassword"
-                                           class="form-input-profile" required
-                                           placeholder="Nhập mật khẩu hiện tại">
-                                    <button type="button" class="toggle-password" onclick="togglePasswordVisibility('oldPassword')">
+                                    <input class="form-input-profile" id="oldPassword" name="oldPassword"
+                                           placeholder="Nhập mật khẩu hiện tại" required
+                                           type="password">
+                                    <button class="toggle-password" onclick="togglePasswordVisibility('oldPassword')"
+                                            type="button">
                                         <i class="fas fa-eye"></i>
                                     </button>
                                 </div>
@@ -379,10 +386,11 @@
                                     <i class="fas fa-key"></i> Mật khẩu mới *
                                 </label>
                                 <div class="password-input-wrapper">
-                                    <input type="password" id="newPassword" name="newPassword"
-                                           class="form-input-profile" required minlength="6"
-                                           placeholder="Nhập mật khẩu mới (tối thiểu 6 ký tự)">
-                                    <button type="button" class="toggle-password" onclick="togglePasswordVisibility('newPassword')">
+                                    <input class="form-input-profile" id="newPassword" minlength="6"
+                                           name="newPassword" placeholder="Nhập mật khẩu mới (tối thiểu 6 ký tự)" required
+                                           type="password">
+                                    <button class="toggle-password" onclick="togglePasswordVisibility('newPassword')"
+                                            type="button">
                                         <i class="fas fa-eye"></i>
                                     </button>
                                 </div>
@@ -399,10 +407,11 @@
                                     <i class="fas fa-check-double"></i> Xác nhận mật khẩu mới *
                                 </label>
                                 <div class="password-input-wrapper">
-                                    <input type="password" id="confirmPassword" name="confirmPassword"
-                                           class="form-input-profile" required
-                                           placeholder="Nhập lại mật khẩu mới">
-                                    <button type="button" class="toggle-password" onclick="togglePasswordVisibility('confirmPassword')">
+                                    <input class="form-input-profile" id="confirmPassword" name="confirmPassword"
+                                           placeholder="Nhập lại mật khẩu mới" required
+                                           type="password">
+                                    <button class="toggle-password" onclick="togglePasswordVisibility('confirmPassword')"
+                                            type="button">
                                         <i class="fas fa-eye"></i>
                                     </button>
                                 </div>
@@ -418,7 +427,7 @@
                             </div>
 
                             <div class="form-actions-profile">
-                                <button type="submit" class="btn-save-profile">
+                                <button class="btn-save-profile" type="submit">
                                     <i class="fas fa-save"></i> Đổi mật khẩu
                                 </button>
                             </div>
@@ -427,7 +436,7 @@
                 </div>
 
                 <!-- Tab 5: Wishlist -->
-                <div id="wishlist" class="profile-tab-content">
+                <div class="profile-tab-content" id="wishlist">
                     <div class="content-header">
                         <div>
                             <h2><i class="fas fa-heart"></i> Sản phẩm yêu thích</h2>
@@ -440,7 +449,7 @@
                             <i class="fas fa-heart-broken"></i>
                             <h3>Chưa có sản phẩm yêu thích</h3>
                             <p>Hãy thêm những sản phẩm bạn yêu thích vào đây!</p>
-                            <a href="/sanpham" class="btn-shopping">
+                            <a class="btn-shopping" href="/sanpham">
                                 <i class="fas fa-shopping-bag"></i> Khám phá sản phẩm
                             </a>
                         </div>
@@ -448,7 +457,7 @@
                 </div>
 
                 <!-- Tab 6: Notifications -->
-                <div id="notifications" class="profile-tab-content">
+                <div class="profile-tab-content" id="notifications">
                     <div class="content-header">
                         <div>
                             <h2><i class="fas fa-bell"></i> Thông báo</h2>
@@ -470,7 +479,7 @@
 </div>
 
 <!-- Address Modal -->
-<div id="addressModal" class="modal-overlay" style="display: none;">
+<div class="modal-overlay" id="addressModal" style="display: none;">
     <div class="modal-container">
         <div class="modal-header">
             <h3><i class="fas fa-map-marker-alt"></i> Thêm địa chỉ mới</h3>
@@ -479,23 +488,23 @@
             </button>
         </div>
         <div class="modal-body">
-            <form method="post" th:action="@{/profile/address/add}" id="addressForm">
+            <form id="addressForm" method="post" th:action="@{/profile/address/add}">
                 <div class="form-group-profile">
                     <label class="form-label-profile">Địa chỉ chi tiết *</label>
-                    <textarea name="diaChiChiTiet" class="form-input-profile" rows="3" required
-                              placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố"></textarea>
+                    <textarea class="form-input-profile" name="diaChiChiTiet" placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố" required
+                              rows="3"></textarea>
                 </div>
 
                 <div class="form-check-custom">
-                    <input type="checkbox" id="setDefaultAddress" name="macDinh" value="true">
+                    <input id="setDefaultAddress" name="macDinh" type="checkbox" value="true">
                     <label for="setDefaultAddress">Đặt làm địa chỉ mặc định</label>
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn-cancel-profile" onclick="toggleAddressModal()">
+                    <button class="btn-cancel-profile" onclick="toggleAddressModal()" type="button">
                         Hủy
                     </button>
-                    <button type="submit" class="btn-save-profile">
+                    <button class="btn-save-profile" type="submit">
                         <i class="fas fa-save"></i> Lưu địa chỉ
                     </button>
                 </div>
@@ -559,10 +568,10 @@
     }
 
     // Password strength checker
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const newPasswordInput = document.getElementById('newPassword');
         if (newPasswordInput) {
-            newPasswordInput.addEventListener('input', function() {
+            newPasswordInput.addEventListener('input', function () {
                 const password = this.value;
                 const strengthBar = document.querySelector('.strength-fill');
                 const strengthText = document.querySelector('.strength-text strong');
@@ -607,7 +616,7 @@
     });
 
     // Close modal when clicking outside
-    document.getElementById('addressModal')?.addEventListener('click', function(e) {
+    document.getElementById('addressModal')?.addEventListener('click', function (e) {
         if (e.target === this) {
             toggleAddressModal();
         }

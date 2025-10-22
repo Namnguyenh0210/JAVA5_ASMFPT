@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Thống kê báo cáo</title>
@@ -50,10 +50,10 @@
     const chart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: /*[[${labels}]]*/ ['T1','T2','T3'],
+            labels: /*[[${labels}]]*/ ['T1', 'T2', 'T3'],
             datasets: [{
                 label: 'Doanh thu (VNĐ)',
-                data: /*[[${data}]]*/ [1000000,2000000,3000000],
+                data: /*[[${data}]]*/ [1000000, 2000000, 3000000],
                 borderColor: 'rgb(75, 192, 192)',
                 tension: 0.3
             }]

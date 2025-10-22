@@ -11,11 +11,11 @@ import org.springframework.security.web.SecurityFilterChain;
 /**
  * SECURITY CONFIG - ASM WEB BÁN HÀNG
  * ĐĂNG NHẬP BẰNG EMAIL + MẬT KHẨU PLAIN TEXT
- *
- * PHÂN QUYỀN:
- * - ROLE_KHÁCHHÀNG: Khách hàng
- * - ROLE_NHÂNVIÊN: Nhân viên
- * - ROLE_ADMIN: Quản trị viên
+ * <p>
+ * PHÂN QUYỀN (theo SQL):
+ * - ROLE_Khách hàng: Khách hàng
+ * - ROLE_Nhân viên: Nhân viên
+ * - ROLE_Admin: Quản trị viên
  */
 @Configuration
 @EnableWebSecurity
@@ -37,14 +37,21 @@ public class SecurityConfig {
                         .requestMatchers("/login", "/perform-login", "/register", "/403").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/img/**", "/images/**", "/static/**").permitAll()
                         .requestMatchers("/api/public/**").permitAll()
+                        .requestMatchers("/api/user/role").authenticated()
                         .requestMatchers("/error").permitAll()
 
                         // ==================== GIỎ HÀNG ====================
                         .requestMatchers("/giohang", "/giohang/**").permitAll()
 
-                        // ==================== PHÂN QUYỀN ADMIN ====================
-                        .requestMatchers("/admin/accounts/**", "/admin/reports/**").hasRole("ADMIN")
-                        .requestMatchers("/admin/**").hasAnyRole("ADMIN", "NHANVIEN")
+                        // ==================== PHÂN QUYỀN STAFF (CHỈ NHÂN VIÊN) ====================
+                        .requestMatchers("/staff/**").hasRole("Nhân viên")
+
+                        // ==================== PHÂN QUYỀN ADMIN (CHỈ ADMIN) ====================
+                        // Admin Dashboard, Sản phẩm, Tài khoản, Báo cáo - CHỈ ADMIN
+                        .requestMatchers("/admin/dashboard", "/admin/sanpham/**", "/admin/accounts/**", "/admin/reports/**").hasRole("Admin")
+
+                        // Đơn hàng và Bài viết - CẢ ADMIN VÀ NHÂN VIÊN đều vào được
+                        .requestMatchers("/admin/orders/**", "/admin/baiviet/**").hasAnyRole("Admin", "Nhân viên")
 
                         // ==================== PHẢI ĐĂNG NHẬP ====================
                         .requestMatchers("/checkout", "/checkout/**").authenticated()
@@ -58,14 +65,27 @@ public class SecurityConfig {
                         .loginProcessingUrl("/perform-login")
                         .usernameParameter("email")
                         .passwordParameter("password")
-                        .defaultSuccessUrl("/", true)
                         .successHandler((request, response, authentication) -> {
                             // Điều hướng theo vai trò sau khi đăng nhập
-                            String role = authentication.getAuthorities().iterator().next().getAuthority();
-                            System.out.println("=== DEBUG: Login successful with role: " + role);
-                            if (role.equals("ROLE_ADMIN") || role.equals("ROLE_NHANVIEN")) {
-                                response.sendRedirect("/admin");
+                            boolean isAdmin = authentication.getAuthorities().stream()
+                                    .anyMatch(a -> a.getAuthority().equals("ROLE_Admin"));
+                            boolean isStaff = authentication.getAuthorities().stream()
+                                    .anyMatch(a -> a.getAuthority().equals("ROLE_Nhân viên"));
+
+                            System.out.println("=== LOGIN DEBUG ===");
+                            System.out.println("User: " + authentication.getName());
+                            System.out.println("Authorities: " + authentication.getAuthorities());
+                            System.out.println("Is Admin: " + isAdmin);
+                            System.out.println("Is Staff: " + isStaff);
+
+                            if (isAdmin) {
+                                System.out.println("Redirecting to: /admin/dashboard");
+                                response.sendRedirect("/admin/dashboard");
+                            } else if (isStaff) {
+                                System.out.println("Redirecting to: /staff/dashboard");
+                                response.sendRedirect("/staff/dashboard");
                             } else {
+                                System.out.println("Redirecting to: /");
                                 response.sendRedirect("/");
                             }
                         })

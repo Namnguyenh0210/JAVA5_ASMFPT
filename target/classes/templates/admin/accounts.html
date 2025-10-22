@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org"
+>
 <head>
     <meta charset="UTF-8">
     <title>Quản lý tài khoản</title>
@@ -12,34 +13,44 @@
     <div class="container-fluid p-4">
         <h2>👤 Quản lý tài khoản</h2>
 
-        <form th:action="@{/admin/accounts/save}" method="post" class="row g-3 mb-4">
-            <input type="hidden" name="id" th:value="${account?.id}">
+        <!-- FORM TẠO / SỬA TÀI KHOẢN -->
+        <form class="row g-3 mb-4" method="post" th:action="@{/admin/accounts/save}">
+            <input name="maTK" th:value="${account.maTK}" type="hidden">
+
             <div class="col-md-4">
-                <label class="form-label">Username</label>
-                <input type="text" name="username" class="form-control" th:value="${account.username}">
+                <label class="form-label">Họ tên</label>
+                <input class="form-control" name="hoTen" required th:value="${account.hoTen}" type="text">
             </div>
+
             <div class="col-md-4">
                 <label class="form-label">Email</label>
-                <input type="email" name="email" class="form-control" th:value="${account.email}">
+                <input class="form-control" name="email" required th:value="${account.email}" type="email">
             </div>
+
             <div class="col-md-4">
-                <label class="form-label">Quyền</label>
-                <select name="role" class="form-select">
-                    <option value="ROLE_ADMIN">Admin</option>
-                    <option value="ROLE_EMPLOYEE">Nhân viên</option>
-                    <option value="ROLE_USER">Khách hàng</option>
+                <label class="form-label">Mật khẩu</label>
+                <input class="form-control" name="matKhau" th:value="${account.matKhau}" type="text">
+                <small class="text-muted">Để trống để tạo mật khẩu mặc định 123456</small>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">Vai trò</label>
+                <select class="form-select" name="vaiTro.maVT">
+                    <option th:each="r : ${vaiTros}" th:text="${r.tenVT}" th:value="${r.maVT}"></option>
                 </select>
             </div>
+
             <div class="col-12">
                 <button class="btn btn-success">Lưu</button>
             </div>
         </form>
 
+        <!-- DANH SÁCH TÀI KHOẢN -->
         <table class="table table-striped">
             <thead>
             <tr>
                 <th>#</th>
-                <th>Username</th>
+                <th>Họ tên</th>
                 <th>Email</th>
                 <th>Quyền</th>
                 <th>Trạng thái</th>
@@ -48,22 +59,44 @@
             </thead>
             <tbody>
             <tr th:each="a : ${accounts}">
-                <td th:text="${a.id}"></td>
-                <td th:text="${a.username}"></td>
+                <td th:text="${a.maTK}"></td>
+                <td th:text="${a.hoTen}"></td>
                 <td th:text="${a.email}"></td>
-                <td th:text="${a.role}"></td>
+                <td th:text="${a.vaiTro.tenVT}"></td>
+                <td><span th:text="${a.trangThai ? 'Hoạt động' : 'Khóa'}"></span></td>
                 <td>
-                    <span th:text="${a.enabled ? 'Hoạt động' : 'Khóa'}"></span>
-                </td>
-                <td>
-                    <a th:href="@{'/admin/accounts/edit/' + ${a.id}}" class="btn btn-primary btn-sm">Sửa</a>
-                    <a th:href="@{'/admin/accounts/lock/' + ${a.id}}" class="btn btn-warning btn-sm"
-                       th:text="${a.enabled ? 'Khóa' : 'Mở'}"></a>
-                    <a th:href="@{'/admin/accounts/delete/' + ${a.id}}" class="btn btn-danger btn-sm">Xóa</a>
+                    <a class="btn btn-primary btn-sm" th:href="@{'/admin/accounts/edit/' + ${a.maTK}}">Sửa</a>
+
+                    <form method="post" style="display:inline"
+                          th:action="@{'/admin/accounts/' + ${a.maTK} + '/toggle-status'}">
+                        <button class="btn btn-warning btn-sm" th:text="${a.trangThai ? 'Khóa' : 'Mở'}"
+                                type="submit"></button>
+                    </form>
+
+                    <form method="post" style="display:inline" th:action="@{'/admin/accounts/delete/' + ${a.maTK}}">
+                        <button class="btn btn-danger btn-sm" type="submit">Xóa</button>
+                    </form>
                 </td>
             </tr>
             </tbody>
         </table>
+
+        <!-- PHÂN TRANG -->
+        <nav th:if="${totalPages > 1}">
+            <ul class="pagination">
+                <li class="page-item" th:classappend="${currentPage == 0}? 'disabled'">
+                    <a class="page-link" th:href="@{/admin/accounts(page=${currentPage - 1}, size=${10})}">Trước</a>
+                </li>
+                <li class="page-item" th:classappend="${i == currentPage}? 'active'"
+                    th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                    <a class="page-link" th:href="@{/admin/accounts(page=${i}, size=${10})}" th:text="${i + 1}"></a>
+                </li>
+                <li class="page-item" th:classappend="${currentPage + 1 >= totalPages}? 'disabled'">
+                    <a class="page-link" th:href="@{/admin/accounts(page=${currentPage + 1}, size=${10})}">Sau</a>
+                </li>
+            </ul>
+        </nav>
+
     </div>
 </div>
 </body>

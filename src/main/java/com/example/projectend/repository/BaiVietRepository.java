@@ -22,11 +22,20 @@ public interface BaiVietRepository extends JpaRepository<BaiViet, Integer> {
     // Tìm bài viết theo tiêu đề (search)
     Page<BaiViet> findByTieuDeContainingIgnoreCaseAndTrangThaiOrderByNgayDangDesc(String tieuDe, String trangThai, Pageable pageable);
 
+    // Tìm bài viết theo tiêu đề (admin - tất cả trạng thái)
+    Page<BaiViet> findByTieuDeContainingIgnoreCaseOrderByNgayDangDesc(String tieuDe, Pageable pageable);
+
     // Lấy các bài viết nổi bật (mới nhất)
     List<BaiViet> findTop3ByTrangThaiOrderByNgayDangDesc(String trangThai);
 
-    // Tìm bài viết theo tác giả
+    // Tìm bài viết theo tác giả và trạng thái
     Page<BaiViet> findByTaiKhoanAndTrangThaiOrderByNgayDangDesc(TaiKhoan taiKhoan, String trangThai, Pageable pageable);
+
+    // Tìm tất cả bài viết của một tác giả (staff)
+    Page<BaiViet> findByTaiKhoanOrderByNgayDangDesc(TaiKhoan taiKhoan, Pageable pageable);
+
+    // Tìm bài viết của tác giả theo keyword (staff)
+    Page<BaiViet> findByTaiKhoanAndTieuDeContainingIgnoreCaseOrderByNgayDangDesc(TaiKhoan taiKhoan, String tieuDe, Pageable pageable);
 
     // Đếm số bài viết theo trạng thái
     long countByTrangThai(String trangThai);

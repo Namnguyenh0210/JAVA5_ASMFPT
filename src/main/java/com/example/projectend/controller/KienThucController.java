@@ -18,9 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * KIEN THUC CONTROLLER - Trang kiến thức về văn hóa Tết
- * Người 1 - Database Design & Backend Core (ĐÃ HOÀN THÀNH)
- * Người 3 - Frontend & Customer Website (ĐÃ HOÀN THÀNH)
+ * Controller hiển thị trang kiến thức về văn hóa Tết
  */
 @Controller
 public class KienThucController {
@@ -28,14 +26,16 @@ public class KienThucController {
     @Autowired
     private BaiVietService baiVietService;
 
+    /**
+     * Hiển thị danh sách bài viết kiến thức
+     */
     @GetMapping("/kienthuc")
     public String kienThuc(@RequestParam(defaultValue = "0") int page,
                            @RequestParam(defaultValue = "6") int size,
                            Model model) {
-        // Add current page for navigation active state
         model.addAttribute("currentPage", "kienthuc");
 
-        // Add breadcrumb data
+        // Breadcrumb
         Map<String, String> breadcrumbItem = new HashMap<>();
         breadcrumbItem.put("name", "Kiến Thức");
         breadcrumbItem.put("url", null);
@@ -47,7 +47,7 @@ public class KienThucController {
         Page<BaiViet> baiVietPage = baiVietService.getAllBaiViet(pageable);
         model.addAttribute("baiVietPage", baiVietPage);
 
-        // Lấy bài viết nổi bật (3 bài mới nhất)
+        // Lấy bài viết nổi bật
         List<BaiViet> featuredPosts = baiVietService.getFeaturedPosts(3);
         model.addAttribute("featuredPosts", featuredPosts);
 
@@ -57,7 +57,9 @@ public class KienThucController {
         return "kienthuc";
     }
 
-    // Chi tiết bài viết
+    /**
+     * Hiển thị chi tiết bài viết
+     */
     @GetMapping("/kienthuc/{id}")
     public String chiTietBaiViet(@PathVariable Integer id, Model model) {
         Optional<BaiViet> baiVietOpt = baiVietService.findById(id);
@@ -70,7 +72,7 @@ public class KienThucController {
         model.addAttribute("currentPage", "kienthuc");
         model.addAttribute("pageTitle", baiViet.getTieuDe() + " - Kiến thức Tết");
 
-        // Breadcrumb cho chi tiết bài viết
+        // Breadcrumb
         Map<String, String> breadcrumb1 = new HashMap<>();
         breadcrumb1.put("name", "Kiến Thức");
         breadcrumb1.put("url", "/kienthuc");
@@ -85,7 +87,9 @@ public class KienThucController {
         return "kienthuc-detail";
     }
 
-    // Tìm kiếm bài viết
+    /**
+     * Tìm kiếm bài viết theo từ khóa
+     */
     @GetMapping("/kienthuc/search")
     public String timKiemBaiViet(@RequestParam String keyword,
                                  @RequestParam(defaultValue = "0") int page,
@@ -93,7 +97,7 @@ public class KienThucController {
                                  Model model) {
         model.addAttribute("currentPage", "kienthuc");
 
-        // Breadcrumb cho tìm kiếm
+        // Breadcrumb
         Map<String, String> breadcrumb1 = new HashMap<>();
         breadcrumb1.put("name", "Kiến Thức");
         breadcrumb1.put("url", "/kienthuc");
@@ -102,17 +106,15 @@ public class KienThucController {
         breadcrumb2.put("name", "Tìm kiếm: " + keyword);
         breadcrumb2.put("url", null);
 
-        List<Map<String, String>> breadcrumbItems = List.of(breadcrumb1, breadcrumb2);
-        model.addAttribute("breadcrumbItems", breadcrumbItems);
+        model.addAttribute("breadcrumbItems", List.of(breadcrumb1, breadcrumb2));
 
         // Tìm kiếm bài viết
         Pageable pageable = PageRequest.of(page, size);
-        Page<BaiViet> baiVietPage = baiVietService.searchByTitle(keyword, pageable);
-
+        Page<BaiViet> baiVietPage = baiVietService.searchBaiViet(keyword, pageable);
         model.addAttribute("baiVietPage", baiVietPage);
         model.addAttribute("keyword", keyword);
-        model.addAttribute("pageTitle", "Tìm kiếm: " + keyword + " - Kiến thức Tết");
 
+        model.addAttribute("pageTitle", "Tìm kiếm: " + keyword);
         return "kienthuc";
     }
 }

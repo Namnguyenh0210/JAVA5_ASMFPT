@@ -9,23 +9,24 @@
 <th:block th:replace="~{fragments/layout :: header}"></th:block>
 
 <!-- Breadcrumb -->
-<th:block th:replace="~{fragments/layout :: breadcrumb(${[{name:'Sản Phẩm'}]})}"></th:block>
+<!-- Use named fragment parameter `items` to avoid Thymeleaf parse errors -->
+<th:block th:replace="~{fragments/layout :: breadcrumb(items=${[{name:'Sản Phẩm'}]})}"></th:block>
 
 <!-- Page Header -->
 <section class="page-header">
     <div class="container">
         <div class="header-content">
             <div class="header-text">
-                <h1>🎊 Sản Phẩm Tết <span th:text="${tetYear}">2025</span></h1>
+                <h1>🎊 Sản Phẩm Tết <span th:text="${tetYear != null ? tetYear : 2025}">2025</span></h1>
                 <p>Khám phá bộ sưu tập quà Tết đặc biệt với hàng trăm sản phẩm chất lượng</p>
             </div>
             <div class="header-stats">
                 <div class="stat-item">
-                    <span class="stat-number">200+</span>
+                    <span class="stat-number" th:text="${sanPhamPage != null ? sanPhamPage.totalElements : 0}">0</span>
                     <span class="stat-label">Sản Phẩm</span>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-number">15+</span>
+                    <span class="stat-number" th:text="${categories != null ? #lists.size(categories) : 0}">0</span>
                     <span class="stat-label">Danh Mục</span>
                 </div>
                 <div class="stat-item">
@@ -43,110 +44,115 @@
         <div class="products-layout">
             <!-- Sidebar Filters -->
             <aside class="products-sidebar">
-                <div class="filter-section">
-                    <h3 class="filter-title">
-                        <i class="fas fa-search"></i>
-                        Tìm Kiếm
-                    </h3>
-                    <div class="search-wrapper">
-                        <input class="search-input" placeholder="Tìm sản phẩm..." type="text">
-                        <button class="search-btn">
+                <form action="/sanpham" id="filterForm" method="get">
+                    <input name="page" type="hidden" value="0">
+                    <input name="size" type="hidden" value="6">
+
+                    <div class="filter-section">
+                        <h3 class="filter-title">
                             <i class="fas fa-search"></i>
+                            Tìm Kiếm
+                        </h3>
+                        <div class="search-wrapper">
+                            <!-- Accessible label for search input -->
+                            <label class="sr-only" for="searchInput">Tìm kiếm sản phẩm</label>
+                            <input class="search-input" id="searchInput" name="search" placeholder="Tìm sản phẩm..."
+                                   th:value="${search}" type="text">
+                            <button class="search-btn" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="filter-section">
+                        <h3 class="filter-title">
+                            <i class="fas fa-list"></i>
+                            Danh Mục
+                        </h3>
+                        <div class="filter-options">
+                            <label class="filter-option">
+                                <input name="loai" onchange="document.getElementById('filterForm').submit()" th:checked="${loai == null}" type="radio"
+                                       value="">
+                                <span class="checkmark-circle"></span>
+                                <span class="option-text">Tất Cả</span>
+                            </label>
+                            <th:block th:if="${categories != null and #lists.size(categories) > 0}">
+                                <label class="filter-option" th:each="cat : ${categories}">
+                                    <input name="loai"
+                                           onchange="document.getElementById('filterForm').submit()" th:checked="${loai != null and loai == cat.maLoai}" th:value="${cat.maLoai}"
+                                           type="radio">
+                                    <span class="checkmark-circle"></span>
+                                    <span class="option-text" th:text="${cat.tenLoai}">Danh mục</span>
+                                </label>
+                            </th:block>
+                            <th:block th:if="${categories == null or #lists.size(categories) == 0}">
+                                <div class="no-categories">Không có danh mục nào.</div>
+                            </th:block>
+                        </div>
+                    </div>
+
+                    <!-- Price Filter Section -->
+                    <div class="filter-section">
+                        <h3 class="filter-title">
+                            <i class="fas fa-dollar-sign"></i>
+                            Khoảng Giá
+                        </h3>
+                        <div class="price-range">
+                            <div class="price-input-group">
+                                <div class="price-input-wrapper">
+                                    <label class="price-label" for="priceMin">Từ</label>
+                                    <div class="input-with-currency">
+                                        <input aria-label="Giá tối thiểu" class="price-input" id="priceMin"
+                                               min="0" name="minPrice"
+                                               placeholder="0" step="1000" th:value="${minPrice}" type="number">
+                                        <span class="currency-symbol">₫</span>
+                                    </div>
+                                </div>
+
+                                <div class="price-separator">—</div>
+
+                                <div class="price-input-wrapper">
+                                    <label class="price-label" for="priceMax">Đến</label>
+                                    <div class="input-with-currency">
+                                        <input aria-label="Giá tối đa" class="price-input" id="priceMax"
+                                               min="0" name="maxPrice"
+                                               placeholder="1000000" step="1000" th:value="${maxPrice}" type="number">
+                                        <span class="currency-symbol">₫</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick price presets -->
+                        <div class="price-presets">
+                            <button class="preset-btn" onclick="setPrice(0, 50000)" type="button">
+                                <span class="preset-label">Dưới 50K</span>
+                            </button>
+                            <button class="preset-btn" onclick="setPrice(50000, 100000)" type="button">
+                                <span class="preset-label">50K - 100K</span>
+                            </button>
+                            <button class="preset-btn" onclick="setPrice(100000, 200000)" type="button">
+                                <span class="preset-label">100K - 200K</span>
+                            </button>
+                            <button class="preset-btn" onclick="setPrice(200000, 500000)" type="button">
+                                <span class="preset-label">200K - 500K</span>
+                            </button>
+                            <button class="preset-btn" onclick="setPrice(500000, null)" type="button">
+                                <span class="preset-label">Trên 500K</span>
+                            </button>
+                        </div>
+
+                        <button class="price-apply-btn" type="submit">
+                            <i class="fas fa-filter"></i>
+                            Áp Dụng
                         </button>
                     </div>
-                </div>
 
-                <div class="filter-section">
-                    <h3 class="filter-title">
-                        <i class="fas fa-list"></i>
-                        Danh Mục
-                    </h3>
-                    <div class="filter-options">
-                        <label class="filter-option">
-                            <input checked name="category" type="checkbox" value="all">
-                            <span class="checkmark"></span>
-                            <span class="option-text">Tất Cả</span>
-                            <span class="option-count">(48)</span>
-                        </label>
-                        <label class="filter-option">
-                            <input name="category" type="checkbox" value="gio-qua">
-                            <span class="checkmark"></span>
-                            <span class="option-text">Giỏ Quà Tết</span>
-                            <span class="option-count">(12)</span>
-                        </label>
-                        <label class="filter-option">
-                            <input name="category" type="checkbox" value="hop-qua">
-                            <span class="checkmark"></span>
-                            <span class="option-text">Hộp Quà Tết</span>
-                            <span class="option-count">(15)</span>
-                        </label>
-                        <label class="filter-option">
-                            <input name="category" type="checkbox" value="mut-banh">
-                            <span class="checkmark"></span>
-                            <span class="option-text">Mứt - Bánh Kẹo</span>
-                            <span class="option-count">(18)</span>
-                        </label>
-                        <label class="filter-option">
-                            <input name="category" type="checkbox" value="trang-tri">
-                            <span class="checkmark"></span>
-                            <span class="option-text">Trang Trí</span>
-                            <span class="option-count">(8)</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="filter-section">
-                    <h3 class="filter-title">
-                        <i class="fas fa-dollar-sign"></i>
-                        Khoảng Giá
-                    </h3>
-                    <div class="price-range">
-                        <div class="price-inputs">
-                            <input class="price-input" id="priceMin" placeholder="Từ" type="number">
-                            <span class="price-separator">-</span>
-                            <input class="price-input" id="priceMax" placeholder="Đến" type="number">
-                        </div>
-                        <button class="price-apply-btn">Áp Dụng</button>
-                    </div>
-                </div>
-
-                <div class="filter-section">
-                    <h3 class="filter-title">
-                        <i class="fas fa-star"></i>
-                        Đánh Giá
-                    </h3>
-                    <div class="filter-options">
-                        <label class="filter-option">
-                            <input name="rating" type="radio" value="5">
-                            <span class="radio-mark"></span>
-                            <div class="rating-stars">
-                                <span class="stars">⭐⭐⭐⭐⭐</span>
-                                <span class="rating-text">(5 sao)</span>
-                            </div>
-                        </label>
-                        <label class="filter-option">
-                            <input name="rating" type="radio" value="4">
-                            <span class="radio-mark"></span>
-                            <div class="rating-stars">
-                                <span class="stars">⭐⭐⭐⭐☆</span>
-                                <span class="rating-text">(4 sao trở lên)</span>
-                            </div>
-                        </label>
-                        <label class="filter-option">
-                            <input name="rating" type="radio" value="3">
-                            <span class="radio-mark"></span>
-                            <div class="rating-stars">
-                                <span class="stars">⭐⭐⭐☆☆</span>
-                                <span class="rating-text">(3 sao trở lên)</span>
-                            </div>
-                        </label>
-                    </div>
-                </div>
-
-                <button class="clear-filters-btn">
-                    <i class="fas fa-times"></i>
-                    Xóa Bộ Lọc
-                </button>
+                    <button class="clear-filters-btn" onclick="clearFilters()" type="button">
+                        <i class="fas fa-times-circle"></i>
+                        Xóa Bộ Lọc
+                    </button>
+                </form>
             </aside>
 
             <!-- Main Content -->
@@ -154,201 +160,155 @@
                 <!-- Toolbar -->
                 <div class="products-toolbar">
                     <div class="toolbar-info">
-                        <span class="results-count">Hiển thị 1-12 của 48 sản phẩm</span>
+                        <span class="results-count" th:if="${sanPhamPage != null and sanPhamPage.totalElements > 0}">
+                            Hiển thị
+                            <span th:text="${sanPhamPage.number * sanPhamPage.size + 1}">1</span>-<span
+                                th:text="${sanPhamPage.number * sanPhamPage.size + sanPhamPage.numberOfElements}">6</span>
+                            của <span th:text="${sanPhamPage.totalElements}">0</span> sản phẩm
+                        </span>
+                        <span class="results-count" th:if="${sanPhamPage == null or sanPhamPage.totalElements == 0}">
+                            Không có sản phẩm nào
+                        </span>
                     </div>
                     <div class="toolbar-controls">
                         <div class="sort-dropdown">
-                            <select class="sort-select">
-                                <option value="default">Sắp xếp mặc định</option>
-                                <option value="price-asc">Giá: Thấp đến Cao</option>
-                                <option value="price-desc">Giá: Cao đến Thấp</option>
-                                <option value="name-asc">Tên: A-Z</option>
-                                <option value="name-desc">Tên: Z-A</option>
-                                <option value="newest">Mới nhất</option>
+                            <select class="sort-select" id="sortSelect" onchange="applySort()">
+                                <option th:selected="${sort == null or sort == 'moi'}" value="moi">Mới nhất</option>
+                                <option th:selected="${sort == 'gia-tang'}" value="gia-tang">Giá: Thấp đến Cao</option>
+                                <option th:selected="${sort == 'gia-giam'}" value="gia-giam">Giá: Cao đến Thấp</option>
                             </select>
                         </div>
-                        <div class="view-toggle">
-                            <button class="view-btn active" data-view="grid">
-                                <i class="fas fa-th"></i>
-                            </button>
-                            <button class="view-btn" data-view="list">
-                                <i class="fas fa-list"></i>
-                            </button>
-                        </div>
+                        <!-- Cart Icon with Count -->
+                        <a class="cart-icon-btn" href="/giohang">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="cart-count-badge" id="cartCountBadge">0</span>
+                        </a>
                     </div>
                 </div>
 
                 <!-- Products Grid -->
                 <div class="products-grid" id="productsGrid">
-                    <!-- Product Item -->
-                    <div class="product-item">
-                        <div class="product-image">
-                            <img alt="Giỏ quà Tết An Khang" src="https://picsum.photos/300/300?random=1">
-                            <div class="product-badges">
-                                <span class="badge hot">Hot</span>
-                                <span class="badge sale">-20%</span>
-                            </div>
-                            <div class="product-overlay">
-                                <button class="action-btn quick-view" title="Xem nhanh">
-                                    <i class="fas fa-eye"></i>
+                    <th:block th:if="${sanPhamPage == null or sanPhamPage.totalElements == 0}">
+                        <div class="no-products" style="grid-column: 1/-1; text-align: center; padding: 60px 20px;">
+                            <i class="fas fa-box-open" style="font-size: 64px; color: #ddd; margin-bottom: 20px;"></i>
+                            <h3>Không có sản phẩm nào phù hợp</h3>
+                            <p>Vui lòng thử lại với bộ lọc khác</p>
+                        </div>
+                    </th:block>
+                    <th:block th:if="${sanPhamPage != null and sanPhamPage.totalElements > 0}">
+                        <div class="product-card" th:each="sp : ${sanPhamPage.content}">
+                            <a class="product-link" th:href="@{'/sanpham/' + ${sp.maSP}}">
+                                <div class="product-image">
+                                    <img onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'" th:alt="${sp.tenSP}"
+                                         th:src="${sp.hinhAnh}"/>
+                                    <div class="product-badge" th:if="${sp.soLuong < 10 and sp.soLuong > 0}">
+                                        <span class="badge badge-warning">Sắp hết</span>
+                                    </div>
+                                    <div class="product-badge" th:if="${sp.soLuong == 0}">
+                                        <span class="badge badge-danger">Hết hàng</span>
+                                    </div>
+                                </div>
+                                <div class="product-info">
+                                    <div class="product-category" th:if="${sp.loaiSanPham != null}"
+                                         th:text="${sp.loaiSanPham.tenLoai}">Danh mục
+                                    </div>
+                                    <h3 class="product-title" th:text="${sp.tenSP}">Tên sản phẩm</h3>
+                                    <div class="product-price">
+                                        <span class="price"
+                                              th:text="${#numbers.formatDecimal(sp.gia, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 đ</span>
+                                    </div>
+                                    <div class="product-stock" th:if="${sp.soLuong > 0}">
+                                        <i class="fas fa-check-circle"></i> Còn hàng
+                                    </div>
+                                    <div class="product-stock out-of-stock" th:if="${sp.soLuong == 0}">
+                                        <i class="fas fa-times-circle"></i> Hết hàng
+                                    </div>
+                                </div>
+                            </a>
+                            <div class="product-actions">
+                                <button class="btn-add-to-cart"
+                                        onclick="addToCart(this); event.stopPropagation();"
+                                        th:data-product-id="${sp.maSP}"
+                                        th:data-product-name="${sp.tenSP}"
+                                        th:if="${sp.soLuong > 0}">
+                                    <i class="fas fa-shopping-cart"></i>
+                                    <span class="btn-text">Thêm Vào Giỏ Hàng</span>
+                                    <span class="btn-success-text">✓ Đã Thêm Vào Giỏ</span>
                                 </button>
-                                <button class="action-btn add-to-wishlist" title="Yêu thích">
-                                    <i class="fas fa-heart"></i>
-                                </button>
-                                <button class="action-btn add-to-compare" title="So sánh">
-                                    <i class="fas fa-balance-scale"></i>
+                                <button class="btn-add-to-cart btn-disabled"
+                                        disabled
+                                        th:if="${sp.soLuong == 0}">
+                                    <i class="fas fa-ban"></i>
+                                    <span class="btn-text">Hết Hàng</span>
                                 </button>
                             </div>
                         </div>
-                        <div class="product-info">
-                            <div class="product-category">Giỏ Quà Tết</div>
-                            <h3 class="product-title">
-                                <a href="/sanpham/1">Giỏ Quà Tết An Khang</a>
-                            </h3>
-                            <div class="product-rating">
-                                <div class="stars">⭐⭐⭐⭐⭐</div>
-                                <span class="rating-count">(24 đánh giá)</span>
-                            </div>
-                            <div class="product-price">
-                                <span class="current-price">400.000đ</span>
-                                <span class="original-price">500.000đ</span>
-                            </div>
-                            <button class="add-to-cart-btn">
-                                <i class="fas fa-cart-plus"></i>
-                                Thêm Vào Giỏ
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Repeat similar structure for other products -->
-                    <div class="product-item">
-                        <div class="product-image">
-                            <img alt="Hộp quà Tết Phát Tài" src="https://picsum.photos/300/300?random=2">
-                            <div class="product-badges">
-                                <span class="badge new">New</span>
-                            </div>
-                            <div class="product-overlay">
-                                <button class="action-btn quick-view" title="Xem nhanh">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="action-btn add-to-wishlist" title="Yêu thích">
-                                    <i class="fas fa-heart"></i>
-                                </button>
-                                <button class="action-btn add-to-compare" title="So sánh">
-                                    <i class="fas fa-balance-scale"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="product-info">
-                            <div class="product-category">Hộp Quà Tết</div>
-                            <h3 class="product-title">
-                                <a href="/sanpham/2">Hộp Quà Tết Phát Tài</a>
-                            </h3>
-                            <div class="product-rating">
-                                <div class="stars">⭐⭐⭐⭐⭐</div>
-                                <span class="rating-count">(18 đánh giá)</span>
-                            </div>
-                            <div class="product-price">
-                                <span class="current-price">1.200.000đ</span>
-                            </div>
-                            <button class="add-to-cart-btn">
-                                <i class="fas fa-cart-plus"></i>
-                                Thêm Vào Giỏ
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Add more products... -->
-                    <div class="product-item">
-                        <div class="product-image">
-                            <img alt="Mứt dừa non" src="https://picsum.photos/300/300?random=3">
-                            <div class="product-overlay">
-                                <button class="action-btn quick-view" title="Xem nhanh">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="action-btn add-to-wishlist" title="Yêu thích">
-                                    <i class="fas fa-heart"></i>
-                                </button>
-                                <button class="action-btn add-to-compare" title="So sánh">
-                                    <i class="fas fa-balance-scale"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="product-info">
-                            <div class="product-category">Mứt - Bánh Kẹo</div>
-                            <h3 class="product-title">
-                                <a href="/sanpham/3">Mứt Dừa Non 500g</a>
-                            </h3>
-                            <div class="product-rating">
-                                <div class="stars">⭐⭐⭐⭐☆</div>
-                                <span class="rating-count">(32 đánh giá)</span>
-                            </div>
-                            <div class="product-price">
-                                <span class="current-price">150.000đ</span>
-                            </div>
-                            <button class="add-to-cart-btn">
-                                <i class="fas fa-cart-plus"></i>
-                                Thêm Vào Giỏ
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="product-item">
-                        <div class="product-image">
-                            <img alt="Bao lì xì vàng" src="https://picsum.photos/300/300?random=4">
-                            <div class="product-badges">
-                                <span class="badge bestseller">Best Seller</span>
-                            </div>
-                            <div class="product-overlay">
-                                <button class="action-btn quick-view" title="Xem nhanh">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="action-btn add-to-wishlist" title="Yêu thích">
-                                    <i class="fas fa-heart"></i>
-                                </button>
-                                <button class="action-btn add-to-compare" title="So sánh">
-                                    <i class="fas fa-balance-scale"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="product-info">
-                            <div class="product-category">Trang Trí</div>
-                            <h3 class="product-title">
-                                <!-- TODO (Người 3): Nếu tên sản phẩm phụ thuộc năm, thay 2025 bằng dynamic tetYear -->
-                                <a href="/sanpham/4">Bao Lì Xì Vàng <span th:text="${tetYear}">2025</span> (10 cái)</a>
-                            </h3>
-                            <div class="product-rating">
-                                <div class="stars">⭐⭐⭐⭐⭐</div>
-                                <span class="rating-count">(156 đánh giá)</span>
-                            </div>
-                            <div class="product-price">
-                                <span class="current-price">30.000đ</span>
-                            </div>
-                            <button class="add-to-cart-btn">
-                                <i class="fas fa-cart-plus"></i>
-                                Thêm Vào Giỏ
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Add more products as needed -->
+                    </th:block>
                 </div>
 
-                <!-- Pagination -->
-                <div class="pagination">
-                    <button class="page-btn prev" disabled>
-                        <i class="fas fa-chevron-left"></i>
-                        Trước
-                    </button>
-                    <button class="page-btn active">1</button>
-                    <button class="page-btn">2</button>
-                    <button class="page-btn">3</button>
-                    <span class="page-dots">...</span>
-                    <button class="page-btn">8</button>
-                    <button class="page-btn next">
-                        Sau
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
+                <!-- Pagination - Thiết kế mới đẹp hơn -->
+                <div class="pagination-wrapper" th:if="${sanPhamPage != null and sanPhamPage.totalPages > 1}">
+                    <div class="pagination">
+                        <!-- Previous Button -->
+                        <a class="pagination-btn pagination-prev"
+                           th:href="@{/sanpham(page=${sanPhamPage.number - 1}, size=6, search=${search}, loai=${loai}, minPrice=${minPrice}, maxPrice=${maxPrice}, sort=${sort})}"
+                           th:if="${sanPhamPage.hasPrevious()}">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>Trước</span>
+                        </a>
+                        <span class="pagination-btn pagination-prev disabled" th:unless="${sanPhamPage.hasPrevious()}">
+                            <i class="fas fa-chevron-left"></i>
+                            <span>Trước</span>
+                        </span>
+
+                        <!-- Page Numbers -->
+                        <div class="pagination-numbers">
+                            <!-- First page -->
+                            <a class="pagination-number"
+                               th:href="@{/sanpham(page=0, size=6, search=${search}, loai=${loai}, minPrice=${minPrice}, maxPrice=${maxPrice}, sort=${sort})}"
+                               th:if="${sanPhamPage.number > 2}">1</a>
+
+                            <!-- Dots before -->
+                            <span class="pagination-dots" th:if="${sanPhamPage.number > 3}">...</span>
+
+                            <!-- Current page range -->
+                            <th:block th:each="i : ${#numbers.sequence(0, sanPhamPage.totalPages - 1)}">
+                                <a class="pagination-number"
+                                   th:classappend="${i == sanPhamPage.number} ? 'active' : ''"
+                                   th:href="@{/sanpham(page=${i}, size=6, search=${search}, loai=${loai}, minPrice=${minPrice}, maxPrice=${maxPrice}, sort=${sort})}"
+                                   th:if="${i >= sanPhamPage.number - 2 and i <= sanPhamPage.number + 2}"
+                                   th:text="${i + 1}">1</a>
+                            </th:block>
+
+                            <!-- Dots after -->
+                            <span class="pagination-dots"
+                                  th:if="${sanPhamPage.number < sanPhamPage.totalPages - 4}">...</span>
+
+                            <!-- Last page -->
+                            <a class="pagination-number"
+                               th:href="@{/sanpham(page=${sanPhamPage.totalPages - 1}, size=6, search=${search}, loai=${loai}, minPrice=${minPrice}, maxPrice=${maxPrice}, sort=${sort})}"
+                               th:if="${sanPhamPage.number < sanPhamPage.totalPages - 3}"
+                               th:text="${sanPhamPage.totalPages}">10</a>
+                        </div>
+
+                        <!-- Next Button -->
+                        <a class="pagination-btn pagination-next"
+                           th:href="@{/sanpham(page=${sanPhamPage.number + 1}, size=6, search=${search}, loai=${loai}, minPrice=${minPrice}, maxPrice=${maxPrice}, sort=${sort})}"
+                           th:if="${sanPhamPage.hasNext()}">
+                            <span>Sau</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                        <span class="pagination-btn pagination-next disabled" th:unless="${sanPhamPage.hasNext()}">
+                            <span>Sau</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </span>
+                    </div>
+
+                    <!-- Page Info -->
+                    <div class="pagination-info">
+                        Trang <strong th:text="${sanPhamPage.number + 1}">1</strong> / <strong
+                            th:text="${sanPhamPage.totalPages}">10</strong>
+                    </div>
                 </div>
             </main>
         </div>
@@ -361,35 +321,192 @@
 <!-- Scripts -->
 <th:block th:replace="~{fragments/layout :: scripts}"></th:block>
 <script>
-    // View toggle functionality
-    document.querySelectorAll('.view-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
-            document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-
-            const view = this.dataset.view;
-            const grid = document.getElementById('productsGrid');
-
-            if (view === 'list') {
-                grid.classList.add('list-view');
-            } else {
-                grid.classList.remove('list-view');
-            }
-        });
+    // Load cart count on page load
+    document.addEventListener('DOMContentLoaded', function () {
+        updateCartCount();
     });
 
-    // Add to cart functionality
-    document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
-            this.innerHTML = '<i class="fas fa-check"></i> Đã Thêm';
-            this.classList.add('added');
+    // Update cart count from API
+    function updateCartCount() {
+        fetch('/api/giohang/count')
+            .then(response => response.json())
+            .then(data => {
+                const badge = document.getElementById('cartCountBadge');
+                if (badge && data.count !== undefined) {
+                    badge.textContent = data.count;
+                    badge.style.display = data.count > 0 ? 'flex' : 'none';
+                }
+            })
+            .catch(error => console.error('Error loading cart count:', error));
+    }
 
-            setTimeout(() => {
-                this.innerHTML = '<i class="fas fa-cart-plus"></i> Thêm Vào Giỏ';
-                this.classList.remove('added');
-            }, 2000);
-        });
+    // Apply sort
+    function applySort() {
+        const sortValue = document.getElementById('sortSelect').value;
+        const form = document.getElementById('filterForm');
+
+        // Add sort parameter
+        let sortInput = form.querySelector('input[name="sort"]');
+        if (!sortInput) {
+            sortInput = document.createElement('input');
+            sortInput.type = 'hidden';
+            sortInput.name = 'sort';
+            form.appendChild(sortInput);
+        }
+        sortInput.value = sortValue;
+
+        form.submit();
+    }
+
+    // Clear all filters
+    function clearFilters() {
+        window.location.href = '/sanpham?page=0&size=6';
+    }
+
+    // Auto-submit search on Enter
+    document.querySelector('.search-input').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            document.getElementById('filterForm').submit();
+        }
     });
+
+    // Add to cart function with animation
+    function addToCart(button) {
+        const productId = button.dataset.productId;
+        const productName = button.dataset.productName;
+
+        // Disable button to prevent multiple clicks
+        if (button.classList.contains('adding') || button.classList.contains('added')) {
+            return;
+        }
+
+        button.classList.add('adding');
+        button.disabled = true;
+
+        // Call API to add to cart
+        fetch('/api/giohang/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `sanPhamId=${productId}&soLuong=1`
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Success animation
+                    button.classList.remove('adding');
+                    button.classList.add('added');
+
+                    // Update cart count with animation
+                    updateCartCount();
+
+                    // Add pulse animation to cart badge
+                    const badge = document.getElementById('cartCountBadge');
+                    if (badge) {
+                        badge.classList.add('pulse');
+                        setTimeout(() => badge.classList.remove('pulse'), 500);
+                    }
+
+                    // Show success notification
+                    showNotification(`✓ Đã thêm "${productName}" vào giỏ hàng!`, 'success');
+
+                    // Reset button after 2 seconds
+                    setTimeout(() => {
+                        button.classList.remove('added');
+                        button.disabled = false;
+                    }, 2000);
+                } else {
+                    // Error handling
+                    button.classList.remove('adding');
+                    button.disabled = false;
+
+                    if (data.message) {
+                        if (data.message.includes('đăng nhập')) {
+                            showNotification('⚠️ Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!', 'warning');
+                            setTimeout(() => {
+                                window.location.href = '/login?redirect=/sanpham';
+                            }, 1500);
+                        } else {
+                            showNotification('⚠️ ' + data.message, 'warning');
+                        }
+                    } else {
+                        showNotification('❌ Có lỗi xảy ra, vui lòng thử lại!', 'error');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                button.classList.remove('adding');
+                button.disabled = false;
+                showNotification('❌ Có lỗi xảy ra, vui lòng thử lại!', 'error');
+            });
+    }
+
+    // Show notification function
+    function showNotification(message, type) {
+        // Remove existing notification
+        const existing = document.querySelector('.cart-notification');
+        if (existing) {
+            existing.remove();
+        }
+
+        // Create notification
+        const notification = document.createElement('div');
+        notification.className = `cart-notification ${type}`;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <span class="notification-message">${message}</span>
+                <button class="notification-close" onclick="this.parentElement.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+
+        document.body.appendChild(notification);
+
+        // Show notification
+        setTimeout(() => notification.classList.add('show'), 100);
+
+        // Auto hide after 3 seconds
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 400);
+        }, 3000);
+    }
+
+    // Set price range for quick preset buttons
+    function setPrice(min, max) {
+        const minInput = document.getElementById('priceMin');
+        const maxInput = document.getElementById('priceMax');
+        if (minInput) minInput.value = min;
+        if (maxInput) maxInput.value = max;
+
+        // Submit form automatically
+        document.getElementById('filterForm').submit();
+    }
+
+    // Apply quick preset (inputs are in thousands)
+    function applyPresetPrice(minK, maxK) {
+        const minInput = document.getElementById('priceMin');
+        const maxInput = document.getElementById('priceMax');
+        if (minInput) minInput.value = minK;
+        if (maxInput) maxInput.value = maxK;
+
+        // Update hidden fields too so immediate effect
+        convertPriceToVND();
+    }
+
+    // Ensure hidden VND fields are synchronized on any form submit (covers Enter key and non-button submits)
+    const filterForm = document.getElementById('filterForm');
+    if (filterForm) {
+        filterForm.addEventListener('submit', function (e) {
+            // Update hidden inputs before letting the form submit
+            convertPriceToVND();
+            // small timeout not necessary; convertPriceToVND is synchronous
+        });
+    }
 </script>
 </body>
 </html>

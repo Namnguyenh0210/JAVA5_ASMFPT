@@ -4,33 +4,31 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
- * GIOI THIEU CONTROLLER - Trang giới thiệu
- * PHÂN CÔNG:
- * - THÀNH VIÊN 3: Nội dung trang giới thiệu (company info, mission, vision, team, timeline)
- * - THÀNH VIÊN 4: (Optional) Thêm số liệu thống kê nhanh / badge
- * <p>
- * =============================
- * TODO THÀNH VIÊN 3:
- *  1. Bổ sung model attributes: companyInfo, mission, vision
- *  2. (Optional) Thêm thống kê: totalProducts, totalOrders (gọi service tương ứng)
- *  3. (Optional) Thêm danh sách teamMembers, milestones (nếu tạo bảng/giả lập JSON)
- *  4. (Optional) Tạo thêm trang chính sách / điều khoản (route riêng)
- * TODO THÀNH VIÊN 4 (Optional): Mini widget số đơn pending ở header (qua GlobalModelAdvice)
+ * Controller hiển thị trang giới thiệu
  */
 @Controller
 public class GioiThieuController {
 
+    /**
+     * Hiển thị trang giới thiệu về cửa hàng
+     */
     @GetMapping("/gioithieu")
     public String gioiThieu(Model model) {
         model.addAttribute("currentPage", "gioithieu");
-        // TODO THÀNH VIÊN 3: model.addAttribute("companyInfo", "Thông tin cửa hàng đồ Tết");
-        // TODO THÀNH VIÊN 3: model.addAttribute("mission", "Mang hương vị Tết đến mọi nhà");
-        // TODO THÀNH VIÊN 3: model.addAttribute("vision", "Trở thành nền tảng quà Tết hàng đầu");
         model.addAttribute("pageTitle", "Giới thiệu - Cửa hàng đồ Tết");
+
+        // Breadcrumb
+        Map<String, String> breadcrumbItem = new HashMap<>();
+        breadcrumbItem.put("name", "Giới Thiệu");
+        breadcrumbItem.put("url", null);
+        List<Map<String, String>> breadcrumbItems = List.of(breadcrumbItem);
+        model.addAttribute("breadcrumbItems", breadcrumbItems);
+
         return "gioithieu";
     }
-
-    // TODO THÀNH VIÊN 3 (Optional): Trang chính sách /chinh-sach
-    // TODO THÀNH VIÊN 3 (Optional): Trang điều khoản /dieu-khoan
 }

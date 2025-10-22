@@ -7,37 +7,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
- * BAI VIET SERVICE - Xử lý logic bài viết tin tức
- * <p>
- * =============================
- * PHÂN CÔNG: TV4 - THỐNG KÊ & BÁO CÁO
- * =============================
- * TODO TV4 - CẦN LÀM (4 METHODS ADMIN):
- * <p>
- * 1. getAllBaiVietAdmin(Pageable) - Lấy tất cả bài viết (kể cả ẩn)
- * → Dùng cho trang quản trị
- * <p>
- * 2. save(BaiViet) - Tạo/cập nhật bài viết
- * → Validate tiêu đề không trùng
- * → Set NgayDang = now() nếu tạo mới
- * <p>
- * 3. toggleStatus(Integer id) - Bật/tắt hiển thị
- * → Đổi TrangThai: "Hiển thị" <-> "Ẩn"
- * <p>
- * 4. deleteById(Integer id) - Xóa bài viết
- * → Hard delete hoặc soft delete (optional)
- * <p>
- * THỜI GIAN: 1 ngày
- * LƯU Ý: Methods hiển thị khách (getFeaturedPosts, searchByTitle) đã có sẵn
- * =============================
- * <p>
- * NOTE CHO TV2: Dùng getFeaturedPosts(3) ở HomeController
- * =============================
+ * Service xử lý logic nghiệp vụ cho bài viết tin tức
  */
 @Service
 public class BaiVietService {
@@ -45,75 +27,166 @@ public class BaiVietService {
     @Autowired
     private BaiVietRepository baiVietRepository;
 
-    // =============================
-    // METHODS KHÁCH HÀNG (ĐÃ CÓ SẴN)
+    private final String UPLOAD_DIR = "src/main/resources/static/images/";
 
-    // Lấy tất cả bài viết với phân trang (status = "Hiển thị")
+    /**
+     * Lấy tất cả bài viết đang hiển thị với phân trang
+     */
     public Page<BaiViet> getAllBaiViet(Pageable pageable) {
         return baiVietRepository.findByTrangThaiOrderByNgayDangDesc("Hiển thị", pageable);
     }
 
+    /**
+     * Tìm bài viết theo ID
+     */
     public Optional<BaiViet> findById(Integer id) {
         return baiVietRepository.findById(id);
     }
 
-    public Page<BaiViet> searchByTitle(String keyword, Pageable pageable) {
+    /**
+     * Tìm kiếm bài viết theo tiêu đề
+     */
+    public Page<BaiViet> searchBaiViet(String keyword, Pageable pageable) {
         return baiVietRepository.findByTieuDeContainingIgnoreCaseAndTrangThaiOrderByNgayDangDesc(keyword, "Hiển thị", pageable);
     }
 
-    // Lấy bài viết nổi bật cho trang chủ
+    /**
+     * Tìm kiếm bài viết theo tiêu đề (cho admin)
+     */
+    public Page<BaiViet> searchByTitle(String keyword, Pageable pageable) {
+        return baiVietRepository.findByTieuDeContainingIgnoreCaseOrderByNgayDangDesc(keyword, pageable);
+    }
+
+    /**
+     * Lấy bài viết nổi bật cho trang chủ
+     */
     public List<BaiViet> getFeaturedPosts(int limit) {
         return baiVietRepository.findTop3ByTrangThaiOrderByNgayDangDesc("Hiển thị");
     }
 
+    /**
+     * Lấy bài viết theo tác giả
+     */
     public Page<BaiViet> getBaiVietByAuthor(TaiKhoan taiKhoan, Pageable pageable) {
         return baiVietRepository.findByTaiKhoanAndTrangThaiOrderByNgayDangDesc(taiKhoan, "Hiển thị", pageable);
     }
 
+    /**
+     * Lấy bài viết theo tác giả (staff)
+     */
+    public Page<BaiViet> findByTacGia(TaiKhoan taiKhoan, Pageable pageable) {
+        return baiVietRepository.findByTaiKhoanOrderByNgayDangDesc(taiKhoan, pageable);
+    }
+
+    /**
+     * Tìm kiếm bài viết theo tác giả và từ khóa
+     */
+    public Page<BaiViet> searchByTacGiaAndKeyword(TaiKhoan taiKhoan, String keyword, Pageable pageable) {
+        return baiVietRepository.findByTaiKhoanAndTieuDeContainingIgnoreCaseOrderByNgayDangDesc(taiKhoan, keyword, pageable);
+    }
+
+    /**
+     * Đếm số bài viết đang hiển thị
+     */
     public long countActivePosts() {
         return baiVietRepository.countByTrangThai("Hiển thị");
     }
 
-    // =============================
-    // TODO TV4: Method 1 - Lấy tất cả bài viết cho admin (kể cả ẩn)
-    // HƯỚNG DẪN: return baiVietRepository.findAll(pageable);
+    /**
+     * Đếm tất cả bài viết
+     */
+    public long countAll() {
+        return baiVietRepository.count();
+    }
+
+    /**
+     * Lấy tất cả bài viết cho admin (bao gồm cả bài ẩn)
+     */
     public Page<BaiViet> getAllBaiVietAdmin(Pageable pageable) {
         return baiVietRepository.findAll(pageable);
     }
 
-    // =============================
-    // TODO TV4: Method 2 - Lưu bài viết (tạo mới hoặc cập nhật)
-    // HƯỚNG DẪN:
-    // 1. Validate tiêu đề không trùng (optional):
-    //    if (baiViet.getMaBV() == null) { // Tạo mới
-    //        List<BaiViet> existing = baiVietRepository.findByTieuDe(baiViet.getTieuDe());
-    //        if (!existing.isEmpty()) throw new RuntimeException("Tiêu đề đã tồn tại");
-    //    }
-    // 2. if (baiViet.getNgayDang() == null) baiViet.setNgayDang(LocalDateTime.now());
-    // 3. if (baiViet.getTrangThai() == null) baiViet.setTrangThai("Hiển thị");
-    // 4. return baiVietRepository.save(baiViet);
+    /**
+     * Lưu hoặc cập nhật bài viết
+     */
     public BaiViet save(BaiViet baiViet) {
-        return baiVietRepository.save(baiViet); // TODO TV4: Thêm validation
+        return baiVietRepository.save(baiViet);
     }
 
-    // =============================
-    // TODO TV4: Method 3 - Bật/tắt hiển thị bài viết (đã có sẵn)
+    /**
+     * Tạo bài viết mới với upload ảnh
+     */
+    public BaiViet createBaiViet(BaiViet baiViet, MultipartFile hinhAnh) throws IOException {
+        // Xử lý upload ảnh nếu có
+        if (hinhAnh != null && !hinhAnh.isEmpty()) {
+            String fileName = saveImage(hinhAnh);
+            baiViet.setHinhAnh(fileName);
+        }
+
+        // Set thông tin mặc định
+        if (baiViet.getNgayDang() == null) {
+            baiViet.setNgayDang(LocalDateTime.now());
+        }
+        if (baiViet.getTrangThai() == null) {
+            baiViet.setTrangThai("Hiển thị");
+        }
+
+        return baiVietRepository.save(baiViet);
+    }
+
+    /**
+     * Cập nhật bài viết với upload ảnh
+     */
+    public BaiViet updateBaiViet(BaiViet baiViet, MultipartFile hinhAnh) throws IOException {
+        // Xử lý upload ảnh mới nếu có
+        if (hinhAnh != null && !hinhAnh.isEmpty()) {
+            String fileName = saveImage(hinhAnh);
+            baiViet.setHinhAnh(fileName);
+        }
+
+        return baiVietRepository.save(baiViet);
+    }
+
+    /**
+     * Xóa bài viết
+     */
+    public void deleteBaiViet(Integer id) {
+        baiVietRepository.deleteById(id);
+    }
+
+    /**
+     * Bật/tắt trạng thái hiển thị bài viết
+     */
     public void toggleStatus(Integer id) {
-        Optional<BaiViet> baiVietOpt = baiVietRepository.findById(id);
-        if (baiVietOpt.isPresent()) {
-            BaiViet bv = baiVietOpt.get();
-            String newStatus = "Hiển thị".equals(bv.getTrangThai()) ? "Ẩn" : "Hiển thị";
-            bv.setTrangThai(newStatus);
+        Optional<BaiViet> bvOpt = baiVietRepository.findById(id);
+        if (bvOpt.isPresent()) {
+            BaiViet bv = bvOpt.get();
+            bv.setTrangThai(bv.getTrangThai().equals("Hiển thị") ? "Ẩn" : "Hiển thị");
             baiVietRepository.save(bv);
         }
     }
 
-    // =============================
-    // TODO TV4: Method 4 - Xóa bài viết (đã có sẵn)
-    // HƯỚNG DẪN:
-    // Option 1 (Hard delete): baiVietRepository.deleteById(id);
-    // Option 2 (Soft delete): toggleStatus(id) để set TrangThai = "Đã xóa"
+    /**
+     * Xóa bài viết theo ID
+     */
     public void deleteById(Integer id) {
-        baiVietRepository.deleteById(id); // TODO TV4: Có thể đổi sang soft delete
+        baiVietRepository.deleteById(id);
+    }
+
+    /**
+     * Lưu file ảnh và trả về tên file
+     */
+    private String saveImage(MultipartFile file) throws IOException {
+        String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+        Path uploadPath = Paths.get(UPLOAD_DIR);
+
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        Path filePath = uploadPath.resolve(fileName);
+        Files.copy(file.getInputStream(), filePath);
+
+        return fileName;
     }
 }
