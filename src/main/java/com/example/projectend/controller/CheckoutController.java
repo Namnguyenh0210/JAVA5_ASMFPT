@@ -65,7 +65,6 @@ public class CheckoutController {
             Object selectedObj = session.getAttribute("selectedCartItems");
             List<Map<String, Object>> selectedItems = null;
             if (selectedObj instanceof List<?>) {
-                // Ensure all elements are Map<String, Object>
                 boolean valid = true;
                 for (Object o : (List<?>) selectedObj) {
                     if (!(o instanceof Map)) {
@@ -79,14 +78,21 @@ public class CheckoutController {
             }
             if (selectedItems != null) {
                 items = gioHangService.getGioHangByTaiKhoanAndSanPhamIds(tk, selectedItems);
+                // LƯU items vào session để dùng khi place-order
+                session.setAttribute("checkoutCartItems", items);
+                System.out.println("=== DEBUG: Saved " + items.size() + " items to checkoutCartItems session");
             } else {
                 items = gioHangService.getGioHangByTaiKhoan(tk);
+                session.setAttribute("checkoutCartItems", items);
             }
-            // Xóa khỏi session sau khi lấy ra để tránh lặp lại
+            // Xóa selectedCartItems sau khi đã xử lý
             session.removeAttribute("selectedCartItems");
         } else {
             items = gioHangService.getGioHangByTaiKhoan(tk);
+            // Lưu vào session
+            session.setAttribute("checkoutCartItems", items);
         }
+
         if (items.isEmpty()) {
             return "redirect:/giohang?error=empty";
         }
@@ -145,61 +151,89 @@ public class CheckoutController {
                 return "redirect:/login";
             }
 
-            // Lấy danh sách sản phẩm đã tick chọn từ session nếu có
-            List<GioHang> items;
-            Object selectedObj = session.getAttribute("selectedCartItems");
-            List<Map<String, Object>> selectedItems = null;
-            if (selectedObj instanceof List<?>) {
-                boolean valid = true;
-                for (Object o : (List<?>) selectedObj) {
-                    if (!(o instanceof Map)) {
-                        valid = false;
-                        break;
-                    }
-                }
-                if (valid) {
-                    selectedItems = (List<Map<String, Object>>) selectedObj;
+            // LẤY sản phẩm từ session checkoutCartItems (đã lưu ở trang checkout)
+            List<GioHang> items = null;
+            Object checkoutItemsObj = session.getAttribute("checkoutCartItems");
+
+            if (checkoutItemsObj instanceof List<?>) {
+                try {
+                    items = (List<GioHang>) checkoutItemsObj;
+                    System.out.println("=== DEBUG: Lấy từ checkoutCartItems session: " + items.size() + " sản phẩm");
+                } catch (ClassCastException e) {
+                    System.out.println("=== DEBUG: Lỗi cast checkoutCartItems");
                 }
             }
-            if (selectedItems != null && !selectedItems.isEmpty()) {
-                items = gioHangService.getGioHangByTaiKhoanAndSanPhamIds(tk, selectedItems);
-            } else {
+
+            // Nếu không có session, lấy tất cả giỏ hàng (fallback)
+            if (items == null || items.isEmpty()) {
+                System.out.println("=== DEBUG: Không có checkoutCartItems, lấy tất cả giỏ hàng");
                 items = gioHangService.getGioHangByTaiKhoan(tk);
             }
 
             if (items.isEmpty()) {
-                session.removeAttribute("selectedCartItems"); // luôn xóa session nếu không còn sản phẩm
+                session.removeAttribute("checkoutCartItems");
                 redirectAttributes.addFlashAttribute("error", "Giỏ hàng trống!");
                 return "redirect:/giohang";
             }
+
+            System.out.println("=== DEBUG: Tạo đơn hàng với " + items.size() + " sản phẩm");
 
             // Tạo đơn hàng
             DonHang donHang = donHangService.createDonHang(tk, diaChiId, phuongThucId, items, ghiChu);
 
             if (donHang == null) {
-                session.removeAttribute("selectedCartItems"); // luôn xóa session nếu thất bại
+                session.removeAttribute("checkoutCartItems");
                 redirectAttributes.addFlashAttribute("error", "Đặt hàng thất bại!");
                 return "redirect:/checkout";
             }
 
-            // Xóa các sản phẩm đã đặt khỏi giỏ hàng (nếu muốn xóa toàn bộ thì giữ như cũ)
-            if (selectedItems != null && !selectedItems.isEmpty()) {
-                for (GioHang gh : items) {
-                    gioHangService.xoaSanPham(tk, gh.getSanPham().getMaSP());
-                }
-            } else {
-                gioHangService.clearGioHang(tk);
+            // Xóa các sản phẩm đã đặt khỏi giỏ hàng
+            for (GioHang gh : items) {
+                gioHangService.xoaSanPham(tk, gh.getSanPham().getMaSP());
             }
 
-            session.removeAttribute("selectedCartItems"); // luôn xóa session sau khi đặt hàng
+            // Xóa session sau khi đặt hàng thành công
+            session.removeAttribute("checkoutCartItems");
+            session.removeAttribute("selectedCartItems");
 
             redirectAttributes.addFlashAttribute("success", "Đặt hàng thành công!");
             return "redirect:/checkout/success?orderId=" + donHang.getMaDH();
 
         } catch (Exception e) {
-            session.removeAttribute("selectedCartItems"); // luôn xóa session nếu có lỗi
+            e.printStackTrace();
+            System.out.println("=== DEBUG: Lỗi đặt hàng: " + e.getMessage());
+            session.removeAttribute("checkoutCartItems");
+            session.removeAttribute("selectedCartItems");
             redirectAttributes.addFlashAttribute("error", "Lỗi: " + e.getMessage());
             return "redirect:/checkout";
+        }
+    }
+
+    /**
+     * API nhận danh sách sản phẩm đã chọn từ giỏ hàng
+     */
+    @PostMapping("/api/checkout-selected")
+    @ResponseBody
+    public Map<String, Object> checkoutSelected(@RequestBody Map<String, Object> payload, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            List<Map<String, Object>> items = (List<Map<String, Object>>) payload.get("items");
+            if (items == null || items.isEmpty()) {
+                response.put("thanhCong", false);
+                response.put("thongBao", "Vui lòng chọn ít nhất một sản phẩm!");
+                return response;
+            }
+
+            // Lưu danh sách sản phẩm đã chọn vào session
+            session.setAttribute("selectedCartItems", items);
+
+            response.put("thanhCong", true);
+            response.put("duongDanChuyenHuong", "/checkout?selected=1");
+            return response;
+        } catch (Exception e) {
+            response.put("thanhCong", false);
+            response.put("thongBao", "Có lỗi xảy ra: " + e.getMessage());
+            return response;
         }
     }
 
@@ -234,36 +268,5 @@ public class CheckoutController {
         model.addAttribute("pageTitle", "Đặt hàng thành công");
         model.addAttribute("currentPage", "checkout-success");
         return "checkout-success";
-    }
-
-    /**
-     * Nhận danh sách sản phẩm được chọn từ giỏ hàng và lưu vào session
-     */
-    @PostMapping("/api/checkout-selected")
-    @ResponseBody
-    public Map<String, Object> checkoutSelected(@RequestBody Map<String, List<Map<String, Object>>> payload, Principal principal, HttpSession session) {
-        Map<String, Object> ketQua = new HashMap<>();
-        try {
-            if (principal == null) {
-                ketQua.put("thanhCong", false);
-                ketQua.put("thongBao", "Bạn chưa đăng nhập!");
-                return ketQua;
-            }
-            List<Map<String, Object>> items = payload.get("items");
-            if (items == null || items.isEmpty()) {
-                ketQua.put("thanhCong", false);
-                ketQua.put("thongBao", "Không có sản phẩm nào được chọn!");
-                return ketQua;
-            }
-            // Lưu danh sách sản phẩm được chọn vào session
-            session.setAttribute("selectedCartItems", items);
-            ketQua.put("thanhCong", true);
-            ketQua.put("duongDanChuyenHuong", "/checkout?selected=1");
-            return ketQua;
-        } catch (Exception e) {
-            ketQua.put("thanhCong", false);
-            ketQua.put("thongBao", "Lỗi: " + e.getMessage());
-            return ketQua;
-        }
     }
 }

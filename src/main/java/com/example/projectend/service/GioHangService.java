@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -115,34 +116,27 @@ public class GioHangService {
     }
 
     /**
-     * Lấy các sản phẩm trong giỏ hàng của người dùng theo danh sách sản phẩm được chọn
+     * Lấy giỏ hàng theo tài khoản và danh sách sản phẩm đã chọn
      */
     public List<GioHang> getGioHangByTaiKhoanAndSanPhamIds(TaiKhoan tk, List<Map<String, Object>> selectedItems) {
+        List<GioHang> result = new ArrayList<>();
         List<GioHang> allItems = getGioHangByTaiKhoan(tk);
-        if (selectedItems == null || selectedItems.isEmpty()) {
-            return allItems;
-        }
-        // Extract product IDs from selectedItems
-        java.util.Set<Integer> selectedIds = new java.util.HashSet<>();
+
         for (Map<String, Object> item : selectedItems) {
-            Object idObj = item.get("maSP");
-            if (idObj instanceof Integer) {
-                selectedIds.add((Integer) idObj);
-            } else if (idObj instanceof Number) {
-                selectedIds.add(((Number) idObj).intValue());
-            } else if (idObj != null) {
-                try {
-                    selectedIds.add(Integer.parseInt(idObj.toString()));
-                } catch (NumberFormatException ignored) {}
+            Integer maSP = Integer.parseInt(item.get("maSP").toString());
+            Integer soLuong = Integer.parseInt(item.get("soLuong").toString());
+
+            // Tìm sản phẩm trong giỏ hàng
+            for (GioHang gh : allItems) {
+                if (gh.getSanPham().getMaSP().equals(maSP)) {
+                    // Cập nhật số lượng theo số lượng đã chọn
+                    gh.setSoLuong(soLuong);
+                    result.add(gh);
+                    break;
+                }
             }
         }
-        // Filter cart items by selected product IDs
-        List<GioHang> filtered = new java.util.ArrayList<>();
-        for (GioHang gh : allItems) {
-            if (gh.getSanPham() != null && selectedIds.contains(gh.getSanPham().getMaSP())) {
-                filtered.add(gh);
-            }
-        }
-        return filtered;
+
+        return result;
     }
 }
