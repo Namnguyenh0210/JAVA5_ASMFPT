@@ -523,5 +523,6 @@ FROM DonHang dh
          JOIN TrangThaiDonHang ttdh ON dh.MaTTDH = ttdh.MaTTDH
 ORDER BY dh.NgayDat DESC;
 GO
+SELECT * FROM DonHang;
 
 -- END OF SCRIPT

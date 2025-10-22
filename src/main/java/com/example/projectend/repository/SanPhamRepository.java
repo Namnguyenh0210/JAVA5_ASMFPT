@@ -2,6 +2,9 @@ package com.example.projectend.repository;
 
 import com.example.projectend.entity.SanPham;
 import com.example.projectend.entity.LoaiSanPham;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -50,4 +53,10 @@ public interface SanPhamRepository extends JpaRepository<SanPham, Integer>, JpaS
 
     // Đếm số lượng sản phẩm
     long count();
+ // Tìm theo tên sản phẩm (search)
+    Page<SanPham> findByTenSPContainingIgnoreCase(String keyword, Pageable pageable);
+
+    // Lọc theo loại sản phẩm
+    Page<SanPham> findByLoaiSanPham_MaLoai(Integer maLoai, Pageable pageable);
+    List<SanPham> findAllByOrderByNgayTaoDesc();
 }

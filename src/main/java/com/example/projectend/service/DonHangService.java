@@ -4,57 +4,22 @@ import com.example.projectend.entity.*;
 import com.example.projectend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 /**
  * DON HANG SERVICE - Xử lý đơn hàng
- * <p>
  * =============================
  * PHÂN CÔNG: TV3 - ADMIN BACKEND (QUAN TRỌNG!)
- * =============================
- * TODO TV3 - CẦN LÀM (10 METHODS):
- * <p>
- * ⚠️ PRIORITY #1 (TV2 đang chờ):
- * 1. createDonHang(TaiKhoan, diaChiId, phuongThucId, items, ghiChu) - Tạo đơn hàng
- * → Validate địa chỉ, PTTT, tồn kho
- * → Tính tổng tiền từ items
- * → Tạo DonHang với trạng thái "Chờ xác nhận"
- * → Lưu DonHang
- * → Tạo DonHangChiTiet cho từng item
- * → Trigger tự động giảm tồn kho
- * → Return DonHang đã tạo
- * <p>
- * KHÁCH HÀNG (2-5):
- * 2. getChiTietDonHang(DonHang) - Lấy chi tiết sản phẩm trong đơn
- * 3. findByIdAndKhachHang(id, TaiKhoan) - Lấy đơn của khách (security)
- * 4. getDonHangByKhachHang(TaiKhoan, Pageable) - Lịch sử đơn hàng
- * 5. cancelOrder(donHangId, TaiKhoan) - Hủy đơn (chỉ khi Chờ xác nhận)
- * <p>
- * ADMIN (6-8):
- * 6. searchAdmin(keyword, trangThai, Pageable) - Tìm kiếm đơn hàng admin
- * 7. updateTrangThai(donHangId, trangThaiMoi) - Cập nhật trạng thái
- * 8. getPendingOrders(limit) - Đơn chờ xác nhận (dashboard)
- * <p>
- * PHÍ SHIP (9-10):
- * 9. tinhPhiShip(tongTien) - Tính phí ship (miễn phí > 300k)
- * 10. tinhPhiShipByDiaChi(DiaChi) - Phí ship theo tỉnh (optional)
- * <p>
- * THỜI GIAN: 4 ngày
- * LƯU Ý: Method 1 là QUAN TRỌNG NHẤT! TV2 cần để làm checkout
- * =============================
- * <p>
- * NOTE CHO TV4 (THỐNG KÊ):
- * TV4 sẽ thêm 4 methods thống kê vào file này:
- * - tinhDoanhThu(startDate, endDate)
- * - thongKeTheoThang(soThang)
- * - topSanPhamBanChay(limit)
- * - topKhachHangVIP(limit)
  * =============================
  */
 @Service
@@ -75,145 +40,201 @@ public class DonHangService {
 
     // =============================
     // TODO TV3: Method 1 - Tạo đơn hàng ⚠️ PRIORITY!
-    // HƯỚNG DẪN CHI TIẾT:
-    // 1. Validate:
-    //    DiaChi dc = diaChiRepository.findById(diaChiId).orElseThrow();
-    //    PhuongThucThanhToan pttt = phuongThucThanhToanRepository.findById(phuongThucId).orElseThrow();
-    //    TrangThaiDonHang ttdh = trangThaiDonHangRepository.findByTenTrangThai("Chờ xác nhận").orElseThrow();
-    //
-    // 2. Kiểm tra tồn kho:
-    //    for (GioHang item : items) {
-    //        if (item.getSanPham().getSoLuong() < item.getSoLuong()) {
-    //            throw new RuntimeException("Sản phẩm " + item.getSanPham().getTenSP() + " không đủ số lượng");
-    //        }
-    //    }
-    //
-    // 3. Tính tổng tiền:
-    //    BigDecimal tongTien = BigDecimal.ZERO;
-    //    for (GioHang item : items) {
-    //        tongTien = tongTien.add(item.getSanPham().getGia().multiply(BigDecimal.valueOf(item.getSoLuong())));
-    //    }
-    //    BigDecimal phiShip = tinhPhiShip(tongTien);
-    //    tongTien = tongTien.add(phiShip);
-    //
-    // 4. Tạo DonHang:
-    //    DonHang dh = new DonHang();
-    //    dh.setTaiKhoan(khachHang);
-    //    dh.setDiaChi(dc);
-    //    dh.setPhuongThucThanhToan(pttt);
-    //    dh.setTrangThaiDonHang(ttdh);
-    //    dh.setTongTien(tongTien);
-    //    dh.setPhiShip(phiShip);
-    //    dh.setGhiChu(ghiChu);
-    //    dh.setNgayDatHang(LocalDateTime.now());
-    //    dh = donHangRepository.save(dh);
-    //
-    // 5. Tạo DonHangChiTiet:
-    //    for (GioHang item : items) {
-    //        DonHangChiTiet dhct = new DonHangChiTiet();
-    //        dhct.setDonHang(dh);
-    //        dhct.setSanPham(item.getSanPham());
-    //        dhct.setSoLuong(item.getSoLuong());
-    //        dhct.setGia(item.getSanPham().getGia());
-    //        donHangChiTietRepository.save(dhct);
-    //        // Trigger tự động giảm tồn kho
-    //    }
-    //
-    // 6. return dh;
+    @Transactional
     public DonHang createDonHang(TaiKhoan khachHang, Integer diaChiId, Integer phuongThucId, List<GioHang> items, String ghiChu) {
-        return null; // TODO TV3: Implement - TV2 đang chờ method này!
+        if (items == null || items.isEmpty()) {
+            throw new RuntimeException("Giỏ hàng không được trống.");
+        }
+
+        // 1. Validate Entities
+        DiaChi dc = diaChiRepository.findById(diaChiId)
+                .orElseThrow(() -> new RuntimeException("Địa chỉ không hợp lệ."));
+        PhuongThucThanhToan pttt = phuongThucThanhToanRepository.findById(phuongThucId)
+                .orElseThrow(() -> new RuntimeException("Phương thức thanh toán không hợp lệ."));
+        TrangThaiDonHang ttdhChoXacNhan = trangThaiDonHangRepository.findByTenTTDH(
+                "Chờ xác nhận").orElseThrow(() -> new RuntimeException("Trạng thái đơn hàng 'Chờ xác nhận' không tìm thấy."));
+
+
+        // 2. Kiểm tra tồn kho VÀ Tính tổng tiền ban đầu
+        BigDecimal tongTienHang = BigDecimal.ZERO;
+        for (GioHang item : items) {
+            SanPham sp = sanPhamRepository.findById(item.getSanPham().getMaSP())
+                            .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại: " + item.getSanPham().getMaSP()));
+
+            if (sp.getSoLuong() < item.getSoLuong()) {
+                throw new RuntimeException("Sản phẩm " + sp.getTenSP() + " không đủ số lượng tồn kho (" + sp.getSoLuong() + ").");
+            }
+            
+            // Tính tổng tiền hàng (chưa có phí ship)
+            tongTienHang = tongTienHang.add(sp.getGia().multiply(BigDecimal.valueOf(item.getSoLuong())));
+        }
+
+        // 3. Tính phí ship và Tổng tiền cuối cùng
+        BigDecimal phiShip = tinhPhiShip(tongTienHang);
+        BigDecimal tongTienCuoi = tongTienHang.add(phiShip);
+
+        // 4. Tạo DonHang (Sử dụng Entity objects)
+        DonHang dh = new DonHang();
+        dh.setKhachHang(khachHang);
+        dh.setDiaChiGiaoHang(dc);
+        dh.setPhuongThucThanhToan(pttt);
+        dh.setTrangThaiDonHang(ttdhChoXacNhan); // Set đối tượng Entity
+        dh.setTongTien(tongTienCuoi);
+        dh.setNgayDat(LocalDateTime.now());
+        // dh.setGhiChu(ghiChu); // Giả sử Entity DonHang có trường ghi chú
+        dh = donHangRepository.save(dh);
+
+        // 5. Tạo DonHangChiTiet (Sử dụng Entity objects)
+        for (GioHang item : items) {
+            SanPham sp = sanPhamRepository.findById(item.getSanPham().getMaSP()).get();
+            DonHangChiTiet dhct = new DonHangChiTiet();
+            
+            dhct.setDonHang(dh); // Set đối tượng DonHang
+            dhct.setSanPham(sp); // Set đối tượng SanPham
+            
+            dhct.setSoLuong(item.getSoLuong());
+            dhct.setDonGia(sp.getGia());
+            donHangChiTietRepository.save(dhct);
+        }
+
+        return dh;
     }
 
     // =============================
     // TODO TV3: Method 2 - Lấy chi tiết đơn hàng
-    // HƯỚNG DẪN: return donHangChiTietRepository.findByDonHang(donHang);
     public List<DonHangChiTiet> getChiTietDonHang(DonHang donHang) {
-        return Collections.emptyList(); // TODO TV3: Implement
+        // Giả định DonHangChiTietRepository có findByDonHang(DonHang donHang)
+        return donHangChiTietRepository.findByDonHang(donHang);
     }
 
     // =============================
     // TODO TV3: Method 3 - Lấy đơn theo ID và khách hàng (security)
-    // HƯỚNG DẪN: return donHangRepository.findByMaDHAndTaiKhoan(id, khachHang);
     public Optional<DonHang> findByIdAndKhachHang(Integer id, TaiKhoan khachHang) {
-        return Optional.empty(); // TODO TV3: Implement
+        // Sử dụng MaDH và MaKH (ID nguyên thủy)
+        return donHangRepository.findByMaDHAndKhachHang_MaTK(id, khachHang.getMaTK());
     }
 
     // =============================
     // TODO TV3: Method 4 - Lịch sử đơn hàng của khách
-    // HƯỚNG DẪN: return donHangRepository.findByTaiKhoanOrderByNgayDatHangDesc(tk, pageable);
     public Page<DonHang> getDonHangByKhachHang(TaiKhoan tk, Pageable pageable) {
-        return Page.empty(); // TODO TV3: Implement
+        // Sử dụng MaKH (ID nguyên thủy)
+    	return donHangRepository.findByKhachHang_MaTKOrderByNgayDatDesc(tk.getMaTK(), pageable);
     }
 
     // =============================
     // TODO TV3: Method 5 - Hủy đơn hàng (chỉ khi Chờ xác nhận)
-    // HƯỚNG DẪN:
-    // 1. Optional<DonHang> dhOpt = findByIdAndKhachHang(donHangId, khachHang);
-    // 2. if (!dhOpt.isPresent()) return false;
-    // 3. DonHang dh = dhOpt.get();
-    // 4. if (!"Chờ xác nhận".equals(dh.getTrangThaiDonHang().getTenTrangThai())) return false;
-    // 5. TrangThaiDonHang ttdh = trangThaiDonHangRepository.findByTenTrangThai("Đã hủy").orElse(null);
-    // 6. dh.setTrangThaiDonHang(ttdh);
-    // 7. donHangRepository.save(dh);
-    // 8. return true;
+    @Transactional
     public boolean cancelOrder(Integer donHangId, TaiKhoan khachHang) {
-        return false; // TODO TV3: Implement
+        Optional<DonHang> dhOpt = findByIdAndKhachHang(donHangId, khachHang);
+
+        if (!dhOpt.isPresent()) {
+            return false;
+        }
+
+        DonHang dh = dhOpt.get();
+        
+        // Kiểm tra trạng thái hiện tại
+        Optional<TrangThaiDonHang> ttdhCurrentOpt = Optional.ofNullable(dh.getTrangThaiDonHang());
+        if (!ttdhCurrentOpt.isPresent() || !"Chờ xác nhận".equals(ttdhCurrentOpt.get().getTenTTDH())) {
+            return false;
+        }
+
+        // Cập nhật trạng thái thành "Đã hủy"
+        TrangThaiDonHang ttdhHuy = trangThaiDonHangRepository.findByTenTTDH("Đã hủy").orElse(null);
+        if (ttdhHuy == null) {
+             throw new RuntimeException("Không tìm thấy trạng thái 'Đã hủy'.");
+        }
+        
+        dh.setTrangThaiDonHang(ttdhHuy); // Set đối tượng Entity
+        donHangRepository.save(dh);
+        
+        return true;
     }
 
     // =============================
     // TODO TV3: Method 6 - Tìm kiếm đơn hàng admin
-    // HƯỚNG DẪN:
-    // Specification<DonHang> spec = ...
-    // if (keyword != null) spec = spec.and(maDH LIKE or hoTen khách LIKE)
-    // if (trangThai != null) spec = spec.and(trangThai = trangThai)
-    // return donHangRepository.findAll(spec, pageable);
     public Page<DonHang> searchAdmin(String keyword, String trangThai, Pageable pageable) {
-        return Page.empty(); // TODO TV3: Implement
+        Specification<DonHang> spec = Specification.where(null);
+
+        // 1. Lọc theo trạng thái
+        if (trangThai != null && !trangThai.isEmpty()) {
+            Optional<TrangThaiDonHang> ttdhOpt = trangThaiDonHangRepository.findByTenTTDH(trangThai.trim());
+            if (ttdhOpt.isPresent()) {
+                final int maTTDH = ttdhOpt.get().getMaTTDH();
+                spec = spec.and((root, query, cb) -> cb.equal(root.get("trangThaiDonHang").get("maTTDH"), maTTDH));
+            }
+        }
+        
+        // 2. Tìm kiếm theo keyword (Mã DH)
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            try {
+                int maDH = Integer.parseInt(keyword.trim());
+                spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("maDH"), maDH));
+            } catch (NumberFormatException e) {
+                // Bỏ qua tìm kiếm theo tên khách hàng để giữ đơn giản
+            }
+        }
+
+        return donHangRepository.findAll(spec, pageable);
     }
 
     // =============================
     // TODO TV3: Method 7 - Cập nhật trạng thái đơn hàng
-    // HƯỚNG DẪN:
-    // 1. Optional<DonHang> dhOpt = donHangRepository.findById(donHangId);
-    // 2. if (!dhOpt.isPresent()) return false;
-    // 3. TrangThaiDonHang ttdh = trangThaiDonHangRepository.findByTenTrangThai(trangThaiMoi).orElse(null);
-    // 4. if (ttdh == null) return false;
-    // 5. dhOpt.get().setTrangThaiDonHang(ttdh);
-    // 6. donHangRepository.save(dhOpt.get());
-    // 7. return true;
     public boolean updateTrangThai(Integer donHangId, String trangThaiMoi) {
-        return false; // TODO TV3: Implement
+        Optional<DonHang> dhOpt = donHangRepository.findById(donHangId);
+        
+        if (!dhOpt.isPresent()) {
+            return false;
+        }
+
+        TrangThaiDonHang ttdh = trangThaiDonHangRepository.findByTenTTDH(trangThaiMoi).orElse(null);
+        if (ttdh == null) {
+            return false;
+        }
+        
+        DonHang dh = dhOpt.get();
+        dh.setTrangThaiDonHang(ttdh); // Set đối tượng Entity
+        donHangRepository.save(dh);
+        
+        return true;
     }
 
     // =============================
     // TODO TV3: Method 8 - Lấy đơn chờ xác nhận (dashboard)
-    // HƯỚNG DẪN:
-    // TrangThaiDonHang ttdh = trangThaiDonHangRepository.findByTenTrangThai("Chờ xác nhận").orElse(null);
-    // return donHangRepository.findTopXByTrangThaiDonHangOrderByNgayDatHangDesc(ttdh, PageRequest.of(0, limit)).getContent();
     public List<DonHang> getPendingOrders(int limit) {
-        return Collections.emptyList(); // TODO TV3: Implement
+        TrangThaiDonHang ttdh = trangThaiDonHangRepository.findByTenTTDH("Chờ xác nhận").orElse(null);
+        if (ttdh == null) {
+            return Collections.emptyList();
+        }
+        
+        // Cần lấy MaTTDH từ Entity để tìm kiếm trong Repository
+        return donHangRepository.findByTrangThaiDonHang_MaTTDHOrderByNgayDatDesc(ttdh.getMaTTDH(), PageRequest.of(0, limit)).getContent();
     }
 
     // =============================
     // TODO TV3: Method 9 - Tính phí ship đơn giản
-    // HƯỚNG DẪN:
-    // if (tongTien.compareTo(new BigDecimal("300000")) >= 0) {
-    //     return BigDecimal.ZERO; // Miễn phí ship
-    // }
-    // return new BigDecimal("30000"); // Phí ship 30k
     public BigDecimal tinhPhiShip(BigDecimal tongTien) {
-        return BigDecimal.ZERO; // TODO TV3: Implement
+        BigDecimal MUC_MIEN_PHI = new BigDecimal("300000");
+        BigDecimal PHI_SHIP_CO_BAN = new BigDecimal("30000");
+
+        if (tongTien.compareTo(MUC_MIEN_PHI) >= 0) {
+            return BigDecimal.ZERO;
+        }
+        return PHI_SHIP_CO_BAN;
     }
 
     // =============================
     // TODO TV3: Method 10 - Tính phí ship theo địa chỉ (optional)
-    // HƯỚNG DẪN:
-    // if (diaChi.getTinhTP().contains("Hà Nội") || diaChi.getTinhTP().contains("TP.HCM")) {
-    //     return new BigDecimal("30000");
-    // }
-    // return new BigDecimal("50000");
     public BigDecimal tinhPhiShipByDiaChi(DiaChi diaChi) {
-        return BigDecimal.ZERO; // TODO TV3: Implement (optional)
+        BigDecimal PHI_SHIP_HN_HCM = new BigDecimal("30000");
+        BigDecimal PHI_SHIP_TINH_KHAC = new BigDecimal("50000");
+        
+        String chiTiet = diaChi.getDiaChiChiTiet().toUpperCase();
+
+        if (chiTiet.contains("HÀ NỘI") || chiTiet.contains("TP.HCM") || chiTiet.contains("HỒ CHÍ MINH")) {
+            return PHI_SHIP_HN_HCM;
+        }
+        return PHI_SHIP_TINH_KHAC;
     }
 
     // =============================
@@ -228,8 +249,5 @@ public class DonHangService {
 
     // =============================
     // TODO TV4: Thêm 4 methods thống kê vào đây (sau khi TV3 xong):
-    // public BigDecimal tinhDoanhThu(LocalDateTime start, LocalDateTime end) { ... }
-    // public Map<String, BigDecimal> thongKeTheoThang(int soThang) { ... }
-    // public List<Map<String, Object>> topSanPhamBanChay(int limit) { ... }
-    // public List<Map<String, Object>> topKhachHangVIP(int limit) { ... }
+    // ...
 }

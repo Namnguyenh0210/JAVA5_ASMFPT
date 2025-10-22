@@ -192,5 +192,8 @@ public class SanPhamService {
 
     // =============================
     // NOTE CHO TV3 (ADMIN): Methods save/delete ở trên dùng được cho CRUD admin
+    public List<SanPham> findAll() {
+        return sanPhamRepository.findAll(Sort.by(Sort.Direction.DESC, "ngayTao"));
+    }
     // NOTE CHO TV4 (THỐNG KÊ): Tạo query riêng trong Repository để lấy top bán chạy
 }

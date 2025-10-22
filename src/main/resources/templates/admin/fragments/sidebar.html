@@ -17,21 +17,21 @@
             <a th:href="@{/admin}" class="nav-link text-white">📊 Dashboard</a>
         </li>
         <li>
-            <a th:href="@{/admin/baiviet}" class="nav-link text-white">📝 Bài viết</a>
+            <a th:href="@{/admin/posts}" class="nav-link text-white">📝 Bài viết</a>
         </li>
         <li>
-            <a th:href="@{/admin/sanpham}" class="nav-link text-white">🛒 Sản phẩm</a>
+            <a th:href="@{/admin/products}" class="nav-link text-white">🛒 Sản phẩm</a>
         </li>
         <li>
-            <a th:href="@{/admin/donhang}" class="nav-link text-white">📦 Đơn hàng</a>
+            <a th:href="@{/admin/orders}" class="nav-link text-white">📦 Đơn hàng</a>
         </li>
 
         <!-- Chỉ Admin mới thấy -->
         <li sec:authorize="hasRole('ADMIN')">
-            <a th:href="@{/admin/taikhoan}" class="nav-link text-white">👤 Tài khoản</a>
+            <a th:href="@{/admin/accounts}" class="nav-link text-white">👤 Tài khoản</a>
         </li>
         <li sec:authorize="hasRole('ADMIN')">
-            <a th:href="@{/admin/thongke}" class="nav-link text-white">📈 Thống kê</a>
+            <a th:href="@{/admin/reports}" class="nav-link text-white">📈 Thống kê</a>
         </li>
     </ul>
     <hr>
